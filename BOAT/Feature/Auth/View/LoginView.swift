@@ -5,6 +5,7 @@
 
 import SwiftUI
 import GoogleSignInSwift
+import AuthenticationServices
 
 struct LoginView: View {
 
@@ -22,6 +23,16 @@ struct LoginView: View {
                 .fontWeight(.bold)
 
             Spacer()
+
+            // 애플 로그인 버튼
+            SignInWithAppleButton(.signIn) { request in
+                request.requestedScopes = [.fullName, .email]
+            } onCompletion: { _ in
+                viewModel.dispatch(.signInWithApple)
+            }
+            .signInWithAppleButtonStyle(.black)
+            .frame(height: 50)
+            .padding(.horizontal, 24)
 
             // 구글 로그인 버튼
             GoogleSignInButton(action: {

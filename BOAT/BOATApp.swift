@@ -23,8 +23,16 @@ struct BOATApp: App {
             Group {
                 if isAuthenticated {
                     // 추후 메인 화면으로 교체
-                    Text("로그인 성공! 🎉")
-                        .font(.title)
+                    VStack(spacing: 20) {
+                        Text("로그인 성공! 🎉")
+                            .font(.title)
+                        Button("로그아웃") {
+                            try? Auth.auth().signOut()
+                            GIDSignIn.sharedInstance.signOut()
+                            isAuthenticated = false
+                        }
+                        .foregroundStyle(.red)
+                    }
                 } else {
                     LoginView(onAuthenticated: {
                         isAuthenticated = true

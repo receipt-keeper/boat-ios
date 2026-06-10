@@ -13,12 +13,14 @@ class AuthViewModel {
 
     var state: AuthState = .idle
 
+    private let appleSignInHelper = AppleSignInHelper()
+
     func dispatch(_ intent: AuthIntent) {
         switch intent {
         case .signInWithGoogle:
             signInWithGoogle()
         case .signInWithApple:
-            break // 추후 구현
+            signInWithApple()
         case .signOut:
             signOut()
         }
@@ -62,6 +64,29 @@ class AuthViewModel {
                 } else {
                     self.state = .authenticated
                 }
+            }
+        }
+    }
+
+    // MARK: - Apple Sign In
+
+    private func signInWithApple() {
+        state = .loading
+
+        appleSignInHelper.signIn { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success(let credential):
+                Auth.auth().signIn(with: credential) { [weak self] _, error in
+                    guard let self else { return }
+                    if let error {
+                        self.state = .error(error.localizedDescription)
+                    } else {
+                        self.state = .authenticated
+                    }
+                }
+            case .failure(let error):
+                self.state = .error(error.localizedDescription)
             }
         }
     }
