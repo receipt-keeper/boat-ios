@@ -15,10 +15,25 @@ struct BOATApp: App {
 
     @State private var isAuthenticated: Bool = false
     @State private var permissionManager = PermissionManager()
+    @State private var showOCRTest = false
 
     init() {
         FirebaseApp.configure()
         _isAuthenticated = State(initialValue: Auth.auth().currentUser != nil)
+    }
+
+    private var ocrTestButton: some View {
+        Button {
+            showOCRTest = true
+        } label: {
+            Label("OCR 테스트", systemImage: "text.viewfinder")
+                .font(.footnote)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(Color(.secondarySystemBackground))
+                .clipShape(Capsule())
+        }
+        .foregroundStyle(.secondary)
     }
 
     var body: some Scene {
@@ -35,12 +50,20 @@ struct BOATApp: App {
                             isAuthenticated = false
                         }
                         .foregroundStyle(.red)
+                        ocrTestButton
                     }
                 } else {
                     LoginView(onAuthenticated: {
                         isAuthenticated = true
                     })
+                    .safeAreaInset(edge: .bottom) {
+                        ocrTestButton
+                            .padding()
+                    }
                 }
+            }
+            .sheet(isPresented: $showOCRTest) {
+                OCRTestView()
             }
             .environment(permissionManager)
             .onOpenURL { url in
