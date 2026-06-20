@@ -9,6 +9,5 @@
 import Foundation
 
 enum BaseURL {
-    /// TODO: 실제 BOAT 백엔드 주소로 교체
-    static let current = URL(string: "https://api.boat.receipt-keeper.com")!
+    static let current = URL(string: "https://boatlab-dev.luigi99.cloud")!
 }
