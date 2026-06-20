@@ -9,7 +9,7 @@ import AuthenticationServices
 
 struct LoginView: View {
 
-    var onAuthenticated: (() -> Void)? = nil
+    var onAuthenticated: ((SocialUserInfo) -> Void)? = nil
 
     @State private var viewModel = AuthViewModel()
 
@@ -26,9 +26,9 @@ struct LoginView: View {
 
             // 애플 로그인 버튼
             SignInWithAppleButton(.signIn) { request in
-                request.requestedScopes = [.fullName, .email]
-            } onCompletion: { _ in
-                viewModel.dispatch(.signInWithApple)
+                viewModel.appleSignInHelper.prepareRequest(request)
+            } onCompletion: { result in
+                viewModel.dispatch(.signInWithApple(result))
             }
             .signInWithAppleButtonStyle(.black)
             .frame(height: 50)
@@ -55,8 +55,8 @@ struct LoginView: View {
         }
         .padding(.bottom, 48)
         .onChange(of: viewModel.state) { _, newState in
-            if case .authenticated = newState {
-                onAuthenticated?()
+            if case .authenticated(let userInfo) = newState {
+                onAuthenticated?(userInfo)
             }
         }
     }

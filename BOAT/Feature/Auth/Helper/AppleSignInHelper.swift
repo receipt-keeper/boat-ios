@@ -9,23 +9,61 @@ import FirebaseAuth
 
 final class AppleSignInHelper: NSObject {
 
-    private var currentNonce: String?
-    private var completion: ((Result<AuthCredential, Error>) -> Void)?
+    private(set) var currentNonce: String?
 
-    func signIn(completion: @escaping (Result<AuthCredential, Error>) -> Void) {
-        self.completion = completion
+    // MARK: - SignInWithAppleButton 연동
 
+    /// SignInWithAppleButton request 클로저에서 호출 — nonce 설정
+    func prepareRequest(_ request: ASAuthorizationAppleIDRequest) {
         let nonce = randomNonceString()
         currentNonce = nonce
-
-        let request = ASAuthorizationAppleIDProvider().createRequest()
         request.requestedScopes = [.fullName, .email]
         request.nonce = sha256(nonce)
+    }
 
-        let controller = ASAuthorizationController(authorizationRequests: [request])
-        controller.delegate = self
-        controller.presentationContextProvider = self
-        controller.performRequests()
+    /// SignInWithAppleButton onCompletion 클로저에서 호출 — credential + 유저 정보 추출
+    func process(
+        _ result: Result<ASAuthorization, Error>,
+        completion: @escaping (Result<(AuthCredential, SocialUserInfo), Error>) -> Void
+    ) {
+        switch result {
+        case .failure(let error):
+            completion(.failure(error))
+
+        case .success(let authorization):
+            guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
+                  let nonce = currentNonce,
+                  let appleIDToken = appleIDCredential.identityToken,
+                  let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+                completion(.failure(NSError(
+                    domain: "AppleSignIn",
+                    code: -1,
+                    userInfo: [NSLocalizedDescriptionKey: "애플 로그인 토큰을 가져올 수 없습니다."]
+                )))
+                return
+            }
+
+            let credential = OAuthProvider.appleCredential(
+                withIDToken: idTokenString,
+                rawNonce: nonce,
+                fullName: appleIDCredential.fullName
+            )
+
+            // 이름: Apple은 최초 로그인 시에만 제공
+            let name: String? = appleIDCredential.fullName.flatMap {
+                let formatter = PersonNameComponentsFormatter()
+                let formatted = formatter.string(from: $0)
+                return formatted.isEmpty ? nil : formatted
+            }
+
+            let userInfo = SocialUserInfo(
+                email: appleIDCredential.email,
+                name: name,
+                provider: .apple
+            )
+
+            completion(.success((credential, userInfo)))
+        }
     }
 
     // MARK: - Nonce
@@ -45,47 +83,5 @@ final class AppleSignInHelper: NSObject {
         let inputData = Data(input.utf8)
         let hashedData = SHA256.hash(data: inputData)
         return hashedData.compactMap { String(format: "%02x", $0) }.joined()
-    }
-}
-
-// MARK: - ASAuthorizationControllerDelegate
-
-extension AppleSignInHelper: ASAuthorizationControllerDelegate {
-
-    func authorizationController(controller: ASAuthorizationController,
-                                 didCompleteWithAuthorization authorization: ASAuthorization) {
-        guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
-              let nonce = currentNonce,
-              let appleIDToken = appleIDCredential.identityToken,
-              let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
-            completion?(.failure(NSError(domain: "AppleSignIn", code: -1,
-                                         userInfo: [NSLocalizedDescriptionKey: "애플 로그인 토큰을 가져올 수 없습니다."])))
-            return
-        }
-
-        let credential = OAuthProvider.appleCredential(
-            withIDToken: idTokenString,
-            rawNonce: nonce,
-            fullName: appleIDCredential.fullName
-        )
-        completion?(.success(credential))
-    }
-
-    func authorizationController(controller: ASAuthorizationController,
-                                 didCompleteWithError error: Error) {
-        completion?(.failure(error))
-    }
-}
-
-// MARK: - ASAuthorizationControllerPresentationContextProviding
-
-extension AppleSignInHelper: ASAuthorizationControllerPresentationContextProviding {
-
-    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first else {
-            fatalError("No window found")
-        }
-        return window
     }
 }
