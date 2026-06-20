@@ -26,17 +26,17 @@ enum APIError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidURL:
-            return "잘못된 요청 주소입니다."
+            return String(localized: "error.api.invalid_url")
         case .emptyResponse:
-            return "서버 응답이 비어 있습니다."
+            return String(localized: "error.api.empty_response")
         case .decodingFailed:
-            return "데이터를 해석하는 데 실패했습니다."
+            return String(localized: "error.api.decode_failed")
         case .server(_, let message):
             return message
         case .transport:
-            return "네트워크 연결을 확인해 주세요."
+            return String(localized: "error.api.network")
         case .unknown:
-            return "알 수 없는 오류가 발생했습니다."
+            return String(localized: "error.api.unknown")
         }
     }
 }

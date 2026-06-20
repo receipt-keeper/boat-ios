@@ -28,7 +28,7 @@ struct OCRTestView: View {
                 }
                 .padding()
             }
-            .navigationTitle("OCR 테스트")
+            .navigationTitle("common.ocr_test")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
@@ -37,7 +37,7 @@ struct OCRTestView: View {
 
     private var imagePicker: some View {
         PhotosPicker(selection: $selectedItem, matching: .images) {
-            Label("영수증 이미지 선택", systemImage: "photo.badge.plus")
+            Label("ocr_test.select_image_button", systemImage: "photo.badge.plus")
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(Color(.secondarySystemBackground))
@@ -50,7 +50,7 @@ struct OCRTestView: View {
 
     private func selectedImageView(_ image: UIImage) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("선택된 이미지")
+            Text("ocr_test.selected_image_label")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
@@ -60,7 +60,7 @@ struct OCRTestView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
 
             if !image.isUnderSizeLimit {
-                Label("10MB를 초과하는 이미지입니다.", systemImage: "exclamationmark.triangle.fill")
+                Label("ocr_test.image_size_warning", systemImage: "exclamationmark.triangle.fill")
                     .font(.caption)
                     .foregroundStyle(.orange)
             }
@@ -76,7 +76,7 @@ struct OCRTestView: View {
                     ProgressView()
                         .tint(.white)
                 } else {
-                    Label("텍스트 인식 실행", systemImage: "text.viewfinder")
+                    Label("ocr_test.run_recognition_button", systemImage: "text.viewfinder")
                 }
             }
             .frame(maxWidth: .infinity)
@@ -110,21 +110,21 @@ struct OCRTestView: View {
         }()
 
         return VStack(alignment: .leading, spacing: 12) {
-            Text("파싱 결과")
+            Text("ocr_test.parse_result_header")
                 .font(.subheadline.bold())
 
-            resultRow(label: "제품명",   value: receipt.productName,    fallback: "(인식 실패 — 직접 입력)")
-            resultRow(label: "브랜드",   value: receipt.brandName,       fallback: "(미인식)")
-            resultRow(label: "구매일",   value: receipt.purchaseDate.map { dateFormatter.string(from: $0) }, fallback: "오늘 날짜 (기본값)")
-            resultRow(label: "보증기간", value: receipt.warrantyMonths.map { "\($0)개월" }, fallback: "12개월 (기본값)")
-            resultRow(label: "가격",     value: receipt.price.map { "\($0.formatted())원" }, fallback: "(미인식)")
-            resultRow(label: "시리얼",   value: receipt.serialNumber,    fallback: "(미인식)")
-            resultRow(label: "대분류",   value: receipt.category.rawValue, fallback: nil)
-            resultRow(label: "만료일",   value: dateFormatter.string(from: receipt.warrantyExpiryDate), fallback: nil)
+            resultRow(label: "ocr_test.field.product_name",  value: receipt.productName,    fallback: String(localized: "ocr_test.fallback.recognition_failed"))
+            resultRow(label: "ocr_test.field.brand",         value: receipt.brandName,       fallback: String(localized: "ocr_test.fallback.not_recognized"))
+            resultRow(label: "ocr_test.field.purchase_date", value: receipt.purchaseDate.map { dateFormatter.string(from: $0) }, fallback: String(localized: "ocr_test.fallback.today_default"))
+            resultRow(label: "ocr_test.field.warranty",      value: receipt.warrantyMonths.map { String(localized: "ocr_test.format.warranty_months \($0)") }, fallback: String(localized: "ocr_test.fallback.warranty_default"))
+            resultRow(label: "ocr_test.field.price",         value: receipt.price.map { String(localized: "ocr_test.format.price \($0.formatted())") }, fallback: String(localized: "ocr_test.fallback.not_recognized"))
+            resultRow(label: "ocr_test.field.serial",        value: receipt.serialNumber,    fallback: String(localized: "ocr_test.fallback.not_recognized"))
+            resultRow(label: "ocr_test.field.category",      value: receipt.category.rawValue, fallback: nil)
+            resultRow(label: "ocr_test.field.expiry_date",   value: dateFormatter.string(from: receipt.warrantyExpiryDate), fallback: nil)
 
             Divider()
 
-            Text("원본 텍스트 (\(recognizedLines.count)줄)")
+            Text("ocr_test.original_text_header \(recognizedLines.count)")
                 .font(.subheadline.bold())
 
             ForEach(Array(recognizedLines.enumerated()), id: \.offset) { _, line in
@@ -138,7 +138,7 @@ struct OCRTestView: View {
         }
     }
 
-    private func resultRow(label: String, value: String?, fallback: String?) -> some View {
+    private func resultRow(label: LocalizedStringKey, value: String?, fallback: String?) -> some View {
         HStack(alignment: .top) {
             Text(label)
                 .font(.caption)
@@ -156,7 +156,7 @@ struct OCRTestView: View {
 
     private var rawLinesView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("인식 결과 (\(recognizedLines.count)줄)")
+            Text("ocr_test.recognized_text_header \(recognizedLines.count)")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 

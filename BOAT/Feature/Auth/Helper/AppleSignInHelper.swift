@@ -38,7 +38,7 @@ final class AppleSignInHelper: NSObject {
                 completion(.failure(NSError(
                     domain: "AppleSignIn",
                     code: -1,
-                    userInfo: [NSLocalizedDescriptionKey: "애플 로그인 토큰을 가져올 수 없습니다."]
+                    userInfo: [NSLocalizedDescriptionKey: String(localized: "error.auth.apple_token_missing")]
                 )))
                 return
             }

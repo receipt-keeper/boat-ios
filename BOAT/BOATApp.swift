@@ -26,7 +26,7 @@ struct BOATApp: App {
         Button {
             showOCRTest = true
         } label: {
-            Label("OCR 테스트", systemImage: "text.viewfinder")
+            Label("common.ocr_test", systemImage: "text.viewfinder")
                 .font(.footnote)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
@@ -42,9 +42,9 @@ struct BOATApp: App {
                 if isAuthenticated {
                     // 추후 메인 화면으로 교체
                     VStack(spacing: 20) {
-                        Text("로그인 성공! 🎉")
+                        Text("home.login_success")
                             .font(.title)
-                        Button("로그아웃") {
+                        Button("home.sign_out_button") {
                             try? Auth.auth().signOut()
                             GIDSignIn.sharedInstance.signOut()
                             isAuthenticated = false

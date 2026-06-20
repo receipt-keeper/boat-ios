@@ -49,7 +49,7 @@ class AuthViewModel {
 
             guard let user = result?.user,
                   let idToken = user.idToken?.tokenString else {
-                self.state = .error("구글 로그인 토큰을 가져올 수 없습니다.")
+                self.state = .error(String(localized: "error.auth.google_token_missing"))
                 return
             }
 
