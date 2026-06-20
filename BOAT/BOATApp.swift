@@ -53,7 +53,8 @@ struct BOATApp: App {
                         ocrTestButton
                     }
                 } else {
-                    LoginView(onAuthenticated: {
+                    LoginView(onAuthenticated: { userInfo in
+                        // TODO: userInfo.email, userInfo.name 백엔드 전송
                         isAuthenticated = true
                     })
                     .safeAreaInset(edge: .bottom) {

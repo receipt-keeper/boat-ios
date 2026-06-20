@@ -3,8 +3,10 @@
 //  BOAT
 //
 
+import AuthenticationServices
+
 enum AuthIntent {
     case signInWithGoogle
-    case signInWithApple
+    case signInWithApple(Result<ASAuthorization, Error>)
     case signOut
 }

@@ -6,7 +6,7 @@
 enum AuthState: Equatable {
     case idle
     case loading
-    case authenticated
+    case authenticated(SocialUserInfo)
     case unauthenticated
     case error(String)
 }

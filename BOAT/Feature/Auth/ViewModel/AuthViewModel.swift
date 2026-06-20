@@ -7,20 +7,21 @@ import Foundation
 import FirebaseCore
 import FirebaseAuth
 import GoogleSignIn
+import AuthenticationServices
 
 @Observable
 class AuthViewModel {
 
     var state: AuthState = .idle
 
-    private let appleSignInHelper = AppleSignInHelper()
+    let appleSignInHelper = AppleSignInHelper()
 
     func dispatch(_ intent: AuthIntent) {
         switch intent {
         case .signInWithGoogle:
             signInWithGoogle()
-        case .signInWithApple:
-            signInWithApple()
+        case .signInWithApple(let result):
+            signInWithApple(result: result)
         case .signOut:
             signOut()
         }
@@ -52,6 +53,13 @@ class AuthViewModel {
                 return
             }
 
+            // 이메일 + 이름 추출 (Google은 매 로그인마다 제공)
+            let userInfo = SocialUserInfo(
+                email: user.profile?.email,
+                name: user.profile?.name,
+                provider: .google
+            )
+
             let credential = GoogleAuthProvider.credential(
                 withIDToken: idToken,
                 accessToken: user.accessToken.tokenString
@@ -62,7 +70,7 @@ class AuthViewModel {
                 if let error {
                     self.state = .error(error.localizedDescription)
                 } else {
-                    self.state = .authenticated
+                    self.state = .authenticated(userInfo)
                 }
             }
         }
@@ -70,23 +78,24 @@ class AuthViewModel {
 
     // MARK: - Apple Sign In
 
-    private func signInWithApple() {
+    private func signInWithApple(result: Result<ASAuthorization, Error>) {
         state = .loading
 
-        appleSignInHelper.signIn { [weak self] result in
+        appleSignInHelper.process(result) { [weak self] processResult in
             guard let self else { return }
-            switch result {
-            case .success(let credential):
+            switch processResult {
+            case .failure(let error):
+                self.state = .error(error.localizedDescription)
+
+            case .success(let (credential, userInfo)):
                 Auth.auth().signIn(with: credential) { [weak self] _, error in
                     guard let self else { return }
                     if let error {
                         self.state = .error(error.localizedDescription)
                     } else {
-                        self.state = .authenticated
+                        self.state = .authenticated(userInfo)
                     }
                 }
-            case .failure(let error):
-                self.state = .error(error.localizedDescription)
             }
         }
     }
