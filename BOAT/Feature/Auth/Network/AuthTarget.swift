@@ -18,19 +18,22 @@ enum AuthTarget {
         privacyAccepted: Bool,
         marketingConsent: Bool
     )
+    /// 로그아웃 — refreshToken 세션 revoke (204)
+    case logout(refreshToken: String)
 }
 
 extension AuthTarget: TargetType {
 
     var path: String {
         switch self {
-        case .login: return "/api/v1/auth/login"
+        case .login:  return "/api/v1/auth/login"
+        case .logout: return "/api/v1/auth/logout"
         }
     }
 
     var method: HTTPMethod {
         switch self {
-        case .login: return .post
+        case .login, .logout: return .post
         }
     }
 
@@ -45,6 +48,8 @@ extension AuthTarget: TargetType {
                 "privacyAccepted": privacyAccepted,
                 "marketingConsent": marketingConsent
             ])
+        case let .logout(refreshToken):
+            return .body(["refreshToken": refreshToken])
         }
     }
 }

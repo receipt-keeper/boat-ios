@@ -163,6 +163,14 @@ class AuthViewModel {
     // MARK: - Sign Out
 
     private func signOut() {
+        // 서버 세션 revoke (best-effort) — 토큰을 지우기 전에 호출.
+        // API 성공 여부와 무관하게 로컬 로그아웃은 항상 진행한다.
+        if let refreshToken = KeychainManager.shared.refreshToken, !refreshToken.isEmpty {
+            Task {
+                try? await APIClient.shared.requestVoid(AuthTarget.logout(refreshToken: refreshToken))
+            }
+        }
+
         try? Auth.auth().signOut()
         GIDSignIn.sharedInstance.signOut()
         KeychainManager.shared.clearAll()

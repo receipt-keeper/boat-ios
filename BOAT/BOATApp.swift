@@ -74,17 +74,28 @@ private struct RootView: View {
 private struct HomePlaceholderView: View {
 
     let viewModel: AuthViewModel
+    @State private var showLogoutDialog = false
 
     var body: some View {
         VStack(spacing: 20) {
             Text("home.login_success")
                 .font(.title)
             Button("home.sign_out_button") {
-                viewModel.dispatch(.signOut)
+                showLogoutDialog = true
             }
             .foregroundStyle(.red)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.colorWhite)
+        .boatDialog(
+            isPresented: $showLogoutDialog,
+            title: "dialog.logout.title",
+            message: "dialog.logout.message",
+            confirmText: "home.sign_out_button",
+            confirmColor: .brandPrimary,
+            cancelText: "common.cancel",
+            cancelColor: .brandPrimary,
+            onConfirm: { viewModel.dispatch(.signOut) }
+        )
     }
 }
