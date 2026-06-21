@@ -56,6 +56,8 @@ class AuthViewModel {
             completeTerms(terms: terms, privacy: privacy, marketing: marketing)
         case .signOut:
             signOut()
+        case .deleteAccount:
+            deleteAccount()
         }
     }
 
@@ -166,6 +168,33 @@ class AuthViewModel {
                 await MainActor.run {
                     self.isLoading = false
                     self.errorMessage = message
+                }
+            }
+        }
+    }
+
+    // MARK: - Delete Account (회원 탈퇴)
+
+    private func deleteAccount() {
+        isLoading = true
+
+        Task {
+            do {
+                // 서버 계정 삭제 성공(204) 시에만 로컬 세션/토큰 정리
+                try await APIClient.shared.requestVoid(AuthTarget.deleteAccount)
+                try? Auth.auth().signOut()
+                GIDSignIn.sharedInstance.signOut()
+                KeychainManager.shared.clearAll()
+
+                await MainActor.run {
+                    self.pendingFirebaseToken = nil
+                    self.isLoading = false
+                    self.route = .login
+                }
+            } catch {
+                await MainActor.run {
+                    self.isLoading = false
+                    self.errorMessage = String(localized: "error.delete_account")
                 }
             }
         }

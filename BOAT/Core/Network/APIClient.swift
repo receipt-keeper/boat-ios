@@ -71,6 +71,10 @@ final class APIClient {
     // MARK: - Private
 
     private func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
+        // 204 No Content 등 본문이 비어있고 data가 필요 없는 응답(EmptyData)은 성공 처리
+        if data.isEmpty, let empty = EmptyData() as? T {
+            return empty
+        }
         do {
             let envelope = try JSONDecoder().decode(APIResponse<T>.self, from: data)
             guard let payload = envelope.data else {

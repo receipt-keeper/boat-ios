@@ -22,21 +22,25 @@ enum AuthTarget {
     case logout(refreshToken: String)
     /// AccessToken 재발급 — refreshToken 1회용 회전
     case refresh(refreshToken: String)
+    /// 회원 탈퇴 — 서버 계정 삭제 (204), Bearer 필요
+    case deleteAccount
 }
 
 extension AuthTarget: TargetType {
 
     var path: String {
         switch self {
-        case .login:   return "/api/v1/auth/login"
-        case .logout:  return "/api/v1/auth/logout"
-        case .refresh: return "/api/v1/auth/refresh"
+        case .login:         return "/api/v1/auth/login"
+        case .logout:        return "/api/v1/auth/logout"
+        case .refresh:       return "/api/v1/auth/refresh"
+        case .deleteAccount: return "/api/v1/auth/me"
         }
     }
 
     var method: HTTPMethod {
         switch self {
         case .login, .logout, .refresh: return .post
+        case .deleteAccount:            return .delete
         }
     }
 
@@ -55,9 +59,17 @@ extension AuthTarget: TargetType {
             return .body(["refreshToken": refreshToken])
         case let .refresh(refreshToken):
             return .body(["refreshToken": refreshToken])
+        case .deleteAccount:
+            return .plain
         }
     }
 
-    // 인증 헤더/자동 갱신 대상이 아님 (토큰을 body로 직접 전달)
-    var requiresAuth: Bool { false }
+    var requiresAuth: Bool {
+        switch self {
+        // 토큰을 body로 직접 전달하는 인증 엔드포인트는 헤더 주입/갱신 제외
+        case .login, .logout, .refresh: return false
+        // 탈퇴는 Bearer AccessToken 필요
+        case .deleteAccount: return true
+        }
+    }
 }

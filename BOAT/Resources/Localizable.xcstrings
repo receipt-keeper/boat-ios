@@ -1,6 +1,66 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "dialog.delete.title" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회원 탈퇴를 진행할까요?"
+          }
+        }
+      }
+    },
+    "dialog.delete.message" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탈퇴 시 모든 영수증과 계정 정보가\n삭제되며 복구할 수 없어요"
+          }
+        }
+      }
+    },
+    "dialog.delete.cancel" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "돌아가기"
+          }
+        }
+      }
+    },
+    "dialog.delete.confirm" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탈퇴하기"
+          }
+        }
+      }
+    },
+    "home.delete_account" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회원 탈퇴"
+          }
+        }
+      }
+    },
+    "error.delete_account" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회원 탈퇴에 실패했습니다. 잠시 후 다시 시도해 주세요."
+          }
+        }
+      }
+    },
     "common.cancel" : {
       "localizations" : {
         "ko" : {

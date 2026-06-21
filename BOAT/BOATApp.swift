@@ -78,6 +78,8 @@ private struct HomePlaceholderView: View {
 
     let viewModel: AuthViewModel
     @State private var showLogoutDialog = false
+    @State private var showDeleteDialog = false
+    @State private var toast = BoatToastState()
 
     var body: some View {
         VStack(spacing: 20) {
@@ -87,9 +89,15 @@ private struct HomePlaceholderView: View {
                 showLogoutDialog = true
             }
             .foregroundStyle(.red)
+            Button("home.delete_account") {
+                showDeleteDialog = true
+            }
+            .font(.footnote)
+            .foregroundStyle(Color.systemError)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.colorWhite)
+        .boatToastHost(toast)
         .boatDialog(
             isPresented: $showLogoutDialog,
             title: "dialog.logout.title",
@@ -100,5 +108,21 @@ private struct HomePlaceholderView: View {
             cancelColor: .brandPrimary,
             onConfirm: { viewModel.dispatch(.signOut) }
         )
+        .boatDialog(
+            isPresented: $showDeleteDialog,
+            title: "dialog.delete.title",
+            message: "dialog.delete.message",
+            confirmText: "dialog.delete.confirm",
+            confirmColor: .brandPrimary,
+            cancelText: "dialog.delete.cancel",
+            cancelColor: .brandPrimary,
+            onConfirm: { viewModel.dispatch(.deleteAccount) }
+        )
+        .onChange(of: viewModel.errorMessage) { _, message in
+            if let message {
+                toast.showError(message)
+                viewModel.errorMessage = nil
+            }
+        }
     }
 }
