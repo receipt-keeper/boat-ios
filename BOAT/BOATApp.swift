@@ -65,64 +65,10 @@ private struct RootView: View {
             case .terms:
                 TermsView(viewModel: viewModel)
             case .home:
-                HomePlaceholderView(viewModel: viewModel)
+                MainTabView(viewModel: viewModel)
             }
         }
         .animation(.easeInOut, value: viewModel.route)
     }
 }
 
-// MARK: - 홈 (추후 메인 화면으로 교체)
-
-private struct HomePlaceholderView: View {
-
-    let viewModel: AuthViewModel
-    @State private var showLogoutDialog = false
-    @State private var showDeleteDialog = false
-    @State private var toast = BoatToastState()
-
-    var body: some View {
-        VStack(spacing: 20) {
-            Text("home.login_success")
-                .font(.title)
-            Button("home.sign_out_button") {
-                showLogoutDialog = true
-            }
-            .foregroundStyle(.red)
-            Button("home.delete_account") {
-                showDeleteDialog = true
-            }
-            .font(.footnote)
-            .foregroundStyle(Color.systemError)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.colorWhite)
-        .boatToastHost(toast)
-        .boatDialog(
-            isPresented: $showLogoutDialog,
-            title: "dialog.logout.title",
-            message: "dialog.logout.message",
-            confirmText: "home.sign_out_button",
-            confirmColor: .brandPrimary,
-            cancelText: "common.cancel",
-            cancelColor: .brandPrimary,
-            onConfirm: { viewModel.dispatch(.signOut) }
-        )
-        .boatDialog(
-            isPresented: $showDeleteDialog,
-            title: "dialog.delete.title",
-            message: "dialog.delete.message",
-            confirmText: "dialog.delete.confirm",
-            confirmColor: .brandPrimary,
-            cancelText: "dialog.delete.cancel",
-            cancelColor: .brandPrimary,
-            onConfirm: { viewModel.dispatch(.deleteAccount) }
-        )
-        .onChange(of: viewModel.errorMessage) { _, message in
-            if let message {
-                toast.showError(message)
-                viewModel.errorMessage = nil
-            }
-        }
-    }
-}

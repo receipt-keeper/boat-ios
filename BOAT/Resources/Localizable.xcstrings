@@ -1,6 +1,36 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "tab.list" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "목록"
+          }
+        }
+      }
+    },
+    "tab.home" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "홈"
+          }
+        }
+      }
+    },
+    "tab.my" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마이"
+          }
+        }
+      }
+    },
     "dialog.delete.title" : {
       "localizations" : {
         "ko" : {
