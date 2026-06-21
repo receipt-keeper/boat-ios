@@ -24,11 +24,7 @@ final class APIClient {
     private let session: Session
 
     private init() {
-        #if DEBUG
-        self.session = Session(eventMonitors: [NetworkLogger()])
-        #else
         self.session = Session()
-        #endif
     }
 
     /// data가 있는 응답용. 디코딩한 T를 반환합니다.
@@ -39,6 +35,10 @@ final class APIClient {
             .validate(statusCode: 200..<300)
             .serializingData()
             .response
+
+        #if DEBUG
+        NetworkLogger.log(response)
+        #endif
 
         switch response.result {
         case .success(let data):

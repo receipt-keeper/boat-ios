@@ -18,6 +18,9 @@ struct BOATApp: App {
         FirebaseApp.configure()
         // UIKit 레벨 tint — 시스템 권한 다이얼로그(Allow 버튼) 등 UIAlertController에 적용
         UIView.appearance().tintColor = UIColor(Color.brandPrimary)
+        #if DEBUG
+        print("🚀 BOAT 실행 (DEBUG 로깅 활성화)")
+        #endif
     }
 
     var body: some Scene {
