@@ -15,27 +15,12 @@ struct BOATApp: App {
 
     @State private var isAuthenticated: Bool = false
     @State private var permissionManager = PermissionManager()
-    @State private var showOCRTest = false
 
     init() {
         FirebaseApp.configure()
         _isAuthenticated = State(initialValue: Auth.auth().currentUser != nil)
         // UIKit 레벨 tint — 시스템 권한 다이얼로그(Allow 버튼) 등 UIAlertController에 적용
         UIView.appearance().tintColor = UIColor(Color.brandPrimary)
-    }
-
-    private var ocrTestButton: some View {
-        Button {
-            showOCRTest = true
-        } label: {
-            Label("common.ocr_test", systemImage: "text.viewfinder")
-                .font(.footnote)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(Color(.secondarySystemBackground))
-                .clipShape(Capsule())
-        }
-        .foregroundStyle(.secondary)
     }
 
     var body: some Scene {
@@ -52,21 +37,13 @@ struct BOATApp: App {
                             isAuthenticated = false
                         }
                         .foregroundStyle(.red)
-                        ocrTestButton
                     }
                 } else {
                     LoginView(onAuthenticated: { userInfo in
                         // TODO: userInfo.email, userInfo.name 백엔드 전송
                         isAuthenticated = true
                     })
-                    .safeAreaInset(edge: .bottom) {
-                        ocrTestButton
-                            .padding()
-                    }
                 }
-            }
-            .sheet(isPresented: $showOCRTest) {
-                OCRTestView()
             }
             .tint(Color.brandPrimary)
             .environment(permissionManager)

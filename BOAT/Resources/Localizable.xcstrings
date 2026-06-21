@@ -1,84 +1,6 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
-
-    "login.subtitle" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사진 한 장으로 관리하는 무상 AS 케어"
-          }
-        }
-      }
-    },
-
-    "login.logo_tbd" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "로고 미정"
-          }
-        }
-      }
-    },
-
-    "login.button.google" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Google 계정으로 시작하기"
-          }
-        }
-      }
-    },
-
-    "login.button.apple" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apple 계정으로 시작하기"
-          }
-        }
-      }
-    },
-
-    "login.error.cancelled" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "회원가입이 취소되었습니다."
-          }
-        }
-      }
-    },
-
-    "login.error.google" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Google 로그인에 실패했습니다."
-          }
-        }
-      }
-    },
-
-    "login.error.apple" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apple 로그인에 실패했습니다."
-          }
-        }
-      }
-    },
-
     "common.ocr_test" : {
       "localizations" : {
         "ko" : {
@@ -89,337 +11,6 @@
         }
       }
     },
-
-    "home.login_success" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "로그인 성공! 🎉"
-          }
-        }
-      }
-    },
-
-    "home.sign_out_button" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "로그아웃"
-          }
-        }
-      }
-    },
-
-    "ocr_test.select_image_button" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 이미지 선택"
-          }
-        }
-      }
-    },
-
-    "ocr_test.selected_image_label" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "선택된 이미지"
-          }
-        }
-      }
-    },
-
-    "ocr_test.run_recognition_button" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "텍스트 인식 실행"
-          }
-        }
-      }
-    },
-
-    "ocr_test.image_size_warning" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10MB를 초과하는 이미지입니다."
-          }
-        }
-      }
-    },
-
-    "ocr_test.parse_result_header" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "파싱 결과"
-          }
-        }
-      }
-    },
-
-    "ocr_test.original_text_header %lld" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "원본 텍스트 (%lld줄)"
-          }
-        }
-      }
-    },
-
-    "ocr_test.recognized_text_header %lld" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "인식 결과 (%lld줄)"
-          }
-        }
-      }
-    },
-
-    "ocr_test.field.product_name" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "제품명"
-          }
-        }
-      }
-    },
-
-    "ocr_test.field.brand" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "브랜드"
-          }
-        }
-      }
-    },
-
-    "ocr_test.field.purchase_date" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "구매일"
-          }
-        }
-      }
-    },
-
-    "ocr_test.field.warranty" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "보증기간"
-          }
-        }
-      }
-    },
-
-    "ocr_test.field.price" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "가격"
-          }
-        }
-      }
-    },
-
-    "ocr_test.field.serial" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "시리얼"
-          }
-        }
-      }
-    },
-
-    "ocr_test.field.category" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "대분류"
-          }
-        }
-      }
-    },
-
-    "ocr_test.field.expiry_date" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "만료일"
-          }
-        }
-      }
-    },
-
-    "ocr_test.fallback.recognition_failed" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "(인식 실패 — 직접 입력)"
-          }
-        }
-      }
-    },
-
-    "ocr_test.fallback.not_recognized" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "(미인식)"
-          }
-        }
-      }
-    },
-
-    "ocr_test.fallback.today_default" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오늘 날짜 (기본값)"
-          }
-        }
-      }
-    },
-
-    "ocr_test.fallback.warranty_default" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "12개월 (기본값)"
-          }
-        }
-      }
-    },
-
-    "ocr_test.format.warranty_months %lld" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld개월"
-          }
-        }
-      }
-    },
-
-    "ocr_test.format.price %@" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@원"
-          }
-        }
-      }
-    },
-
-    "error.ocr.invalid_image" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "유효하지 않은 이미지입니다."
-          }
-        }
-      }
-    },
-
-    "error.ocr.recognition_failed %@" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "텍스트 인식에 실패했습니다: %@"
-          }
-        }
-      }
-    },
-
-    "error.ocr.no_text_found" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이미지에서 텍스트를 찾을 수 없습니다."
-          }
-        }
-      }
-    },
-
-    "error.auth.google_token_missing" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "구글 로그인 토큰을 가져올 수 없습니다."
-          }
-        }
-      }
-    },
-
-    "error.auth.apple_token_missing" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "애플 로그인 토큰을 가져올 수 없습니다."
-          }
-        }
-      }
-    },
-
-    "error.api.invalid_url" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "잘못된 요청 주소입니다."
-          }
-        }
-      }
-    },
-
-    "error.api.empty_response" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "서버 응답이 비어 있습니다."
-          }
-        }
-      }
-    },
-
     "error.api.decode_failed" : {
       "localizations" : {
         "ko" : {
@@ -430,7 +21,26 @@
         }
       }
     },
-
+    "error.api.empty_response" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서버 응답이 비어 있습니다."
+          }
+        }
+      }
+    },
+    "error.api.invalid_url" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잘못된 요청 주소입니다."
+          }
+        }
+      }
+    },
     "error.api.network" : {
       "localizations" : {
         "ko" : {
@@ -441,7 +51,6 @@
         }
       }
     },
-
     "error.api.unknown" : {
       "localizations" : {
         "ko" : {
@@ -451,8 +60,362 @@
           }
         }
       }
-    }
+    },
+    "error.auth.apple_token_missing" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "애플 로그인 토큰을 가져올 수 없습니다."
+          }
+        }
+      }
+    },
+    "error.auth.google_token_missing" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구글 로그인 토큰을 가져올 수 없습니다."
+          }
+        }
+      }
+    },
+    "error.ocr.invalid_image" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "유효하지 않은 이미지입니다."
+          }
+        }
+      }
+    },
+    "error.ocr.no_text_found" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지에서 텍스트를 찾을 수 없습니다."
+          }
+        }
+      }
+    },
+    "error.ocr.recognition_failed %@" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "텍스트 인식에 실패했습니다: %@"
+          }
+        }
+      }
+    },
+    "Hello, world!" : {
 
+    },
+    "home.login_success" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그인 성공! 🎉"
+          }
+        }
+      }
+    },
+    "home.sign_out_button" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그아웃"
+          }
+        }
+      }
+    },
+    "login.button.apple" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple 계정으로 시작하기"
+          }
+        }
+      }
+    },
+    "login.button.google" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google 계정으로 시작하기"
+          }
+        }
+      }
+    },
+    "login.error.apple" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple 로그인에 실패했습니다."
+          }
+        }
+      }
+    },
+    "login.error.cancelled" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회원가입이 취소되었습니다."
+          }
+        }
+      }
+    },
+    "login.error.google" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google 로그인에 실패했습니다."
+          }
+        }
+      }
+    },
+    "login.logo_tbd" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로고 미정"
+          }
+        }
+      }
+    },
+    "login.subtitle" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진 한 장으로 관리하는 무상 AS 케어"
+          }
+        }
+      }
+    },
+    "ocr_test.fallback.not_recognized" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(미인식)"
+          }
+        }
+      }
+    },
+    "ocr_test.fallback.recognition_failed" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(인식 실패 — 직접 입력)"
+          }
+        }
+      }
+    },
+    "ocr_test.fallback.today_default" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오늘 날짜 (기본값)"
+          }
+        }
+      }
+    },
+    "ocr_test.fallback.warranty_default" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12개월 (기본값)"
+          }
+        }
+      }
+    },
+    "ocr_test.field.brand" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "브랜드"
+          }
+        }
+      }
+    },
+    "ocr_test.field.category" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "대분류"
+          }
+        }
+      }
+    },
+    "ocr_test.field.expiry_date" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "만료일"
+          }
+        }
+      }
+    },
+    "ocr_test.field.price" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가격"
+          }
+        }
+      }
+    },
+    "ocr_test.field.product_name" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "제품명"
+          }
+        }
+      }
+    },
+    "ocr_test.field.purchase_date" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구매일"
+          }
+        }
+      }
+    },
+    "ocr_test.field.serial" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시리얼"
+          }
+        }
+      }
+    },
+    "ocr_test.field.warranty" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "보증기간"
+          }
+        }
+      }
+    },
+    "ocr_test.format.price %@" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@원"
+          }
+        }
+      }
+    },
+    "ocr_test.format.warranty_months %lld" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld개월"
+          }
+        }
+      }
+    },
+    "ocr_test.image_size_warning" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10MB를 초과하는 이미지입니다."
+          }
+        }
+      }
+    },
+    "ocr_test.original_text_header %lld" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "원본 텍스트 (%lld줄)"
+          }
+        }
+      }
+    },
+    "ocr_test.parse_result_header" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파싱 결과"
+          }
+        }
+      }
+    },
+    "ocr_test.recognized_text_header %lld" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "인식 결과 (%lld줄)"
+          }
+        }
+      }
+    },
+    "ocr_test.run_recognition_button" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "텍스트 인식 실행"
+          }
+        }
+      }
+    },
+    "ocr_test.select_image_button" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영수증 이미지 선택"
+          }
+        }
+      }
+    },
+    "ocr_test.selected_image_label" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "선택된 이미지"
+          }
+        }
+      }
+    }
   },
   "version" : "1.0"
 }
