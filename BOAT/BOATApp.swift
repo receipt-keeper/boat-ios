@@ -20,6 +20,8 @@ struct BOATApp: App {
     init() {
         FirebaseApp.configure()
         _isAuthenticated = State(initialValue: Auth.auth().currentUser != nil)
+        // UIKit 레벨 tint — 시스템 권한 다이얼로그(Allow 버튼) 등 UIAlertController에 적용
+        UIView.appearance().tintColor = UIColor(Color.brandPrimary)
     }
 
     private var ocrTestButton: some View {
@@ -66,6 +68,7 @@ struct BOATApp: App {
             .sheet(isPresented: $showOCRTest) {
                 OCRTestView()
             }
+            .tint(Color.brandPrimary)
             .environment(permissionManager)
             .onOpenURL { url in
                 GIDSignIn.sharedInstance.handle(url)
