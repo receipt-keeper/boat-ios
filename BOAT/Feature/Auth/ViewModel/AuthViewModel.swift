@@ -149,9 +149,12 @@ class AuthViewModel {
                     self.route = .home
                 }
             } catch {
+                // 서버가 준 에러 문구가 있으면 우선 노출, 없으면 일반 문구
+                let message = (error as? LocalizedError)?.errorDescription
+                    ?? String(localized: "terms.login_failed")
                 await MainActor.run {
                     self.isLoading = false
-                    self.errorMessage = String(localized: "terms.login_failed")
+                    self.errorMessage = message
                 }
             }
         }

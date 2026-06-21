@@ -41,11 +41,12 @@ final class APIClient {
             return try decode(T.self, from: data)
 
         case .failure(let afError):
-            // 서버가 4xx/5xx와 함께 Envelope(message)를 내려준 경우 그 문구를 우선 사용
+            // 서버가 4xx/5xx와 함께 Envelope(data.message)를 내려준 경우 그 문구를 우선 사용
             if let data = response.data,
                let statusCode = response.response?.statusCode,
-               let envelope = try? JSONDecoder().decode(APIResponse<EmptyData>.self, from: data) {
-                throw APIError.server(statusCode: statusCode, message: envelope.message)
+               let envelope = try? JSONDecoder().decode(APIResponse<APIErrorData>.self, from: data),
+               let message = envelope.data?.message {
+                throw APIError.server(statusCode: statusCode, message: message)
             }
             throw APIError.transport(afError)
         }
