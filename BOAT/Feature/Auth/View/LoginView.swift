@@ -118,8 +118,8 @@ struct LoginView: View {
         } label: {
             ZStack {
                 HStack {
-                    Image(systemName: "apple.logo")
-                        .font(.system(size: 18))
+                    Image("icApple")
+                        .renderingMode(.template)
                         .foregroundStyle(Color.colorWhite)
                         .frame(width: 20, height: 20)
                     Spacer()
