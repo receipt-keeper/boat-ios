@@ -33,6 +33,17 @@ class AuthViewModel {
     init() {
         // 이미 백엔드 토큰을 보유한 경우 바로 홈
         route = KeychainManager.shared.accessToken != nil ? .home : .login
+
+        // 토큰 재발급 실패(세션 만료) → 강제 로그인 화면 복귀
+        NotificationCenter.default.addObserver(
+            forName: .boatSessionExpired,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.pendingFirebaseToken = nil
+            self?.isLoading = false
+            self?.route = .login
+        }
     }
 
     func dispatch(_ intent: AuthIntent) {

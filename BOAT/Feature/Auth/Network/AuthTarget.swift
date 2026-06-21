@@ -20,20 +20,23 @@ enum AuthTarget {
     )
     /// 로그아웃 — refreshToken 세션 revoke (204)
     case logout(refreshToken: String)
+    /// AccessToken 재발급 — refreshToken 1회용 회전
+    case refresh(refreshToken: String)
 }
 
 extension AuthTarget: TargetType {
 
     var path: String {
         switch self {
-        case .login:  return "/api/v1/auth/login"
-        case .logout: return "/api/v1/auth/logout"
+        case .login:   return "/api/v1/auth/login"
+        case .logout:  return "/api/v1/auth/logout"
+        case .refresh: return "/api/v1/auth/refresh"
         }
     }
 
     var method: HTTPMethod {
         switch self {
-        case .login, .logout: return .post
+        case .login, .logout, .refresh: return .post
         }
     }
 
@@ -50,6 +53,11 @@ extension AuthTarget: TargetType {
             ])
         case let .logout(refreshToken):
             return .body(["refreshToken": refreshToken])
+        case let .refresh(refreshToken):
+            return .body(["refreshToken": refreshToken])
         }
     }
+
+    // 인증 헤더/자동 갱신 대상이 아님 (토큰을 body로 직접 전달)
+    var requiresAuth: Bool { false }
 }

@@ -55,6 +55,9 @@ protocol TargetType: URLRequestConvertible {
     var task: RequestTask { get }
     /// 엔드포인트별 추가 헤더 (없으면 nil)
     var headers: HTTPHeaders? { get }
+    /// Bearer 토큰 주입 + 401 자동 갱신 대상 여부 (기본 true).
+    /// 로그인/리프레시/로그아웃처럼 토큰이 필요 없는 엔드포인트는 false.
+    var requiresAuth: Bool { get }
 }
 
 extension TargetType {
@@ -64,6 +67,8 @@ extension TargetType {
     var headers: HTTPHeaders? {
         ["Content-Type": "application/json"]
     }
+
+    var requiresAuth: Bool { true }
 
     /// TargetType을 실제 URLRequest로 변환합니다. (Alamofire가 내부적으로 호출)
     func asURLRequest() throws -> URLRequest {
