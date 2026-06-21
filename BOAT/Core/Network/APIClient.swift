@@ -24,7 +24,11 @@ final class APIClient {
     private let session: Session
 
     private init() {
+        #if DEBUG
+        self.session = Session(eventMonitors: [NetworkLogger()])
+        #else
         self.session = Session()
+        #endif
     }
 
     /// data가 있는 응답용. 디코딩한 T를 반환합니다.
