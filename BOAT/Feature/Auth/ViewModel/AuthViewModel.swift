@@ -14,14 +14,14 @@ class AuthViewModel {
 
     var state: AuthState = .idle
 
-    let appleSignInHelper = AppleSignInHelper()
+    private let appleSignInHelper = AppleSignInHelper()
 
     func dispatch(_ intent: AuthIntent) {
         switch intent {
         case .signInWithGoogle:
             signInWithGoogle()
-        case .signInWithApple(let result):
-            signInWithApple(result: result)
+        case .signInWithApple:
+            signInWithApple()
         case .signOut:
             signOut()
         }
@@ -43,7 +43,11 @@ class AuthViewModel {
             guard let self else { return }
 
             if let error {
-                self.state = .error(error.localizedDescription)
+                // 사용자 취소와 일반 실패를 구분
+                let isCancelled = (error as NSError).code == GIDSignInError.canceled.rawValue
+                self.state = .error(String(localized: isCancelled
+                    ? "login.error.cancelled"
+                    : "login.error.google"))
                 return
             }
 
@@ -78,20 +82,24 @@ class AuthViewModel {
 
     // MARK: - Apple Sign In
 
-    private func signInWithApple(result: Result<ASAuthorization, Error>) {
+    private func signInWithApple() {
         state = .loading
 
-        appleSignInHelper.process(result) { [weak self] processResult in
+        appleSignInHelper.startSignIn { [weak self] result in
             guard let self else { return }
-            switch processResult {
+            switch result {
             case .failure(let error):
-                self.state = .error(error.localizedDescription)
+                // 사용자 취소와 일반 실패를 구분
+                let isCancelled = (error as? ASAuthorizationError)?.code == .canceled
+                self.state = .error(String(localized: isCancelled
+                    ? "login.error.cancelled"
+                    : "login.error.apple"))
 
             case .success(let (credential, userInfo)):
                 Auth.auth().signIn(with: credential) { [weak self] _, error in
                     guard let self else { return }
-                    if let error {
-                        self.state = .error(error.localizedDescription)
+                    if error != nil {
+                        self.state = .error(String(localized: "login.error.apple"))
                     } else {
                         self.state = .authenticated(userInfo)
                     }

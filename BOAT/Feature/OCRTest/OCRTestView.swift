@@ -146,7 +146,7 @@ struct OCRTestView: View {
                 .frame(width: 64, alignment: .leading)
             Text(value ?? fallback ?? "")
                 .font(.subheadline)
-                .foregroundStyle(value != nil ? .primary : .orange)
+                .foregroundStyle(value != nil ? Color.primary : Color.orange)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(10)

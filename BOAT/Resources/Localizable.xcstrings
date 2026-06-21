@@ -2,6 +2,83 @@
   "sourceLanguage" : "ko",
   "strings" : {
 
+    "login.subtitle" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진 한 장으로 관리하는 무상 AS 케어"
+          }
+        }
+      }
+    },
+
+    "login.logo_tbd" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로고 미정"
+          }
+        }
+      }
+    },
+
+    "login.button.google" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google 계정으로 시작하기"
+          }
+        }
+      }
+    },
+
+    "login.button.apple" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple 계정으로 시작하기"
+          }
+        }
+      }
+    },
+
+    "login.error.cancelled" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회원가입이 취소되었습니다."
+          }
+        }
+      }
+    },
+
+    "login.error.google" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google 로그인에 실패했습니다."
+          }
+        }
+      }
+    },
+
+    "login.error.apple" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple 로그인에 실패했습니다."
+          }
+        }
+      }
+    },
+
     "common.ocr_test" : {
       "localizations" : {
         "ko" : {

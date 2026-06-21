@@ -6,23 +6,52 @@
 import AuthenticationServices
 import CryptoKit
 import FirebaseAuth
+import UIKit
 
 final class AppleSignInHelper: NSObject {
 
     private(set) var currentNonce: String?
 
-    // MARK: - SignInWithAppleButton 연동
+    typealias SignInResult = Result<(AuthCredential, SocialUserInfo), Error>
 
-    /// SignInWithAppleButton request 클로저에서 호출 — nonce 설정
-    func prepareRequest(_ request: ASAuthorizationAppleIDRequest) {
+    private var signInCompletion: ((SignInResult) -> Void)?
+    private var authController: ASAuthorizationController?
+
+    // MARK: - 프로그래밍 방식 로그인 (커스텀 버튼 연동)
+
+    /// 커스텀 버튼에서 호출 — ASAuthorizationController로 Apple 로그인 플로우 시작
+    func startSignIn(completion: @escaping (SignInResult) -> Void) {
+        signInCompletion = completion
+
+        let request = ASAuthorizationAppleIDProvider().createRequest()
+        prepareRequest(request)
+
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = self
+        controller.presentationContextProvider = self
+        authController = controller
+        controller.performRequests()
+    }
+
+    private func finish(_ result: SignInResult) {
+        let completion = signInCompletion
+        signInCompletion = nil
+        authController = nil
+        completion?(result)
+    }
+
+    // MARK: - 요청 구성 (nonce)
+
+    /// request에 scope + nonce 설정
+    private func prepareRequest(_ request: ASAuthorizationAppleIDRequest) {
         let nonce = randomNonceString()
         currentNonce = nonce
         request.requestedScopes = [.fullName, .email]
         request.nonce = sha256(nonce)
     }
 
-    /// SignInWithAppleButton onCompletion 클로저에서 호출 — credential + 유저 정보 추출
-    func process(
+    /// ASAuthorization 결과에서 Firebase credential + 유저 정보(email/name) 추출
+    private func process(
         _ result: Result<ASAuthorization, Error>,
         completion: @escaping (Result<(AuthCredential, SocialUserInfo), Error>) -> Void
     ) {
@@ -83,5 +112,37 @@ final class AppleSignInHelper: NSObject {
         let inputData = Data(input.utf8)
         let hashedData = SHA256.hash(data: inputData)
         return hashedData.compactMap { String(format: "%02x", $0) }.joined()
+    }
+}
+
+// MARK: - ASAuthorizationControllerDelegate
+
+extension AppleSignInHelper: ASAuthorizationControllerDelegate {
+
+    func authorizationController(
+        controller: ASAuthorizationController,
+        didCompleteWithAuthorization authorization: ASAuthorization
+    ) {
+        process(.success(authorization)) { [weak self] result in
+            self?.finish(result)
+        }
+    }
+
+    func authorizationController(
+        controller: ASAuthorizationController,
+        didCompleteWithError error: Error
+    ) {
+        finish(.failure(error))
+    }
+}
+
+// MARK: - ASAuthorizationControllerPresentationContextProviding
+
+extension AppleSignInHelper: ASAuthorizationControllerPresentationContextProviding {
+
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        let scene = UIApplication.shared.connectedScenes
+            .first { $0.activationState == .foregroundActive } as? UIWindowScene
+        return scene?.keyWindow ?? ASPresentationAnchor()
     }
 }
