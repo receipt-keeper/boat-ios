@@ -1,6 +1,106 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "terms.title" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회원가입"
+          }
+        }
+      }
+    },
+    "terms.headline" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "더 나은 서비스 사용을 위해\n이용약관에 동의 해주세요."
+          }
+        }
+      }
+    },
+    "terms.agree_all" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전체 동의 (선택 포함)"
+          }
+        }
+      }
+    },
+    "terms.age" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(필수) 만 14세 이상입니다."
+          }
+        }
+      }
+    },
+    "terms.service" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(필수) 서비스 이용약관에 동의"
+          }
+        }
+      }
+    },
+    "terms.privacy" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(필수) 개인정보 수집 이용에 동의"
+          }
+        }
+      }
+    },
+    "terms.marketing" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(선택) 홍보 및 마케팅 이용에 동의"
+          }
+        }
+      }
+    },
+    "terms.view" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "보기"
+          }
+        }
+      }
+    },
+    "terms.complete" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "선택 완료"
+          }
+        }
+      }
+    },
+    "terms.login_failed" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그인에 실패했습니다. 잠시 후 다시 시도해 주세요."
+          }
+        }
+      }
+    },
     "common.ocr_test" : {
       "localizations" : {
         "ko" : {

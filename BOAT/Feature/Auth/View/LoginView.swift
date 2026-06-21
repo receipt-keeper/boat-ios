@@ -9,15 +9,9 @@ import SwiftUI
 
 struct LoginView: View {
 
-    var onAuthenticated: ((SocialUserInfo) -> Void)? = nil
+    let viewModel: AuthViewModel
 
-    @State private var viewModel = AuthViewModel()
     @State private var toast = BoatToastState()
-
-    private var isLoading: Bool {
-        if case .loading = viewModel.state { return true }
-        return false
-    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -48,16 +42,12 @@ struct LoginView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.horizontal, .spacing20)
         .background(Color.colorWhite)
-        .disabled(isLoading)
+        .disabled(viewModel.isLoading)
         .boatToastHost(toast)
-        .onChange(of: viewModel.state) { _, newState in
-            switch newState {
-            case .authenticated(let userInfo):
-                onAuthenticated?(userInfo)
-            case .error(let message):
+        .onChange(of: viewModel.errorMessage) { _, message in
+            if let message {
                 toast.showError(message)
-            default:
-                break
+                viewModel.errorMessage = nil
             }
         }
     }
@@ -138,5 +128,5 @@ struct LoginView: View {
 }
 
 #Preview {
-    LoginView()
+    LoginView(viewModel: AuthViewModel())
 }
