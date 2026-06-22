@@ -19,59 +19,50 @@ struct MainTabView: View {
     @State private var selection: MainTab = .home
     @State private var showAddMenu = false
 
-    init(viewModel: AuthViewModel) {
-        self.viewModel = viewModel
-        Self.configureTabBarAppearance()
-    }
-
     // FAB는 홈/목록 탭에서만 노출 (마이 탭 제외)
     private var showFab: Bool {
         selection == .home || selection == .list
     }
 
     var body: some View {
-        TabView(selection: $selection) {
+        content
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.colorWhite)
+            // 커스텀 하단 바 (콘텐츠를 자동으로 바 위로 인셋)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                BoatBottomBar(selection: $selection)
+            }
+            // 영수증 등록 FAB (바 위 우측)
+            .overlay(alignment: .bottomTrailing) {
+                if showFab && !showAddMenu {
+                    fabButton
+                        .padding(.trailing, .spacing16)
+                        .padding(.bottom, .spacing16)
+                }
+            }
+            // 등록 메뉴 오버레이 (스크림이 바까지 딤 처리)
+            .overlay {
+                if showAddMenu {
+                    ReceiptAddMenu(
+                        onDismiss: { showAddMenu = false },
+                        onCamera: { showAddMenu = false /* TODO: 카메라 촬영 → 영수증 등록 */ },
+                        onGallery: { showAddMenu = false /* TODO: 갤러리 선택 → 영수증 등록 */ }
+                    )
+                }
+            }
+            .animation(.easeInOut(duration: 0.2), value: showAddMenu)
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch selection {
+        case .list:
             TabPlaceholderView(titleKey: "tab.list")
-                .tabItem {
-                    Image("icList")
-                    Text("tab.list")
-                }
-                .tag(MainTab.list)
-
+        case .home:
             TabPlaceholderView(titleKey: "tab.home")
-                .tabItem {
-                    Image("icHome")
-                    Text("tab.home")
-                }
-                .tag(MainTab.home)
-
+        case .my:
             MyPageView(viewModel: viewModel)
-                .tabItem {
-                    Image("icProfile")
-                    Text("tab.my")
-                }
-                .tag(MainTab.my)
         }
-        .tint(Color.brandPrimary)
-        // 영수증 등록 FAB (탭바 위 우측). TabView 오버레이라 safe area에 탭바 높이가 포함됨
-        .overlay(alignment: .bottomTrailing) {
-            if showFab && !showAddMenu {
-                fabButton
-                    .padding(.trailing, .spacing16)
-                    .padding(.bottom, .spacing16)
-            }
-        }
-        // 등록 메뉴 오버레이 (스크림이 탭바까지 딤 처리)
-        .overlay {
-            if showAddMenu {
-                ReceiptAddMenu(
-                    onDismiss: { showAddMenu = false },
-                    onCamera: { showAddMenu = false /* TODO: 카메라 촬영 → 영수증 등록 */ },
-                    onGallery: { showAddMenu = false /* TODO: 갤러리 선택 → 영수증 등록 */ }
-                )
-            }
-        }
-        .animation(.easeInOut(duration: 0.2), value: showAddMenu)
     }
 
     private var fabButton: some View {
@@ -86,26 +77,6 @@ struct MainTabView: View {
                 .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
         }
         .accessibilityLabel(Text("receipt.add"))
-    }
-
-    /// 선택=brandPrimary / 비선택=gray400 / 배경=흰색 (Android BoatBottomBar 동일)
-    private static func configureTabBarAppearance() {
-        let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(Color.colorWhite)
-
-        let item = UITabBarItemAppearance()
-        item.normal.iconColor = UIColor(Color.gray400)
-        item.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.gray400)]
-        item.selected.iconColor = UIColor(Color.brandPrimary)
-        item.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.brandPrimary)]
-
-        appearance.stackedLayoutAppearance = item
-        appearance.inlineLayoutAppearance = item
-        appearance.compactInlineLayoutAppearance = item
-
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
     }
 }
 

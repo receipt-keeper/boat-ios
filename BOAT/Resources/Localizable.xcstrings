@@ -1,82 +1,22 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
-    "receipt.add" : {
+    "common.cancel" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "영수증 등록"
+            "value" : "취소"
           }
         }
       }
     },
-    "receipt.add.camera" : {
+    "common.ocr_test" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "사진으로 찍기"
-          }
-        }
-      }
-    },
-    "receipt.add.gallery" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "갤러리에서 불러오기"
-          }
-        }
-      }
-    },
-    "tab.list" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "목록"
-          }
-        }
-      }
-    },
-    "tab.home" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "홈"
-          }
-        }
-      }
-    },
-    "tab.my" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "마이"
-          }
-        }
-      }
-    },
-    "dialog.delete.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "회원 탈퇴를 진행할까요?"
-          }
-        }
-      }
-    },
-    "dialog.delete.message" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "탈퇴 시 모든 영수증과 계정 정보가\n삭제되며 복구할 수 없어요"
+            "value" : "OCR 테스트"
           }
         }
       }
@@ -101,42 +41,22 @@
         }
       }
     },
-    "home.delete_account" : {
+    "dialog.delete.message" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "회원 탈퇴"
+            "value" : "탈퇴 시 모든 영수증과 계정 정보가\n삭제되며 복구할 수 없어요"
           }
         }
       }
     },
-    "error.delete_account" : {
+    "dialog.delete.title" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "회원 탈퇴에 실패했습니다. 잠시 후 다시 시도해 주세요."
-          }
-        }
-      }
-    },
-    "common.cancel" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "취소"
-          }
-        }
-      }
-    },
-    "dialog.logout.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "로그아웃 할까요?"
+            "value" : "회원 탈퇴를 진행할까요?"
           }
         }
       }
@@ -151,12 +71,12 @@
         }
       }
     },
-    "common.ocr_test" : {
+    "dialog.logout.title" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OCR 테스트"
+            "value" : "로그아웃 할까요?"
           }
         }
       }
@@ -231,6 +151,16 @@
         }
       }
     },
+    "error.delete_account" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회원 탈퇴에 실패했습니다. 잠시 후 다시 시도해 주세요."
+          }
+        }
+      }
+    },
     "error.ocr.invalid_image" : {
       "localizations" : {
         "ko" : {
@@ -264,7 +194,18 @@
     "Hello, world!" : {
 
     },
+    "home.delete_account" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회원 탈퇴"
+          }
+        }
+      }
+    },
     "home.login_success" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
@@ -560,6 +501,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "선택된 이미지"
+          }
+        }
+      }
+    },
+    "receipt.add" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영수증 등록"
+          }
+        }
+      }
+    },
+    "receipt.add.camera" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진으로 찍기"
+          }
+        }
+      }
+    },
+    "receipt.add.gallery" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "갤러리에서 불러오기"
+          }
+        }
+      }
+    },
+    "tab.home" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "홈"
+          }
+        }
+      }
+    },
+    "tab.list" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "목록"
+          }
+        }
+      }
+    },
+    "tab.my" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마이"
           }
         }
       }
