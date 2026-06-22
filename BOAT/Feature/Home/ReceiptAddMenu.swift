@@ -2,35 +2,24 @@
 //  ReceiptAddMenu.swift
 //  BOAT
 //
-//  영수증 등록 FAB 메뉴. Android ReceiptAddSheet 대응.
-//  스크림(탭 시 닫힘) + 흰 카드(사진으로 찍기 / 갤러리에서 불러오기), FAB 위에 위치.
+//  영수증 등록 FAB 메뉴 카드. Android ReceiptAddSheet 대응.
+//  내용(가장 긴 항목) 크기에 맞춰지는 컴팩트 카드 — 스크림/위치는 호출부에서 처리.
 //
 
 import SwiftUI
 
-struct ReceiptAddMenu: View {
-    let onDismiss: () -> Void
+struct ReceiptAddMenuCard: View {
     let onCamera: () -> Void
     let onGallery: () -> Void
 
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            // 스크림 — 전체 화면(탭바 포함) 딤 처리, 탭하면 닫힘
-            Color.black.opacity(0.35)
-                .ignoresSafeArea()
-                .onTapGesture { onDismiss() }
-
-            // 메뉴 카드 — FAB 위쪽 우측에 배치
-            VStack(alignment: .leading, spacing: .spacing4) {
-                menuItem(icon: "icCamera", label: "receipt.add.camera", action: onCamera)
-                menuItem(icon: "icImage", label: "receipt.add.gallery", action: onGallery)
-            }
-            .padding(.vertical, .spacing20)
-            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
-            .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
-            .padding(.trailing, .spacing16)
-            .padding(.bottom, 84) // FAB(56) + bottom 16 + gap 12 위로
+        VStack(alignment: .leading, spacing: .spacing4) {
+            menuItem(icon: "icCamera", label: "receipt.add.camera", action: onCamera)
+            menuItem(icon: "icImage", label: "receipt.add.gallery", action: onGallery)
         }
+        .padding(.vertical, .spacing20)
+        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+        .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
     }
 
     private func menuItem(
@@ -48,10 +37,11 @@ struct ReceiptAddMenu: View {
                     .font(.pretendard(.medium, size: 16))
                     .foregroundStyle(Color.gray900)
                     .lineLimit(1)
-                Spacer(minLength: 0)
+                    .fixedSize()
             }
             .padding(.horizontal, .spacing24)
             .padding(.vertical, .spacing12)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }

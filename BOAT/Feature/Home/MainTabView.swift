@@ -28,27 +28,35 @@ struct MainTabView: View {
         content
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.colorWhite)
-            // 영수증 등록 FAB — 콘텐츠 영역(바 위)에 올려 바와 겹치지 않게 함
+            // 스크림 + FAB + 메뉴 카드를 같은 좌표계(바 위)에 배치
             .overlay(alignment: .bottomTrailing) {
-                if showFab && !showAddMenu {
-                    fabButton
+                ZStack(alignment: .bottomTrailing) {
+                    // 스크림 (메뉴 열릴 때, 탭하면 닫힘)
+                    if showAddMenu {
+                        Color.black.opacity(0.35)
+                            .ignoresSafeArea()
+                            .onTapGesture { showAddMenu = false }
+                    }
+                    // FAB — 메뉴 열려도 계속 보이게 (스크림 위)
+                    if showFab {
+                        fabButton
+                            .padding(.trailing, .spacing16)
+                            .padding(.bottom, .spacing16)
+                    }
+                    // 메뉴 카드 — FAB 위쪽
+                    if showAddMenu {
+                        ReceiptAddMenuCard(
+                            onCamera: { showAddMenu = false /* TODO: 카메라 촬영 → 영수증 등록 */ },
+                            onGallery: { showAddMenu = false /* TODO: 갤러리 선택 → 영수증 등록 */ }
+                        )
                         .padding(.trailing, .spacing16)
-                        .padding(.bottom, .spacing16)
+                        .padding(.bottom, 84) // FAB(56) + 하단 16 + 간격 12 위로
+                    }
                 }
             }
-            // 커스텀 하단 바 (콘텐츠 + FAB를 자동으로 바 위로 인셋)
+            // 커스텀 하단 바 (콘텐츠 + 오버레이를 자동으로 바 위로 인셋)
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 BoatBottomBar(selection: $selection)
-            }
-            // 등록 메뉴 오버레이 (스크림이 바까지 딤 처리)
-            .overlay {
-                if showAddMenu {
-                    ReceiptAddMenu(
-                        onDismiss: { showAddMenu = false },
-                        onCamera: { showAddMenu = false /* TODO: 카메라 촬영 → 영수증 등록 */ },
-                        onGallery: { showAddMenu = false /* TODO: 갤러리 선택 → 영수증 등록 */ }
-                    )
-                }
             }
             .animation(.easeInOut(duration: 0.2), value: showAddMenu)
     }
