@@ -17,10 +17,16 @@ struct MainTabView: View {
 
     let viewModel: AuthViewModel
     @State private var selection: MainTab = .home
+    @State private var showAddMenu = false
 
     init(viewModel: AuthViewModel) {
         self.viewModel = viewModel
         Self.configureTabBarAppearance()
+    }
+
+    // FAB는 홈/목록 탭에서만 노출 (마이 탭 제외)
+    private var showFab: Bool {
+        selection == .home || selection == .list
     }
 
     var body: some View {
@@ -47,6 +53,39 @@ struct MainTabView: View {
                 .tag(MainTab.my)
         }
         .tint(Color.brandPrimary)
+        // 영수증 등록 FAB (탭바 위 우측). TabView 오버레이라 safe area에 탭바 높이가 포함됨
+        .overlay(alignment: .bottomTrailing) {
+            if showFab && !showAddMenu {
+                fabButton
+                    .padding(.trailing, .spacing16)
+                    .padding(.bottom, .spacing16)
+            }
+        }
+        // 등록 메뉴 오버레이 (스크림이 탭바까지 딤 처리)
+        .overlay {
+            if showAddMenu {
+                ReceiptAddMenu(
+                    onDismiss: { showAddMenu = false },
+                    onCamera: { showAddMenu = false /* TODO: 카메라 촬영 → 영수증 등록 */ },
+                    onGallery: { showAddMenu = false /* TODO: 갤러리 선택 → 영수증 등록 */ }
+                )
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: showAddMenu)
+    }
+
+    private var fabButton: some View {
+        Button {
+            showAddMenu = true
+        } label: {
+            Image("icPlus")
+                .renderingMode(.template)
+                .foregroundStyle(Color.colorWhite)
+                .frame(width: 56, height: 56)
+                .background(Color.gray900, in: Circle())
+                .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
+        }
+        .accessibilityLabel(Text("receipt.add"))
     }
 
     /// 선택=brandPrimary / 비선택=gray400 / 배경=흰색 (Android BoatBottomBar 동일)

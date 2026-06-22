@@ -1,6 +1,36 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "receipt.add" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영수증 등록"
+          }
+        }
+      }
+    },
+    "receipt.add.camera" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진으로 찍기"
+          }
+        }
+      }
+    },
+    "receipt.add.gallery" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "갤러리에서 불러오기"
+          }
+        }
+      }
+    },
     "tab.list" : {
       "localizations" : {
         "ko" : {
