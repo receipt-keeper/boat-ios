@@ -1,6 +1,36 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "header.logo" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로고"
+          }
+        }
+      }
+    },
+    "header.search" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "검색"
+          }
+        }
+      }
+    },
+    "header.notification" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림"
+          }
+        }
+      }
+    },
     "common.cancel" : {
       "localizations" : {
         "ko" : {

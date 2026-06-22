@@ -71,7 +71,7 @@ struct MainTabView: View {
         case .list:
             TabPlaceholderView(titleKey: "tab.list")
         case .home:
-            TabPlaceholderView(titleKey: "tab.home")
+            HomeView()
         case .my:
             MyPageView(viewModel: viewModel)
         }
@@ -92,7 +92,25 @@ struct MainTabView: View {
     }
 }
 
-// MARK: - 임시 플레이스홀더 (목록/홈 디자인 보류)
+// MARK: - 홈 (공통 헤더 + 본문 placeholder, 디자인 보류)
+
+private struct HomeView: View {
+    var body: some View {
+        VStack(spacing: 0) {
+            BoatHeader(
+                onSearch: { /* TODO: 검색 */ },
+                onNotification: { /* TODO: 알림 */ }
+            )
+            Text("tab.home")
+                .font(.pretendard(.semibold, size: 18))
+                .foregroundStyle(Color.gray400)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .background(Color.colorWhite)
+    }
+}
+
+// MARK: - 임시 플레이스홀더 (목록 디자인 보류)
 
 private struct TabPlaceholderView: View {
     let titleKey: LocalizedStringKey
