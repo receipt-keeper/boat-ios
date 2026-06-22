@@ -11,6 +11,8 @@ import SwiftUI
 struct BoatBottomBar: View {
 
     @Binding var selection: MainTab
+    var dimmed: Bool = false
+    var onDimTap: () -> Void = {}
 
     var body: some View {
         HStack(spacing: 0) {
@@ -29,6 +31,14 @@ struct BoatBottomBar: View {
             Rectangle()
                 .fill(Color.gray200)
                 .frame(height: 0.5)
+        }
+        // 등록 메뉴 노출 시 바도 함께 dim 처리 (탭하면 닫힘)
+        .overlay {
+            if dimmed {
+                Color.black.opacity(0.35)
+                    .ignoresSafeArea(edges: .bottom)
+                    .onTapGesture { onDimTap() }
+            }
         }
     }
 

@@ -43,20 +43,24 @@ struct MainTabView: View {
                             .padding(.trailing, .spacing16)
                             .padding(.bottom, .spacing16)
                     }
-                    // 메뉴 카드 — FAB 위쪽
+                    // 메뉴 카드 — FAB 위쪽, 오른쪽 변을 FAB 중앙(우측 44pt)에 정렬
                     if showAddMenu {
                         ReceiptAddMenuCard(
                             onCamera: { showAddMenu = false /* TODO: 카메라 촬영 → 영수증 등록 */ },
                             onGallery: { showAddMenu = false /* TODO: 갤러리 선택 → 영수증 등록 */ }
                         )
-                        .padding(.trailing, .spacing16)
+                        .padding(.trailing, 44) // FAB 중앙 (end 16 + 반지름 28)
                         .padding(.bottom, 84) // FAB(56) + 하단 16 + 간격 12 위로
                     }
                 }
             }
             // 커스텀 하단 바 (콘텐츠 + 오버레이를 자동으로 바 위로 인셋)
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                BoatBottomBar(selection: $selection)
+                BoatBottomBar(
+                    selection: $selection,
+                    dimmed: showAddMenu,
+                    onDimTap: { showAddMenu = false }
+                )
             }
             .animation(.easeInOut(duration: 0.2), value: showAddMenu)
     }
