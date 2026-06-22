@@ -28,17 +28,17 @@ struct MainTabView: View {
         content
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.colorWhite)
-            // 커스텀 하단 바 (콘텐츠를 자동으로 바 위로 인셋)
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                BoatBottomBar(selection: $selection)
-            }
-            // 영수증 등록 FAB (바 위 우측)
+            // 영수증 등록 FAB — 콘텐츠 영역(바 위)에 올려 바와 겹치지 않게 함
             .overlay(alignment: .bottomTrailing) {
                 if showFab && !showAddMenu {
                     fabButton
                         .padding(.trailing, .spacing16)
                         .padding(.bottom, .spacing16)
                 }
+            }
+            // 커스텀 하단 바 (콘텐츠 + FAB를 자동으로 바 위로 인셋)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                BoatBottomBar(selection: $selection)
             }
             // 등록 메뉴 오버레이 (스크림이 바까지 딤 처리)
             .overlay {
