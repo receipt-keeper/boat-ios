@@ -16,6 +16,7 @@ struct MyPageView: View {
 
     @State private var showLogoutDialog = false
     @State private var showDeleteDialog = false
+    @State private var showNotificationSettings = false
     @State private var toast = BoatToastState()
 
     private var nameText: String {
@@ -42,7 +43,7 @@ struct MyPageView: View {
                 .frame(height: 8)
 
             sectionLabel("mypage.section.notification")
-            settingRow("mypage.section.notification") { /* TODO: 알림 설정 */ }
+            settingRow("mypage.section.notification") { showNotificationSettings = true }
 
             Rectangle()
                 .fill(Color.gray200)
@@ -60,6 +61,9 @@ struct MyPageView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.colorWhite)
+        .fullScreenCover(isPresented: $showNotificationSettings) {
+            NotificationSettingsView(onBack: { showNotificationSettings = false })
+        }
         .boatToastHost(toast)
         .boatDialog(
             isPresented: $showLogoutDialog,

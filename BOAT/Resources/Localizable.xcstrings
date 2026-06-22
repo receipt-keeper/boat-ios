@@ -1,37 +1,17 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
-    "mypage.title" : {
+    "notif.settings.title" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "마이페이지"
+            "value" : "알림설정"
           }
         }
       }
     },
-    "mypage.name_placeholder" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이름"
-          }
-        }
-      }
-    },
-    "mypage.email_placeholder" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "email@naver.com"
-          }
-        }
-      }
-    },
-    "mypage.section.notification" : {
+    "notif.settings.alarm" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
@@ -41,72 +21,12 @@
         }
       }
     },
-    "mypage.section.help" : {
+    "notif.settings.marketing" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "도움말"
-          }
-        }
-      }
-    },
-    "mypage.inquiry" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1:1 문의하기"
-          }
-        }
-      }
-    },
-    "mypage.terms" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "서비스 이용약관"
-          }
-        }
-      }
-    },
-    "mypage.withdraw" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "회원탈퇴"
-          }
-        }
-      }
-    },
-    "header.logo" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "로고"
-          }
-        }
-      }
-    },
-    "header.search" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "검색"
-          }
-        }
-      }
-    },
-    "header.notification" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "알림"
+            "value" : "마케팅 정보 수신 동의"
           }
         }
       }
@@ -301,10 +221,41 @@
         }
       }
     },
+    "header.logo" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로고"
+          }
+        }
+      }
+    },
+    "header.notification" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림"
+          }
+        }
+      }
+    },
+    "header.search" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "검색"
+          }
+        }
+      }
+    },
     "Hello, world!" : {
 
     },
     "home.delete_account" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
@@ -401,6 +352,86 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "사진 한 장으로 관리하는 무상 AS 케어"
+          }
+        }
+      }
+    },
+    "mypage.email_placeholder" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "email@naver.com"
+          }
+        }
+      }
+    },
+    "mypage.inquiry" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1:1 문의하기"
+          }
+        }
+      }
+    },
+    "mypage.name_placeholder" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이름"
+          }
+        }
+      }
+    },
+    "mypage.section.help" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "도움말"
+          }
+        }
+      }
+    },
+    "mypage.section.notification" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림 설정"
+          }
+        }
+      }
+    },
+    "mypage.terms" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서비스 이용약관"
+          }
+        }
+      }
+    },
+    "mypage.title" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마이페이지"
+          }
+        }
+      }
+    },
+    "mypage.withdraw" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회원탈퇴"
           }
         }
       }
