@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>BoatLab</string>
+	<string>보트랩</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

@@ -1,35 +1,11 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
-    "notif.settings.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "알림설정"
-          }
-        }
-      }
+    "" : {
+
     },
-    "notif.settings.alarm" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "알림 설정"
-          }
-        }
-      }
-    },
-    "notif.settings.marketing" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "마케팅 정보 수신 동의"
-          }
-        }
-      }
+    "|" : {
+
     },
     "common.cancel" : {
       "localizations" : {
@@ -432,6 +408,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "회원탈퇴"
+          }
+        }
+      }
+    },
+    "notif.settings.alarm" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림 설정"
+          }
+        }
+      }
+    },
+    "notif.settings.marketing" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마케팅 정보 수신 동의"
+          }
+        }
+      }
+    },
+    "notif.settings.title" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림설정"
           }
         }
       }
