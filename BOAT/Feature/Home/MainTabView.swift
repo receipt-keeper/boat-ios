@@ -101,12 +101,17 @@ private struct HomeView: View {
                 onSearch: { /* TODO: 검색 */ },
                 onNotification: { /* TODO: 알림 */ }
             )
-            Text("tab.home")
-                .font(.pretendard(.semibold, size: 18))
-                .foregroundStyle(Color.gray400)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            // 무료 분석 잔여 횟수는 유저 데이터에서 가져옴 (없으면 임시 3)
+            FreeAnalysisBanner(
+                remaining: UserStore.shared.current?.freeAnalysisTokensRemaining ?? 3
+            )
+            .padding(.horizontal, .spacing20)
+            .padding(.top, .spacing8)
+
+            Spacer()
         }
-        .background(Color.colorWhite)
+        .background(Color.gray50)
     }
 }
 

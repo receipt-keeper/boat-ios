@@ -7,6 +7,26 @@
     "|" : {
 
     },
+    "home.free_analysis" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영수증 무료 분석"
+          }
+        }
+      }
+    },
+    "home.free_analysis_remaining %lld" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잔여 %lld회"
+          }
+        }
+      }
+    },
     "common.cancel" : {
       "localizations" : {
         "ko" : {
