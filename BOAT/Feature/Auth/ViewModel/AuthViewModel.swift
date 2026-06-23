@@ -42,6 +42,7 @@ class AuthViewModel {
         ) { [weak self] _ in
             self?.pendingFirebaseToken = nil
             self?.isLoading = false
+            UserStore.shared.clear()
             self?.route = .login
         }
     }
@@ -185,6 +186,7 @@ class AuthViewModel {
                 try? Auth.auth().signOut()
                 GIDSignIn.sharedInstance.signOut()
                 KeychainManager.shared.clearAll()
+                UserStore.shared.clear()
 
                 await MainActor.run {
                     self.pendingFirebaseToken = nil
@@ -214,6 +216,7 @@ class AuthViewModel {
         try? Auth.auth().signOut()
         GIDSignIn.sharedInstance.signOut()
         KeychainManager.shared.clearAll()
+        UserStore.shared.clear()
         pendingFirebaseToken = nil
         isLoading = false
         route = .login
