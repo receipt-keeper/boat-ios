@@ -34,6 +34,11 @@ class AuthViewModel {
         // 이미 백엔드 토큰을 보유한 경우 바로 홈
         route = KeychainManager.shared.accessToken != nil ? .home : .login
 
+        // 앱 시작 시 이미 로그인 상태면 사용자 정보 동기화
+        if route == .home {
+            Task { try? await UserRepository.shared.refreshUser() }
+        }
+
         // 토큰 재발급 실패(세션 만료) → 강제 로그인 화면 복귀
         NotificationCenter.default.addObserver(
             forName: .boatSessionExpired,
@@ -156,6 +161,9 @@ class AuthViewModel {
                 )
                 KeychainManager.shared.accessToken = tokens.accessToken
                 KeychainManager.shared.refreshToken = tokens.refreshToken
+
+                // 로그인 직후 사용자 정보 조회 (best-effort)
+                try? await UserRepository.shared.refreshUser()
 
                 await MainActor.run {
                     self.pendingFirebaseToken = nil

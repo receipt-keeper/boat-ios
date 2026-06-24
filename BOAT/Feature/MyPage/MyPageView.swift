@@ -11,8 +11,7 @@ import SwiftUI
 struct MyPageView: View {
 
     let viewModel: AuthViewModel
-    var name: String? = nil
-    var email: String? = nil
+    private let store = UserStore.shared
 
     @State private var showLogoutDialog = false
     @State private var showDeleteDialog = false
@@ -20,12 +19,12 @@ struct MyPageView: View {
     @State private var toast = BoatToastState()
 
     private var nameText: String {
-        let trimmed = name?.trimmingCharacters(in: .whitespaces)
-        return (trimmed?.isEmpty == false ? trimmed : nil) ?? String(localized: "mypage.name_placeholder")
+        let name = store.current?.displayName.trimmingCharacters(in: .whitespaces)
+        return (name?.isEmpty == false ? name : nil) ?? String(localized: "mypage.name_placeholder")
     }
     private var emailText: String {
-        let trimmed = email?.trimmingCharacters(in: .whitespaces)
-        return (trimmed?.isEmpty == false ? trimmed : nil) ?? String(localized: "mypage.email_placeholder")
+        let email = store.current?.email.trimmingCharacters(in: .whitespaces)
+        return (email?.isEmpty == false ? email : nil) ?? String(localized: "mypage.email_placeholder")
     }
 
     var body: some View {

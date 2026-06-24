@@ -12,6 +12,8 @@ struct User: Codable, Equatable {
     var email: String
     /// 이름
     var name: String
+    /// 닉네임
+    var nickname: String
     /// 프로필 이미지 URL
     var profileImageUrl: String
     /// 알림 수신 설정. true면 푸시 알림을 받는다.
@@ -21,11 +23,17 @@ struct User: Codable, Equatable {
     /// 남은 무료 분석 토큰 수.
     var freeAnalysisTokensRemaining: Int
 
+    /// 표시용 이름 — 닉네임 우선, 없으면 이름
+    var displayName: String {
+        nickname.isEmpty ? name : nickname
+    }
+
     static let empty = User(
         email: "",
         name: "",
+        nickname: "",
         profileImageUrl: "",
-        notificationEnabled: true,
+        notificationEnabled: false,
         marketingConsent: false,
         freeAnalysisTokensRemaining: 0
     )

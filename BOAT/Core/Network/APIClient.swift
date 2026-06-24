@@ -51,15 +51,23 @@ final class APIClient {
         case .success(let data):
             return try decode(T.self, from: data)
 
-        case .failure(let afError):
-            // 서버가 4xx/5xx와 함께 Envelope(data.message)를 내려준 경우 그 문구를 우선 사용
+        case .failure:
+            // HTTP 응답 없음(연결 실패) → 네트워크
+            guard let statusCode = response.response?.statusCode else {
+                throw APIError.network
+            }
+            // 5xx → 네트워크 문구 (Android ApiErrorParser 규칙)
+            if statusCode >= 500 {
+                throw APIError.network
+            }
+            // 4xx → 서버 본문의 data.message
             if let data = response.data,
-               let statusCode = response.response?.statusCode,
                let envelope = try? JSONDecoder().decode(APIResponse<APIErrorData>.self, from: data),
-               let message = envelope.data?.message {
+               let message = envelope.data?.message, !message.isEmpty {
                 throw APIError.server(statusCode: statusCode, message: message)
             }
-            throw APIError.transport(afError)
+            // 메시지 파싱 불가 → 일반 오류
+            throw APIError.unknown
         }
     }
 
@@ -82,11 +90,11 @@ final class APIClient {
                 if let empty = EmptyData() as? T {
                     return empty
                 }
-                throw APIError.emptyResponse
+                throw APIError.unknown
             }
             return payload
         } catch is DecodingError {
-            throw APIError.decodingFailed
+            throw APIError.unknown
         }
     }
 }
