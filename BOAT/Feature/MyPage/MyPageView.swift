@@ -13,10 +13,14 @@ struct MyPageView: View {
     let viewModel: AuthViewModel
     private let store = UserStore.shared
 
+    @Environment(\.openURL) private var openURL
+
     @State private var showLogoutDialog = false
     @State private var showDeleteDialog = false
     @State private var showNotificationSettings = false
     @State private var toast = BoatToastState()
+
+    private let inquiryEmail = "team.swyp8.app@gmail.com"
 
     private var nameText: String {
         let name = store.current?.displayName.trimmingCharacters(in: .whitespaces)
@@ -50,7 +54,7 @@ struct MyPageView: View {
                 .padding(.horizontal, .spacing20)
 
             sectionLabel("mypage.section.help")
-            settingRow("mypage.inquiry") { /* TODO: 1:1 문의하기 */ }
+            settingRow("mypage.inquiry") { sendInquiryMail() }
             settingRow("mypage.terms") { /* TODO: 서비스 이용약관 */ }
 
             Spacer()
@@ -149,6 +153,19 @@ struct MyPageView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - 1:1 문의 메일
+
+    private func sendInquiryMail() {
+        let subject = String(localized: "mypage.inquiry_subject")
+        let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        guard let url = URL(string: "mailto:\(inquiryEmail)?subject=\(encodedSubject)") else { return }
+        openURL(url) { accepted in
+            if !accepted {
+                toast.showError(String(localized: "mypage.inquiry_mail_failed"))
+            }
+        }
     }
 
     // MARK: - 로그아웃 | 회원탈퇴
