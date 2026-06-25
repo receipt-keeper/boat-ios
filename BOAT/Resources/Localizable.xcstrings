@@ -13,6 +13,16 @@
         }
       }
     },
+    "common.confirm": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "확인"
+          }
+        }
+      }
+    },
     "common.ocr_test": {
       "localizations": {
         "ko": {
@@ -769,6 +779,16 @@
         }
       }
     },
+    "receipt.register.max": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증은 최대 5장까지 등록할 수 있어요"
+          }
+        }
+      }
+    },
     "receipt.register.uploaded": {
       "localizations": {
         "ko": {
@@ -910,23 +930,142 @@
       }
     },
     "카메라를 사용할 수 없습니다.": {},
-    "확인": {},
-    "receipt.register.max": {
+    "receipt.tab.all": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "영수증은 최대 5장까지 등록할 수 있어요"
+            "value": "전체"
           }
         }
       }
     },
-    "common.confirm": {
+    "receipt.tab.expiring": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "확인"
+            "value": "만료예정"
+          }
+        }
+      }
+    },
+    "receipt.tab.expired": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "만료"
+          }
+        }
+      }
+    },
+    "receipt.filter.all": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전체"
+          }
+        }
+      }
+    },
+    "receipt.filter.it": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영상/IT 기기"
+          }
+        }
+      }
+    },
+    "receipt.filter.laundry": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세탁/청소"
+          }
+        }
+      }
+    },
+    "receipt.filter.kitchen": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "주방가전"
+          }
+        }
+      }
+    },
+    "receipt.filter.living": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "리빙/냉난방"
+          }
+        }
+      }
+    },
+    "receipt.filter.other": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기타"
+          }
+        }
+      }
+    },
+    "receipt.sort.default": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기본 순"
+          }
+        }
+      }
+    },
+    "receipt.sort.expiring": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "만료 임박 순"
+          }
+        }
+      }
+    },
+    "receipt.sort.recent": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최근 등록 순"
+          }
+        }
+      }
+    },
+    "receipt.sort.purchase": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매일 순"
+          }
+        }
+      }
+    },
+    "receipt.empty": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "등록된 영수증이 없습니다."
           }
         }
       }

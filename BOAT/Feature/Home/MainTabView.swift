@@ -69,7 +69,7 @@ struct MainTabView: View {
     private var content: some View {
         switch selection {
         case .list:
-            TabPlaceholderView(titleKey: "tab.list")
+            ReceiptListView()
         case .home:
             HomeView()
         case .my:
@@ -169,17 +169,4 @@ private struct HomeCard: View {
     }
 }
 
-// MARK: - 임시 플레이스홀더 (목록 디자인 보류)
-
-private struct TabPlaceholderView: View {
-    let titleKey: LocalizedStringKey
-
-    var body: some View {
-        Text(titleKey)
-            .font(.pretendard(.semibold, size: 18))
-            .foregroundStyle(Color.gray400)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.colorWhite)
-    }
-}
 
