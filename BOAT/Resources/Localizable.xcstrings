@@ -3,26 +3,6 @@
   "strings": {
     "": {},
     "|": {},
-    "home.free_analysis": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "영수증 무료 분석"
-          }
-        }
-      }
-    },
-    "home.free_analysis_remaining %lld": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "잔여 %lld회"
-          }
-        }
-      }
-    },
     "common.cancel": {
       "localizations": {
         "ko": {
@@ -104,6 +84,7 @@
       }
     },
     "error.api.decode_failed": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -114,6 +95,7 @@
       }
     },
     "error.api.empty_response": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -124,6 +106,7 @@
       }
     },
     "error.api.invalid_url": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -251,6 +234,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "회원 탈퇴"
+          }
+        }
+      }
+    },
+    "home.free_analysis": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 무료 분석"
+          }
+        }
+      }
+    },
+    "home.free_analysis_remaining %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "잔여 %lld회"
           }
         }
       }
@@ -822,6 +825,86 @@
           "stringUnit": {
             "state": "translated",
             "value": "보기"
+          }
+        }
+      }
+    },
+    "home.card.register.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 등록하기"
+          }
+        }
+      }
+    },
+    "home.card.register.desc": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증을 등록하고 보증 기간과\n구매 정보를 관리해 보세요."
+          }
+        }
+      }
+    },
+    "home.card.popular.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "인기상품 특가"
+          }
+        }
+      }
+    },
+    "home.card.popular.desc": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "나에게 필요한 제품을\n지금 바로, 확인해 보세요."
+          }
+        }
+      }
+    },
+    "receipt.register.uploaded": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "업로드된 영수증"
+          }
+        }
+      }
+    },
+    "receipt.register.camera": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "카메라로 촬영하기"
+          }
+        }
+      }
+    },
+    "receipt.register.gallery": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "갤러리에서 불러오기"
+          }
+        }
+      }
+    },
+    "receipt.register.analyze": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 분석 시작하기"
           }
         }
       }

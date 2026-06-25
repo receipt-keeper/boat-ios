@@ -95,6 +95,8 @@ struct MainTabView: View {
 // MARK: - 홈 (공통 헤더 + 본문 placeholder, 디자인 보류)
 
 private struct HomeView: View {
+    @State private var showReceiptRegister = false
+
     var body: some View {
         VStack(spacing: 0) {
             BoatHeader(
@@ -102,16 +104,68 @@ private struct HomeView: View {
                 onNotification: { /* TODO: 알림 */ }
             )
 
-            // 무료 분석 잔여 횟수는 유저 데이터에서 가져옴 (없으면 임시 3)
-            FreeAnalysisBanner(
-                remaining: UserStore.shared.current?.freeAnalysisTokensRemaining ?? 3
-            )
-            .padding(.horizontal, .spacing20)
-            .padding(.top, .spacing8)
+            ScrollView {
+                VStack(spacing: .spacing12) {
+                    // 무료 분석 잔여 횟수는 유저 데이터에서 가져옴 (없으면 임시 3)
+                    FreeAnalysisBanner(
+                        remaining: UserStore.shared.current?.freeAnalysisTokensRemaining ?? 3
+                    )
 
-            Spacer()
+                    // 영수증 등록 배너 (탭 → 영수증 등록 화면)
+                    Button {
+                        showReceiptRegister = true
+                    } label: {
+                        HomeCard(
+                            title: "home.card.register.title",
+                            desc: "home.card.register.desc",
+                            minHeight: 260
+                        )
+                    }
+                    .buttonStyle(.plain)
+
+                    // 광고 배너 (임시)
+                    HomeCard(
+                        title: "home.card.popular.title",
+                        desc: "home.card.popular.desc",
+                        minHeight: 110
+                    )
+                }
+                .padding(.horizontal, .spacing20)
+                .padding(.vertical, .spacing12)
+            }
         }
         .background(Color.gray50)
+        .fullScreenCover(isPresented: $showReceiptRegister) {
+            ReceiptRegisterView(onBack: { showReceiptRegister = false })
+        }
+    }
+}
+
+// MARK: - 홈 카드 (영수증 등록 / 광고 배너)
+
+private struct HomeCard: View {
+    let title: LocalizedStringKey
+    let desc: LocalizedStringKey
+    var minHeight: CGFloat
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: .spacing8) {
+            Text(title)
+                .font(.pretendard(.bold, size: 20))
+                .foregroundStyle(Color.brandPrimary)
+            Text(desc)
+                .font(.pretendard(.regular, size: 13))
+                .foregroundStyle(Color.gray500)
+                .lineSpacing(2)
+            Spacer(minLength: 0)
+        }
+        .padding(.spacing20)
+        .frame(maxWidth: .infinity, minHeight: minHeight, alignment: .topLeading)
+        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+        .overlay(
+            RoundedRectangle(cornerRadius: .rounded2xl)
+                .stroke(Color.brandQuinary, lineWidth: 1)
+        )
     }
 }
 
