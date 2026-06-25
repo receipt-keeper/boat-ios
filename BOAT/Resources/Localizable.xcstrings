@@ -227,6 +227,46 @@
       }
     },
     "Hello, world!": {},
+    "home.card.popular.desc": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "나에게 필요한 제품을\n지금 바로, 확인해 보세요."
+          }
+        }
+      }
+    },
+    "home.card.popular.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "인기상품 특가"
+          }
+        }
+      }
+    },
+    "home.card.register.desc": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증을 등록하고 보증 기간과\n구매 정보를 관리해 보세요."
+          }
+        }
+      }
+    },
+    "home.card.register.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 등록하기"
+          }
+        }
+      }
+    },
     "home.delete_account": {
       "extractionState": "stale",
       "localizations": {
@@ -699,6 +739,46 @@
         }
       }
     },
+    "receipt.register.analyze": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 분석 시작하기"
+          }
+        }
+      }
+    },
+    "receipt.register.camera": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "카메라로 촬영하기"
+          }
+        }
+      }
+    },
+    "receipt.register.gallery": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "갤러리에서 불러오기"
+          }
+        }
+      }
+    },
+    "receipt.register.uploaded": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "업로드된 영수증"
+          }
+        }
+      }
+    },
     "tab.home": {
       "localizations": {
         "ko": {
@@ -829,82 +909,24 @@
         }
       }
     },
-    "home.card.register.title": {
+    "카메라를 사용할 수 없습니다.": {},
+    "확인": {},
+    "receipt.register.max": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "영수증 등록하기"
+            "value": "영수증은 최대 5장까지 등록할 수 있어요"
           }
         }
       }
     },
-    "home.card.register.desc": {
+    "common.confirm": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "영수증을 등록하고 보증 기간과\n구매 정보를 관리해 보세요."
-          }
-        }
-      }
-    },
-    "home.card.popular.title": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "인기상품 특가"
-          }
-        }
-      }
-    },
-    "home.card.popular.desc": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "나에게 필요한 제품을\n지금 바로, 확인해 보세요."
-          }
-        }
-      }
-    },
-    "receipt.register.uploaded": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "업로드된 영수증"
-          }
-        }
-      }
-    },
-    "receipt.register.camera": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "카메라로 촬영하기"
-          }
-        }
-      }
-    },
-    "receipt.register.gallery": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "갤러리에서 불러오기"
-          }
-        }
-      }
-    },
-    "receipt.register.analyze": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "영수증 분석 시작하기"
+            "value": "확인"
           }
         }
       }
