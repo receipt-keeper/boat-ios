@@ -286,7 +286,7 @@ struct ReceiptManualInputView: View {
                 HStack(spacing: .spacing8) {
                     Image(systemName: keepReceipt ? "checkmark.square.fill" : "square")
                         .font(.system(size: 20))
-                        .foregroundStyle(keepReceipt ? Color.gray400 : Color.gray300)
+                        .foregroundStyle(keepReceipt ? Color.brandPrimary : Color.gray300)
                     Text("manual.as_keep_receipt")
                         .font(.pretendard(.regular, size: 14))
                         .foregroundStyle(Color.gray700)
