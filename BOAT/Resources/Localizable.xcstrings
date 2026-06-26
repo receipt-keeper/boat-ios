@@ -1090,6 +1090,106 @@
           }
         }
       }
+    },
+    "home.expiring_caption": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "한달 안에 끝나요!"
+          }
+        }
+      }
+    },
+    "home.expiring_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AS만료 예정"
+          }
+        }
+      }
+    },
+    "home.expiring_count %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld 건"
+          }
+        }
+      }
+    },
+    "home.recent_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최근 등록된 영수증"
+          }
+        }
+      }
+    },
+    "home.more": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "더보기"
+          }
+        }
+      }
+    },
+    "home.label.vendor": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매처"
+          }
+        }
+      }
+    },
+    "home.label.purchase": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매일"
+          }
+        }
+      }
+    },
+    "home.label.warranty": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보증 기간"
+          }
+        }
+      }
+    },
+    "home.dday %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "D - %lld"
+          }
+        }
+      }
+    },
+    "home.days_ago %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld일 전"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

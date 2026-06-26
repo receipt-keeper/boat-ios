@@ -96,6 +96,7 @@ struct MainTabView: View {
 
 private struct HomeView: View {
     @State private var showReceiptRegister = false
+    @State private var showGeneral = false // 임시: 초기(false) ↔ 일반(true) 전환
 
     var body: some View {
         VStack(spacing: 0) {
@@ -104,39 +105,57 @@ private struct HomeView: View {
                 onNotification: { /* TODO: 알림 */ }
             )
 
-            ScrollView {
-                VStack(spacing: .spacing12) {
-                    // 무료 분석 잔여 횟수는 유저 데이터에서 가져옴 (없으면 임시 3)
-                    FreeAnalysisBanner(
-                        remaining: UserStore.shared.current?.freeAnalysisTokensRemaining ?? 3
-                    )
+            // 임시(개발용) 상태 전환 토글 — 백엔드 데이터 유무 분기 대용
+            Picker("", selection: $showGeneral) {
+                Text("초기").tag(false)
+                Text("일반").tag(true)
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, .spacing20)
+            .padding(.bottom, .spacing8)
 
-                    // 영수증 등록 배너 (탭 → 영수증 등록 화면)
-                    Button {
-                        showReceiptRegister = true
-                    } label: {
-                        HomeCard(
-                            title: "home.card.register.title",
-                            desc: "home.card.register.desc",
-                            minHeight: 260
-                        )
-                    }
-                    .buttonStyle(.plain)
-
-                    // 광고 배너 (임시)
-                    HomeCard(
-                        title: "home.card.popular.title",
-                        desc: "home.card.popular.desc",
-                        minHeight: 110
-                    )
-                }
-                .padding(.horizontal, .spacing20)
-                .padding(.vertical, .spacing12)
+            if showGeneral {
+                HomeGeneralView(
+                    expiring: HomeMock.expiringWarranties,
+                    recent: HomeMock.recentReceipts
+                )
+            } else {
+                initialContent
             }
         }
         .background(Color.gray50)
         .fullScreenCover(isPresented: $showReceiptRegister) {
             ReceiptRegisterView(onBack: { showReceiptRegister = false })
+        }
+    }
+
+    // 초기 홈 (데이터 없을 때) — 무료 분석 배너 + 등록 카드 + 광고 배너
+    private var initialContent: some View {
+        ScrollView {
+            VStack(spacing: .spacing12) {
+                FreeAnalysisBanner(
+                    remaining: UserStore.shared.current?.freeAnalysisTokensRemaining ?? 3
+                )
+
+                Button {
+                    showReceiptRegister = true
+                } label: {
+                    HomeCard(
+                        title: "home.card.register.title",
+                        desc: "home.card.register.desc",
+                        minHeight: 260
+                    )
+                }
+                .buttonStyle(.plain)
+
+                HomeCard(
+                    title: "home.card.popular.title",
+                    desc: "home.card.popular.desc",
+                    minHeight: 110
+                )
+            }
+            .padding(.horizontal, .spacing20)
+            .padding(.vertical, .spacing12)
         }
     }
 }
