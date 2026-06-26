@@ -86,6 +86,7 @@ struct ReceiptRegisterView: View {
                 }
             }
             .presentationDragIndicator(.hidden)
+            .presentationBackground(Color.colorWhite)
         }
     }
 
