@@ -69,12 +69,13 @@ struct ReceiptManualInputView: View {
                     Spacer().frame(height: .spacing12)
                     asGuideCard
 
+                    Spacer().frame(height: .spacing24)
+                    submitButton
+
                     Spacer().frame(height: .spacing16)
                 }
                 .padding(.horizontal, .spacing20)
             }
-
-            submitButton
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.gray50)
@@ -317,8 +318,6 @@ struct ReceiptManualInputView: View {
         }
         .buttonStyle(.plain)
         .disabled(!canSubmit)
-        .padding(.horizontal, .spacing20)
-        .padding(.vertical, .spacing12)
     }
 
     // MARK: - 작은 컴포넌트
