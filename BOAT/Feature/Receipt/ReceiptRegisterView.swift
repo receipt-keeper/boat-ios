@@ -10,7 +10,11 @@ import PhotosUI
 
 struct ReceiptRegisterView: View {
 
+    /// 진입 시 자동으로 열 소스 (FAB 카메라/갤러리 선택)
+    enum AutoOpen { case camera, gallery }
+
     let onBack: () -> Void
+    var autoOpen: AutoOpen? = nil
 
     /// 최대 등록 가능 장수 (Android MAX_PHOTOS와 동일)
     private static let maxPhotos = 5
@@ -21,11 +25,13 @@ struct ReceiptRegisterView: View {
     @State private var images: [UIImage] = []
     @State private var galleryItems: [PhotosPickerItem] = []
     @State private var showCamera = false
+    @State private var showGalleryPicker = false
     @State private var cameraUnavailable = false
     @State private var showMaxAlert = false
     @State private var isAnalyzing = false
     @State private var activeSheet: AnalysisSheet?
     @State private var showManualInput = false
+    @State private var didAutoOpen = false
 
     private var canAddMore: Bool { images.count < Self.maxPhotos }
     private var remainingSlots: Int { max(0, Self.maxPhotos - images.count) }
@@ -59,8 +65,28 @@ struct ReceiptRegisterView: View {
             CameraPicker { image in addImages([image]) }
                 .ignoresSafeArea()
         }
+        .photosPicker(
+            isPresented: $showGalleryPicker,
+            selection: $galleryItems,
+            maxSelectionCount: max(1, remainingSlots),
+            matching: .images
+        )
         .onChange(of: galleryItems) { _, items in
             loadGalleryImages(items)
+        }
+        .onAppear {
+            guard !didAutoOpen, let autoOpen else { return }
+            didAutoOpen = true
+            switch autoOpen {
+            case .camera:
+                if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                    showCamera = true
+                } else {
+                    cameraUnavailable = true
+                }
+            case .gallery:
+                showGalleryPicker = true
+            }
         }
         .alert("카메라를 사용할 수 없습니다.", isPresented: $cameraUnavailable) {
             Button("common.confirm", role: .cancel) {}
@@ -195,22 +221,13 @@ struct ReceiptRegisterView: View {
         .buttonStyle(.plain)
     }
 
-    @ViewBuilder
     private var galleryButton: some View {
-        if canAddMore {
-            PhotosPicker(
-                selection: $galleryItems,
-                maxSelectionCount: remainingSlots,
-                matching: .images
-            ) {
-                outlinedLabel(icon: "icImage", label: "receipt.register.gallery")
-            }
-        } else {
-            Button { showMaxAlert = true } label: {
-                outlinedLabel(icon: "icImage", label: "receipt.register.gallery")
-            }
-            .buttonStyle(.plain)
+        Button {
+            if canAddMore { showGalleryPicker = true } else { showMaxAlert = true }
+        } label: {
+            outlinedLabel(icon: "icImage", label: "receipt.register.gallery")
         }
+        .buttonStyle(.plain)
     }
 
     private func outlinedLabel(icon: String, label: LocalizedStringKey) -> some View {

@@ -18,6 +18,9 @@ struct MainTabView: View {
     let viewModel: AuthViewModel
     @State private var selection: MainTab = .home
     @State private var showAddMenu = false
+    // FAB 카메라/갤러리 → 영수증 등록 화면(자동 열기)
+    @State private var showRegisterFromFab = false
+    @State private var registerAutoOpen: ReceiptRegisterView.AutoOpen?
     // 목록 탭의 inner tab / 정렬 — 홈에서 이동 시 지정 가능
     @State private var listTab: ReceiptTab = .all
     @State private var listSort: ReceiptSort = .default
@@ -49,8 +52,8 @@ struct MainTabView: View {
                     // 메뉴 카드 — FAB 위쪽, 오른쪽 변을 FAB 중앙(우측 44pt)에 정렬
                     if showAddMenu {
                         ReceiptAddMenuCard(
-                            onCamera: { showAddMenu = false /* TODO: 카메라 촬영 → 영수증 등록 */ },
-                            onGallery: { showAddMenu = false /* TODO: 갤러리 선택 → 영수증 등록 */ }
+                            onCamera: { openRegisterFromFab(.camera) },
+                            onGallery: { openRegisterFromFab(.gallery) }
                         )
                         .padding(.trailing, 44) // FAB 중앙 (end 16 + 반지름 28)
                         .padding(.bottom, 84) // FAB(56) + 하단 16 + 간격 12 위로
@@ -66,6 +69,19 @@ struct MainTabView: View {
                 )
             }
             .animation(.easeInOut(duration: 0.2), value: showAddMenu)
+            // FAB 카메라/갤러리 → 영수증 등록 화면(진입 즉시 해당 소스 열림)
+            .fullScreenCover(isPresented: $showRegisterFromFab) {
+                ReceiptRegisterView(
+                    onBack: { showRegisterFromFab = false },
+                    autoOpen: registerAutoOpen
+                )
+            }
+    }
+
+    private func openRegisterFromFab(_ action: ReceiptRegisterView.AutoOpen) {
+        showAddMenu = false
+        registerAutoOpen = action
+        showRegisterFromFab = true
     }
 
     @ViewBuilder
