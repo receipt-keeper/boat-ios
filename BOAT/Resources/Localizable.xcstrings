@@ -1293,6 +1293,276 @@
           }
         }
       }
+    },
+    "manual.image_section": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "등록된 이미지 확인"
+          }
+        }
+      }
+    },
+    "manual.image_add": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "등록하기"
+          }
+        }
+      }
+    },
+    "manual.product_name": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제품명"
+          }
+        }
+      }
+    },
+    "manual.product_name_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제품명을 입력하세요."
+          }
+        }
+      }
+    },
+    "manual.purchase_date": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매일"
+          }
+        }
+      }
+    },
+    "manual.purchase_date_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매일을 입력하세요."
+          }
+        }
+      }
+    },
+    "manual.warranty": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "무상 AS 만료기간"
+          }
+        }
+      }
+    },
+    "manual.warranty_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AS 만료기간을 입력해 주세요."
+          }
+        }
+      }
+    },
+    "manual.warranty_6m": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "6개월"
+          }
+        }
+      }
+    },
+    "manual.warranty_1y": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1년"
+          }
+        }
+      }
+    },
+    "manual.warranty_2y": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2년"
+          }
+        }
+      }
+    },
+    "manual.warranty_3y": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3년"
+          }
+        }
+      }
+    },
+    "manual.warranty_custom": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "직접입력"
+          }
+        }
+      }
+    },
+    "manual.memo": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "메모"
+          }
+        }
+      }
+    },
+    "manual.memo_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기기 관련 특이사항을 입력하세요."
+          }
+        }
+      }
+    },
+    "manual.memo_counter": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최대 100자"
+          }
+        }
+      }
+    },
+    "manual.warranty_section": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보증 정보"
+          }
+        }
+      }
+    },
+    "manual.brand": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "브랜드명"
+          }
+        }
+      }
+    },
+    "manual.brand_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "브랜드명을 입력하세요."
+          }
+        }
+      }
+    },
+    "manual.price": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매 가격"
+          }
+        }
+      }
+    },
+    "manual.price_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매 가격을 입력하세요."
+          }
+        }
+      }
+    },
+    "manual.serial": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시리얼 넘버"
+          }
+        }
+      }
+    },
+    "manual.serial_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시리얼 넘버를 입력하세요."
+          }
+        }
+      }
+    },
+    "manual.as_section": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "무상 AS 안내"
+          }
+        }
+      }
+    },
+    "manual.as_guide": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "일부 제조사의 경우, 추후 수리 접수 시\n실물 영수증 증빙을 추가로 요구할 수 있습니다."
+          }
+        }
+      }
+    },
+    "manual.as_keep_receipt": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "실물 영수증도 함께 보관"
+          }
+        }
+      }
+    },
+    "manual.submit": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 정보 등록하기"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

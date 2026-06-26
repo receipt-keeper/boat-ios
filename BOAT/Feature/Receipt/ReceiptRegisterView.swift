@@ -25,6 +25,7 @@ struct ReceiptRegisterView: View {
     @State private var showMaxAlert = false
     @State private var isAnalyzing = false
     @State private var activeSheet: AnalysisSheet?
+    @State private var showManualInput = false
 
     private var canAddMore: Bool { images.count < Self.maxPhotos }
     private var remainingSlots: Int { max(0, Self.maxPhotos - images.count) }
@@ -73,13 +74,13 @@ struct ReceiptRegisterView: View {
                 case .noToken:
                     NoTokenSheet(
                         onRecharge: { activeSheet = nil /* TODO: 충전 */ },
-                        onManualInput: { activeSheet = nil /* TODO: 직접 입력 화면 */ },
+                        onManualInput: { openManualInput() },
                         onLater: { activeSheet = nil }
                     )
                     .presentationDetents([.height(440)])
                 case .failed:
                     AnalysisFailedSheet(
-                        onManualInput: { activeSheet = nil /* TODO: 직접 입력 화면 */ },
+                        onManualInput: { openManualInput() },
                         onRetry: { activeSheet = nil }
                     )
                     .presentationDetents([.height(360)])
@@ -87,6 +88,18 @@ struct ReceiptRegisterView: View {
             }
             .presentationDragIndicator(.hidden)
             .presentationBackground(Color.colorWhite)
+        }
+        // 직접 입력 화면 — 등록한 이미지를 그대로 전달
+        .fullScreenCover(isPresented: $showManualInput) {
+            ReceiptManualInputView(images: images, onBack: { showManualInput = false })
+        }
+    }
+
+    /// 시트 닫고 직접 입력 화면 열기
+    private func openManualInput() {
+        activeSheet = nil
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            showManualInput = true
         }
     }
 
