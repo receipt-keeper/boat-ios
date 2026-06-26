@@ -18,6 +18,9 @@ struct MainTabView: View {
     let viewModel: AuthViewModel
     @State private var selection: MainTab = .home
     @State private var showAddMenu = false
+    // 목록 탭의 inner tab / 정렬 — 홈에서 이동 시 지정 가능
+    @State private var listTab: ReceiptTab = .all
+    @State private var listSort: ReceiptSort = .default
 
     // FAB는 홈/목록 탭에서만 노출 (마이 탭 제외)
     private var showFab: Bool {
@@ -69,9 +72,13 @@ struct MainTabView: View {
     private var content: some View {
         switch selection {
         case .list:
-            ReceiptListView()
+            ReceiptListView(selectedTab: $listTab, selectedSort: $listSort)
         case .home:
-            HomeView()
+            HomeView(onOpenList: { tab, sort in
+                listTab = tab
+                if let sort { listSort = sort }
+                selection = .list
+            })
         case .my:
             MyPageView(viewModel: viewModel)
         }
@@ -95,6 +102,9 @@ struct MainTabView: View {
 // MARK: - 홈 (공통 헤더 + 본문 placeholder, 디자인 보류)
 
 private struct HomeView: View {
+    /// 목록 탭으로 이동 (탭, 정렬 지정). sort=nil이면 정렬 유지.
+    var onOpenList: (ReceiptTab, ReceiptSort?) -> Void
+
     @State private var showReceiptRegister = false
     @State private var showGeneral = false // 임시: 초기(false) ↔ 일반(true) 전환
 
@@ -117,7 +127,11 @@ private struct HomeView: View {
             if showGeneral {
                 HomeGeneralView(
                     expiring: HomeMock.expiringWarranties,
-                    recent: HomeMock.recentReceipts
+                    recent: HomeMock.recentReceipts,
+                    // 만료예정 > → 목록 만료예정 탭
+                    onExpiringMore: { onOpenList(.expiring, nil) },
+                    // 더보기 → 목록 전체 탭 + 최근 등록 순
+                    onRecentMore: { onOpenList(.all, .recent) }
                 )
             } else {
                 initialContent

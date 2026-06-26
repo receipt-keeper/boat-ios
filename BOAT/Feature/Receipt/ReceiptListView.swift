@@ -50,9 +50,9 @@ enum ReceiptSort: CaseIterable {
 
 struct ReceiptListView: View {
 
-    @State private var selectedTab: ReceiptTab = .all
+    @Binding var selectedTab: ReceiptTab
+    @Binding var selectedSort: ReceiptSort
     @State private var selectedFilter: ReceiptFilter = .all
-    @State private var selectedSort: ReceiptSort = .default
     @State private var sortExpanded = false
 
     // TODO: 실제 영수증 데이터 연동
@@ -220,5 +220,5 @@ private struct SortAnchorKey: PreferenceKey {
 }
 
 #Preview {
-    ReceiptListView()
+    ReceiptListView(selectedTab: .constant(.all), selectedSort: .constant(.default))
 }
