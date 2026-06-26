@@ -24,18 +24,19 @@ struct ReceiptRegisterView: View {
     @State private var cameraUnavailable = false
     @State private var showMaxAlert = false
     @State private var isAnalyzing = false
+    @State private var activeSheet: AnalysisSheet?
 
     private var canAddMore: Bool { images.count < Self.maxPhotos }
     private var remainingSlots: Int { max(0, Self.maxPhotos - images.count) }
+    /// 남은 무료 분석 토큰 (데이터 없으면 임시 3)
+    private var remainingTokens: Int { store.current?.freeAnalysisTokensRemaining ?? 3 }
 
     var body: some View {
         VStack(spacing: 0) {
             topBar
 
             VStack(alignment: .leading, spacing: .spacing20) {
-                FreeAnalysisBanner(
-                    remaining: store.current?.freeAnalysisTokensRemaining ?? 0
-                )
+                FreeAnalysisBanner(remaining: remainingTokens)
                 uploadedSection
             }
             .padding(.horizontal, .spacing20)
@@ -65,6 +66,26 @@ struct ReceiptRegisterView: View {
         }
         .alert("receipt.register.max", isPresented: $showMaxAlert) {
             Button("common.confirm", role: .cancel) {}
+        }
+        .sheet(item: $activeSheet) { sheet in
+            Group {
+                switch sheet {
+                case .noToken:
+                    NoTokenSheet(
+                        onRecharge: { activeSheet = nil /* TODO: 충전 */ },
+                        onManualInput: { activeSheet = nil /* TODO: 직접 입력 화면 */ },
+                        onLater: { activeSheet = nil }
+                    )
+                    .presentationDetents([.height(440)])
+                case .failed:
+                    AnalysisFailedSheet(
+                        onManualInput: { activeSheet = nil /* TODO: 직접 입력 화면 */ },
+                        onRetry: { activeSheet = nil }
+                    )
+                    .presentationDetents([.height(360)])
+                }
+            }
+            .presentationDragIndicator(.hidden)
         }
     }
 
@@ -245,15 +266,16 @@ struct ReceiptRegisterView: View {
 
     private func analyze() {
         guard !images.isEmpty else { return }
-        isAnalyzing = true
-        Task {
-            // 기존 OCR 엔진으로 인식 + 파싱 (다중 이미지/결과 화면은 추후 연결 — TODO)
-            for image in images {
-                let lines = (try? await OCRService.shared.recognizeOrdered(image: image)) ?? []
-                _ = ReceiptParser.parse(lines: lines)
-            }
-            await MainActor.run { isAnalyzing = false }
+
+        // 1) 토큰 체크 — 없으면 충전 안내 시트
+        guard remainingTokens > 0 else {
+            activeSheet = .noToken
+            return
         }
+
+        // 2) OCR 분석 API 호출 (TODO: 백엔드 연동)
+        //    현재 API 미구현 → 실패 처리하여 분석 실패 시트 노출
+        activeSheet = .failed
     }
 }
 
