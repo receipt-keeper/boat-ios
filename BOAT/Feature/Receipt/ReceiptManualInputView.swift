@@ -174,9 +174,12 @@ struct ReceiptManualInputView: View {
             }
 
             Spacer().frame(height: .spacing20)
-            fieldLabel("manual.product_name", required: true)
-            Spacer().frame(height: .spacing8)
-            FormTextField(text: $productName, hint: "manual.product_name_hint")
+            BoatInputField(
+                text: $productName,
+                label: "manual.product_name",
+                required: true,
+                placeholder: "manual.product_name_hint"
+            )
 
             Spacer().frame(height: .spacing16)
             fieldLabel("manual.purchase_date", required: true)
@@ -240,7 +243,7 @@ struct ReceiptManualInputView: View {
                 .frame(height: 120)
             }
             .overlay(
-                RoundedRectangle(cornerRadius: .roundedXl)
+                RoundedRectangle(cornerRadius: .roundedLg)
                     .stroke(Color.gray300, lineWidth: 1)
             )
             Text("manual.memo_counter")
@@ -252,20 +255,15 @@ struct ReceiptManualInputView: View {
     // MARK: - 보증 정보 카드
 
     private var warrantyInfoCard: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            fieldLabel("manual.brand", required: false)
-            Spacer().frame(height: .spacing8)
-            FormTextField(text: $brand, hint: "manual.brand_hint")
-
-            Spacer().frame(height: .spacing16)
-            fieldLabel("manual.price", required: false)
-            Spacer().frame(height: .spacing8)
-            FormTextField(text: $price, hint: "manual.price_hint", keyboard: .numberPad)
-
-            Spacer().frame(height: .spacing16)
-            fieldLabel("manual.serial", required: false)
-            Spacer().frame(height: .spacing8)
-            FormTextField(text: $serial, hint: "manual.serial_hint")
+        VStack(alignment: .leading, spacing: .spacing16) {
+            BoatInputField(text: $brand, label: "manual.brand", placeholder: "manual.brand_hint")
+            BoatInputField(
+                text: Binding(get: { price }, set: { price = $0.filter(\.isNumber) }),
+                label: "manual.price",
+                placeholder: "manual.price_hint",
+                keyboard: .numberPad
+            )
+            BoatInputField(text: $serial, label: "manual.serial", placeholder: "manual.serial_hint")
         }
         .padding(.spacing16)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
@@ -333,7 +331,7 @@ struct ReceiptManualInputView: View {
         HStack(spacing: 0) {
             Text(key)
                 .font(.pretendard(.medium, size: 14))
-                .foregroundStyle(Color.gray900)
+                .foregroundStyle(Color.gray600)
             if required {
                 Text(" *")
                     .font(.pretendard(.medium, size: 14))
@@ -342,6 +340,7 @@ struct ReceiptManualInputView: View {
         }
     }
 
+    // 입력 필드와 동일한 외형(52/8)의 탭형 박스 (구매일 등)
     private func fieldBox(onTap: @escaping () -> Void, @ViewBuilder content: () -> some View) -> some View {
         Button(action: onTap) {
             HStack {
@@ -349,10 +348,10 @@ struct ReceiptManualInputView: View {
                 Spacer()
             }
             .padding(.horizontal, .spacing16)
-            .frame(height: 56)
-            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedXl))
+            .frame(height: 52)
+            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
             .overlay(
-                RoundedRectangle(cornerRadius: .roundedXl)
+                RoundedRectangle(cornerRadius: .roundedLg)
                     .stroke(Color.gray300, lineWidth: 1)
             )
         }
@@ -413,29 +412,6 @@ struct ReceiptManualInputView: View {
                 galleryItems = []
             }
         }
-    }
-}
-
-// MARK: - 폼 텍스트 필드 (포커스 시 테두리 강조)
-
-private struct FormTextField: View {
-    @Binding var text: String
-    let hint: LocalizedStringKey
-    var keyboard: UIKeyboardType = .default
-    @FocusState private var focused: Bool
-
-    var body: some View {
-        TextField("", text: $text, prompt: Text(hint).foregroundStyle(Color.gray400))
-            .font(.pretendard(.regular, size: 15))
-            .keyboardType(keyboard)
-            .focused($focused)
-            .padding(.horizontal, .spacing16)
-            .frame(height: 56)
-            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedXl))
-            .overlay(
-                RoundedRectangle(cornerRadius: .roundedXl)
-                    .stroke(focused ? Color.brandPrimary : Color.gray300, lineWidth: 1)
-            )
     }
 }
 
