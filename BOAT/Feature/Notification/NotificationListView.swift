@@ -1,0 +1,155 @@
+//
+//  NotificationListView.swift
+//  BOAT
+//
+//  상단 종 아이콘 → 쌓인 푸시 알림 목록 화면. Android NotificationListScreen 대응.
+//  NotificationStore에서 최신순 items를 읽어 카드형 리스트로 표시.
+//  진입 시 전체 읽음 처리.
+//
+
+import SwiftUI
+
+struct NotificationListView: View {
+    let onBack: () -> Void
+    private let store = NotificationStore.shared
+
+    var body: some View {
+        VStack(spacing: 0) {
+            topBar
+            if store.items.isEmpty {
+                emptyContent
+            } else {
+                ScrollView {
+                    VStack(spacing: .spacing8) {
+                        ForEach(store.items) { item in
+                            NotificationCard(item: item)
+                        }
+                    }
+                    .padding(.horizontal, .spacing20)
+                    .padding(.top, .spacing12)
+                    .padding(.bottom, .spacing24)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.gray50)
+        .onAppear { store.markAllRead() }
+    }
+
+    // MARK: - Top Bar
+
+    private var topBar: some View {
+        ZStack {
+            Text("알림")
+                .font(.pretendard(.bold, size: 18))
+                .foregroundStyle(Color.gray900)
+            HStack {
+                Button(action: onBack) {
+                    Image("icChevronLeft")
+                        .renderingMode(.template)
+                        .foregroundStyle(Color.gray900)
+                        .frame(width: 24, height: 24)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                Spacer()
+            }
+        }
+        .frame(height: 56)
+        .padding(.horizontal, .spacing20)
+    }
+
+    // MARK: - Empty State
+
+    private var emptyContent: some View {
+        VStack(spacing: .spacing12) {
+            Spacer()
+            Image(systemName: "bell.slash")
+                .font(.system(size: 48))
+                .foregroundStyle(Color.gray300)
+            Text("알림이 없어요")
+                .font(.pretendard(.semibold, size: 17))
+                .foregroundStyle(Color.gray600)
+            Text("AS 만료가 다가오면 알림을 보내드려요")
+                .font(.pretendard(.regular, size: 14))
+                .foregroundStyle(Color.gray400)
+            Spacer()
+        }
+    }
+}
+
+// MARK: - Notification Card
+
+private struct NotificationCard: View {
+    let item: NotificationItem
+
+    private var formattedDate: String {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy.MM.dd"
+        return f.string(from: item.receivedAt)
+    }
+
+    var body: some View {
+        HStack(alignment: .center, spacing: .spacing12) {
+            deviceIcon
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(alignment: .top) {
+                    Text(item.productName)
+                        .font(.pretendard(.semibold, size: 14))
+                        .foregroundStyle(Color.gray900)
+                    Spacer()
+                    Text(formattedDate)
+                        .font(.pretendard(.regular, size: 12))
+                        .foregroundStyle(Color.gray400)
+                }
+                Text(item.message)
+                    .font(.pretendard(.regular, size: 13))
+                    .foregroundStyle(Color.gray500)
+                    .lineLimit(1)
+            }
+        }
+        .padding(.horizontal, .spacing16)
+        .padding(.vertical, .spacing16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+    }
+
+    private var deviceIcon: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: .roundedXl)
+                .fill(Color.brandSenary)
+            Image(systemName: item.category.sfSymbol)
+                .font(.system(size: 22))
+                .foregroundStyle(Color.brandPrimary)
+        }
+        .frame(width: 48, height: 48)
+    }
+}
+
+// MARK: - DeviceCategory SF Symbol
+
+private extension DeviceCategory {
+    var sfSymbol: String {
+        switch self {
+        case .kitchen: return "refrigerator"
+        case .laundry: return "washer"
+        case .living:  return "air.conditioner.horizontal"
+        case .it:      return "ipad"
+        case .other:   return "tag"
+        }
+    }
+}
+
+// MARK: - Preview
+
+#Preview("목록 있음") {
+    let store = NotificationStore.shared
+    store.clear()
+    NotificationItem.mocks.reversed().forEach { store.add($0) }
+    return NotificationListView(onBack: {})
+}
+
+#Preview("빈 목록") {
+    NotificationStore.shared.clear()
+    return NotificationListView(onBack: {})
+}

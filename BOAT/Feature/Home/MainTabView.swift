@@ -122,13 +122,14 @@ private struct HomeView: View {
     var onOpenList: (ReceiptTab, ReceiptSort?) -> Void
 
     @State private var showReceiptRegister = false
+    @State private var showNotifications = false
     @State private var showGeneral = false // 임시: 초기(false) ↔ 일반(true) 전환
 
     var body: some View {
         VStack(spacing: 0) {
             BoatHeader(
                 onSearch: { /* TODO: 검색 */ },
-                onNotification: { /* TODO: 알림 */ }
+                onNotification: { showNotifications = true }
             )
 
             // 임시(개발용) 상태 전환 토글 — 백엔드 데이터 유무 분기 대용
@@ -156,6 +157,9 @@ private struct HomeView: View {
         .background(Color.gray50)
         .fullScreenCover(isPresented: $showReceiptRegister) {
             ReceiptRegisterView(onBack: { showReceiptRegister = false })
+        }
+        .fullScreenCover(isPresented: $showNotifications) {
+            NotificationListView(onBack: { showNotifications = false })
         }
     }
 

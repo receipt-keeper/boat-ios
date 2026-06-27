@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum DeviceCategory: String, CaseIterable {
+enum DeviceCategory: String, CaseIterable, Codable {
     case kitchen = "주방 가전"
     case laundry = "세탁/청소"
     case living  = "리빙/냉난방"
