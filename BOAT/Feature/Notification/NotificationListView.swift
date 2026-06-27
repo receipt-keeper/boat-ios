@@ -103,7 +103,13 @@ private struct NotificationCard: View {
         .padding(.horizontal, .spacing16)
         .padding(.vertical, .spacing16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+        .background(Color.colorWhite)
+        .clipShape(RoundedRectangle(cornerRadius: .rounded2xl))
+        .overlay(
+            RoundedRectangle(cornerRadius: .rounded2xl)
+                .stroke(Color.brandQuinary, lineWidth: 1)
+        )
+        .shadow(color: Color(hex: "#007EFF").opacity(0.08), radius: 4, x: 0, y: 0)
     }
 
     private var deviceIcon: some View {
