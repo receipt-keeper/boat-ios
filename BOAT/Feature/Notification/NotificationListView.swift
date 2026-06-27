@@ -62,19 +62,10 @@ struct NotificationListView: View {
     // MARK: - Empty State
 
     private var emptyContent: some View {
-        VStack(spacing: .spacing12) {
-            Spacer()
-            Image(systemName: "bell.slash")
-                .font(.system(size: 48))
-                .foregroundStyle(Color.gray300)
-            Text("알림이 없어요")
-                .font(.pretendard(.semibold, size: 17))
-                .foregroundStyle(Color.gray600)
-            Text("AS 만료가 다가오면 알림을 보내드려요")
-                .font(.pretendard(.regular, size: 14))
-                .foregroundStyle(Color.gray400)
-            Spacer()
-        }
+        Text("수신된 알림 내역이 없습니다.")
+            .font(.pretendard(.regular, size: 14))
+            .foregroundStyle(Color.gray400)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
