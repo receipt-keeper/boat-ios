@@ -65,7 +65,8 @@ struct NotificationListView: View {
         Text("수신된 알림 내역이 없습니다.")
             .font(.pretendard(.regular, size: 14))
             .foregroundStyle(Color.gray400)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
 }
 
