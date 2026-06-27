@@ -20,20 +20,25 @@ struct NotificationListView: View {
                 emptyContent
             } else {
                 ScrollView {
-                    VStack(spacing: .spacing8) {
+                    VStack(spacing: .spacing12) {
                         ForEach(store.items) { item in
                             NotificationCard(item: item)
                         }
                     }
                     .padding(.horizontal, .spacing20)
-                    .padding(.top, .spacing12)
+                    .padding(.top, .spacing16)
                     .padding(.bottom, .spacing24)
                 }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.gray50)
-        .onAppear { store.markAllRead() }
+        .onAppear {
+            if store.items.isEmpty {
+                NotificationItem.mocks.reversed().forEach { store.add($0) }
+            }
+            store.markAllRead()
+        }
     }
 
     // MARK: - Top Bar
@@ -57,6 +62,7 @@ struct NotificationListView: View {
         }
         .frame(height: 56)
         .padding(.horizontal, .spacing20)
+        .background(Color.colorWhite)
     }
 
     // MARK: - Empty State
@@ -75,56 +81,55 @@ struct NotificationListView: View {
 private struct NotificationCard: View {
     let item: NotificationItem
 
-    private var formattedDate: String {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy.MM.dd"
-        return f.string(from: item.receivedAt)
-    }
-
     var body: some View {
-        HStack(alignment: .center, spacing: .spacing12) {
-            deviceIcon
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(alignment: .top) {
+        HStack(alignment: .center, spacing: 14) {
+            thumbnail
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .center) {
                     Text(item.productName)
-                        .font(.pretendard(.semibold, size: 14))
+                        .font(.pretendard(.bold, size: 16))
                         .foregroundStyle(Color.gray900)
+                        .lineLimit(1)
                     Spacer()
-                    Text(formattedDate)
-                        .font(.pretendard(.regular, size: 12))
-                        .foregroundStyle(Color.gray400)
+                    Text(item.formattedDate)
+                        .font(.pretendard(.regular, size: 14))
+                        .foregroundStyle(Color.gray500)
                 }
                 Text(item.message)
-                    .font(.pretendard(.regular, size: 13))
+                    .font(.pretendard(.regular, size: 14))
                     .foregroundStyle(Color.gray500)
                     .lineLimit(1)
             }
         }
-        .padding(.horizontal, .spacing16)
-        .padding(.vertical, .spacing16)
+        .padding(.spacing16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.colorWhite)
         .clipShape(RoundedRectangle(cornerRadius: .rounded2xl))
-        .overlay(
-            RoundedRectangle(cornerRadius: .rounded2xl)
-                .stroke(Color.brandQuinary, lineWidth: 1)
-        )
         .shadow(color: Color(hex: "#007EFF").opacity(0.08), radius: 4, x: 0, y: 0)
     }
 
-    private var deviceIcon: some View {
+    // 실제 썸네일이 없는 경우 카테고리 아이콘 placeholder (Android ic_gallery 대응)
+    private var thumbnail: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: .roundedXl)
-                .fill(Color.brandSenary)
+            RoundedRectangle(cornerRadius: 14)
+                .fill(Color.gray100)
             Image(systemName: item.category.sfSymbol)
-                .font(.system(size: 22))
-                .foregroundStyle(Color.brandPrimary)
+                .font(.system(size: 24))
+                .foregroundStyle(Color.gray400)
         }
-        .frame(width: 48, height: 48)
+        .frame(width: 56, height: 56)
     }
 }
 
-// MARK: - DeviceCategory SF Symbol
+// MARK: - Helpers
+
+private extension NotificationItem {
+    var formattedDate: String {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy.MM.dd"
+        return f.string(from: receivedAt)
+    }
+}
 
 private extension DeviceCategory {
     var sfSymbol: String {
