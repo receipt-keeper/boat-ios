@@ -27,7 +27,7 @@ struct HomeGeneralView: View {
 
                 // 가로 스크롤 카드 (D-day 뱃지가 위로 겹치므로 상단 여유 확보)
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: .spacing12) {
+                    HStack(spacing: .spacing16) {
                         ForEach(expiring) { item in
                             ExpiringWarrantyCard(item: item)
                         }
@@ -97,87 +97,102 @@ struct HomeGeneralView: View {
     }
 }
 
-// MARK: - AS 만료 예정 가로형 카드 (334×183, D-day 뱃지 겹침)
+// MARK: - AS 만료 예정 가로형 카드 (D-day 뱃지 겹침)
 
 private struct ExpiringWarrantyCard: View {
     let item: ExpiringWarranty
 
-    private let cardWidth: CGFloat = 334
-    private let cardHeight: CGFloat = 183
-    private let ddayOverhang: CGFloat = 15
+    private var cardWidth: CGFloat { UIScreen.main.bounds.width - 52 }
+    private let badgeHeight: CGFloat = 32
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
             // 카드 본문
-            HStack(spacing: .spacing16) {
-                thumbnail(size: 84, bg: .brandQuaternary)
-
-                VStack(alignment: .leading, spacing: 0) {
-                    Text(item.productName)
-                        .font(.pretendard(.bold, size: 18))
-                        .foregroundStyle(Color.gray900)
-                        .lineLimit(1)
-                    Spacer().frame(height: 8)
-                    labelValue("home.label.vendor", item.vendor)
-                    Spacer().frame(height: 2)
-                    labelValue("home.label.purchase", item.purchaseDate)
-                    Spacer().frame(height: 8)
-                    HStack(spacing: 8) {
-                        Text("home.label.warranty")
-                            .font(.pretendard(.medium, size: 12))
-                            .foregroundStyle(Color.brandPrimary)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.brandQuaternary, in: RoundedRectangle(cornerRadius: .roundedLg))
-                        Text(item.warrantyUntil)
-                            .font(.pretendard(.regular, size: 13))
-                            .foregroundStyle(Color.gray900)
-                            .lineLimit(1)
-                    }
-                }
+            HStack(alignment: .top, spacing: .spacing16) {
+                thumbnail
+                infoColumn
             }
-            .padding(.spacing16)
-            .frame(width: cardWidth, height: cardHeight)
+            .padding(20)
+            .frame(width: cardWidth)
             .background(Color.brandSenary, in: RoundedRectangle(cornerRadius: .rounded2xl))
             .overlay(
                 RoundedRectangle(cornerRadius: .rounded2xl)
                     .stroke(Color.brandPrimary, lineWidth: 1)
             )
-            .padding(.top, ddayOverhang)
+            .padding(.top, badgeHeight / 2)
 
-            // D-day 뱃지 80×30 — 우측 상단 모서리에 겹침
+            // D-day 뱃지 — 우측 상단 모서리에 겹침
             Text("home.dday \(item.dDay)")
-                .font(.pretendard(.bold, size: 13))
+                .font(.pretendard(.bold, size: 14))
                 .foregroundStyle(Color.colorWhite)
-                .frame(width: 80, height: 30)
+                .frame(height: badgeHeight)
+                .padding(.horizontal, .spacing16)
                 .background(Color.gray900, in: Capsule())
-                .padding(.trailing, 16)
+                .padding(.trailing, 24)
         }
         .frame(width: cardWidth)
+    }
+
+    private var thumbnail: some View {
+        RoundedRectangle(cornerRadius: .rounded2xl)
+            .fill(Color.colorWhite)
+            .frame(width: 88, height: 88)
+            .overlay {
+                if let name = item.localImageName {
+                    Image(name)
+                        .resizable()
+                        .scaledToFit()
+                        .padding(8)
+                } else {
+                    Image(systemName: "photo")
+                        .font(.system(size: 26))
+                        .foregroundStyle(Color.gray400)
+                }
+            }
+    }
+
+    private var infoColumn: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(item.productName)
+                .font(.pretendard(.bold, size: 18))
+                .foregroundStyle(Color.gray900)
+                .lineLimit(1)
+
+            Spacer().frame(height: 14)
+
+            VStack(alignment: .leading, spacing: 6) {
+                labelValue("home.label.vendor", item.vendor)
+                labelValue("home.label.purchase", item.purchaseDate)
+            }
+
+            Spacer().frame(height: 16)
+
+            HStack(spacing: 8) {
+                Text("home.label.warranty")
+                    .font(.pretendard(.medium, size: 12))
+                    .foregroundStyle(Color.brandPrimary)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.colorWhite, in: Capsule())
+                Text(item.warrantyUntil)
+                    .font(.pretendard(.medium, size: 15))
+                    .foregroundStyle(Color.gray900)
+                    .lineLimit(1)
+            }
+        }
     }
 
     private func labelValue(_ label: LocalizedStringKey, _ value: String) -> some View {
         HStack(spacing: 0) {
             Text(label)
-                .font(.pretendard(.regular, size: 13))
-                .foregroundStyle(Color.gray500)
-                .frame(width: 48, alignment: .leading)
+                .font(.pretendard(.regular, size: 14))
+                .foregroundStyle(Color.gray700)
+                .frame(width: 52, alignment: .leading)
             Text(value)
-                .font(.pretendard(.regular, size: 13))
-                .foregroundStyle(Color.gray900)
+                .font(.pretendard(.regular, size: 14))
+                .foregroundStyle(Color.gray700)
                 .lineLimit(1)
         }
-    }
-
-    private func thumbnail(size: CGFloat, bg: Color) -> some View {
-        RoundedRectangle(cornerRadius: .roundedXl)
-            .fill(bg)
-            .frame(width: size, height: size)
-            .overlay {
-                Image(systemName: "photo")
-                    .font(.system(size: size * 0.3))
-                    .foregroundStyle(Color.brandPrimary.opacity(0.4))
-            }
     }
 }
 
