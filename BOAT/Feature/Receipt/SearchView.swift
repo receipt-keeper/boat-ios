@@ -24,7 +24,10 @@ struct SearchView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.gray50)
-        .onAppear { focused = true }
+        .task {
+            try? await Task.sleep(for: .milliseconds(300))
+            focused = true
+        }
     }
 
     // MARK: - Top Bar
