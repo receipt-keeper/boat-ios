@@ -6,7 +6,6 @@
 //  현재: 서버 Base URL 전환 (배포 서버 ↔ localhost:8000)
 //
 
-#if DEBUG
 import Foundation
 
 @Observable
@@ -24,4 +23,3 @@ final class DebugConfig {
         useLocalServer = UserDefaults.standard.bool(forKey: "boat.debug.useLocalServer")
     }
 }
-#endif

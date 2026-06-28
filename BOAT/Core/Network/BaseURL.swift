@@ -13,11 +13,17 @@ enum BaseURL {
     private static let production = URL(string: "https://boatlab-dev.luigi99.cloud")!
     private static let local      = URL(string: "http://localhost:8000")!
 
+    private static var isTestFlight: Bool {
+        Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
+    }
+
     static var current: URL {
         #if DEBUG
-        return DebugConfig.shared.useLocalServer ? local : production
+        let allowToggle = true
         #else
-        return production
+        let allowToggle = isTestFlight
         #endif
+        guard allowToggle, DebugConfig.shared.useLocalServer else { return production }
+        return local
     }
 }
