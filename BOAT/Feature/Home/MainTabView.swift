@@ -152,6 +152,7 @@ private struct HomeView: View {
     var body: some View {
         VStack(spacing: 0) {
             BoatHeader(
+                showLogo: true,
                 onSearch: onSearch,
                 onNotification: onNotification
             )
@@ -196,19 +197,11 @@ private struct HomeView: View {
                 Button {
                     showReceiptRegister = true
                 } label: {
-                    HomeCard(
-                        title: "home.card.register.title",
-                        desc: "home.card.register.desc",
-                        minHeight: 260
-                    )
+                    ReceiptRegisterCard()
                 }
                 .buttonStyle(.plain)
 
-                HomeCard(
-                    title: "home.card.popular.title",
-                    desc: "home.card.popular.desc",
-                    minHeight: 110
-                )
+                RepairServiceCard()
             }
             .padding(.horizontal, .spacing20)
             .padding(.vertical, .spacing12)
@@ -216,26 +209,61 @@ private struct HomeView: View {
     }
 }
 
-// MARK: - 홈 카드 (영수증 등록 / 광고 배너)
+// MARK: - 영수증 등록하기 배너 (파란 배경 + 이미지)
 
-private struct HomeCard: View {
-    let title: LocalizedStringKey
-    let desc: LocalizedStringKey
-    var minHeight: CGFloat
-
+private struct ReceiptRegisterCard: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: .spacing8) {
-            Text(title)
-                .font(.pretendard(.bold, size: 20))
-                .foregroundStyle(Color.brandPrimary)
-            Text(desc)
-                .font(.pretendard(.regular, size: 13))
-                .foregroundStyle(Color.gray500)
-                .lineSpacing(2)
-            Spacer(minLength: 0)
+        ZStack(alignment: .bottomTrailing) {
+            HStack {
+                VStack(alignment: .leading, spacing: .spacing8) {
+                    Text("home.card.register.title")
+                        .font(.pretendard(.bold, size: 22))
+                        .foregroundStyle(Color.colorWhite)
+                        .lineSpacing(4)
+                    Text("home.card.register.desc")
+                        .font(.pretendard(.regular, size: 13))
+                        .foregroundStyle(Color.colorWhite.opacity(0.85))
+                        .lineSpacing(4)
+                    Spacer(minLength: 0)
+                }
+                .padding(.top, .spacing20)
+                .padding(.leading, .spacing20)
+                Spacer(minLength: 0)
+            }
+
+            Image("img_receipt_upload")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 180)
         }
-        .padding(.spacing20)
-        .frame(maxWidth: .infinity, minHeight: minHeight, alignment: .topLeading)
+        .frame(maxWidth: .infinity, minHeight: 196)
+        .background(Color.brandPrimary, in: RoundedRectangle(cornerRadius: .rounded2xl))
+        .clipped()
+    }
+}
+
+// MARK: - 가전제품 AS 광고 배너 (흰 배경 + 이미지)
+
+private struct RepairServiceCard: View {
+    var body: some View {
+        HStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: .spacing8) {
+                Text("home.card.popular.title")
+                    .font(.pretendard(.bold, size: 16))
+                    .foregroundStyle(Color.brandPrimary)
+                Text("home.card.popular.desc")
+                    .font(.pretendard(.regular, size: 13))
+                    .foregroundStyle(Color.gray500)
+                    .lineSpacing(4)
+            }
+            Spacer(minLength: .spacing8)
+            Image("img_banner_repair_service")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 80)
+        }
+        .padding(.horizontal, .spacing20)
+        .frame(maxWidth: .infinity, minHeight: 110)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
         .overlay(
             RoundedRectangle(cornerRadius: .rounded2xl)

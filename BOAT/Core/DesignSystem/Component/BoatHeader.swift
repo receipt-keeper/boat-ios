@@ -11,14 +11,22 @@ import SwiftUI
 struct BoatHeader: View {
 
     var title: LocalizedStringKey = "header.logo"
+    var showLogo: Bool = false
     var onSearch: () -> Void = {}
     var onNotification: () -> Void = {}
 
     var body: some View {
         HStack(spacing: 0) {
-            Text(title)
-                .font(.pretendard(.bold, size: 20))
-                .foregroundStyle(Color.gray900)
+            if showLogo {
+                Image("app_logo_text")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 24)
+            } else {
+                Text(title)
+                    .font(.pretendard(.bold, size: 20))
+                    .foregroundStyle(Color.gray900)
+            }
 
             Spacer(minLength: 0)
 
