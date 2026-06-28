@@ -189,7 +189,7 @@ private struct HomeView: View {
     // 초기 홈 (데이터 없을 때) — 무료 분석 배너 + 등록 카드 + 광고 배너
     private var initialContent: some View {
         ScrollView {
-            VStack(spacing: .spacing12) {
+            VStack(spacing: .spacing16) {
                 FreeAnalysisBanner(
                     remaining: CreditStore.shared.current?.remainingCount ?? 3
                 )
@@ -209,36 +209,34 @@ private struct HomeView: View {
     }
 }
 
-// MARK: - 영수증 등록하기 배너 (파란 배경 + 이미지)
+// MARK: - 영수증 등록하기 배너 (파란 배경 + 이미지 하단 중앙)
 
 private struct ReceiptRegisterCard: View {
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            HStack {
+        Color.brandPrimary
+            .frame(maxWidth: .infinity, minHeight: 360)
+            .overlay(alignment: .bottom) {
+                Image("img_receipt_upload")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity)
+            }
+            .overlay(alignment: .topLeading) {
                 VStack(alignment: .leading, spacing: .spacing8) {
                     Text("home.card.register.title")
-                        .font(.pretendard(.bold, size: 22))
+                        .font(.pretendard(.bold, size: 28))
                         .foregroundStyle(Color.colorWhite)
                         .lineSpacing(4)
                     Text("home.card.register.desc")
-                        .font(.pretendard(.regular, size: 13))
-                        .foregroundStyle(Color.colorWhite.opacity(0.85))
-                        .lineSpacing(4)
-                    Spacer(minLength: 0)
+                        .font(.pretendard(.regular, size: 14))
+                        .foregroundStyle(Color.colorWhite)
+                        .lineSpacing(3)
                 }
-                .padding(.top, .spacing20)
                 .padding(.leading, .spacing20)
-                Spacer(minLength: 0)
+                .padding(.top, 24)
+                .padding(.trailing, .spacing20)
             }
-
-            Image("img_receipt_upload")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 180)
-        }
-        .frame(maxWidth: .infinity, minHeight: 196)
-        .background(Color.brandPrimary, in: RoundedRectangle(cornerRadius: .rounded2xl))
-        .clipped()
+            .clipShape(RoundedRectangle(cornerRadius: .roundedXl))
     }
 }
 
@@ -246,29 +244,29 @@ private struct ReceiptRegisterCard: View {
 
 private struct RepairServiceCard: View {
     var body: some View {
-        HStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: .spacing8) {
+        HStack(alignment: .center, spacing: 0) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text("home.card.popular.title")
                     .font(.pretendard(.bold, size: 16))
                     .foregroundStyle(Color.brandPrimary)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.85)
                 Text("home.card.popular.desc")
                     .font(.pretendard(.regular, size: 13))
                     .foregroundStyle(Color.gray500)
-                    .lineSpacing(4)
+                    .lineSpacing(2.5)
             }
-            Spacer(minLength: .spacing8)
+            Spacer(minLength: .spacing16)
             Image("img_banner_repair_service")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 80)
+                .frame(width: 88, height: 88)
         }
         .padding(.horizontal, .spacing20)
-        .frame(maxWidth: .infinity, minHeight: 110)
-        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+        .padding(.vertical, .spacing20)
+        .frame(maxWidth: .infinity, minHeight: 120)
+        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedXl))
         .overlay(
-            RoundedRectangle(cornerRadius: .rounded2xl)
+            RoundedRectangle(cornerRadius: .roundedXl)
                 .strokeBorder(Color.brandTertiary, lineWidth: 1)
         )
     }
