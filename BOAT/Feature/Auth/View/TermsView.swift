@@ -140,8 +140,10 @@ struct TermsView: View {
                     Text("terms.view")
                         .font(.pretendard(.regular, size: 13))
                         .foregroundStyle(Color.gray500)
+                        .underline()
                 }
             }
+            .padding(.horizontal, .spacing16)
             .padding(.vertical, 14)
         }
         .buttonStyle(.plain)
