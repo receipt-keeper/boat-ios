@@ -102,15 +102,11 @@ struct MyPageView: View {
 
     private var profile: some View {
         HStack(spacing: .spacing16) {
-            // 프로필 이미지 (디자이너 제공 전 임시)
-            Circle()
-                .fill(Color.brandSenary)
+            Image("img_profile")
+                .resizable()
+                .scaledToFill()
                 .frame(width: 64, height: 64)
-                .overlay {
-                    Image(systemName: "sailboat.fill")
-                        .font(.system(size: 26))
-                        .foregroundStyle(Color.brandPrimary)
-                }
+                .clipShape(Circle())
 
             VStack(alignment: .leading, spacing: .spacing4) {
                 Text(nameText)
