@@ -11,6 +11,7 @@ import SwiftUI
 struct MyPageView: View {
 
     let viewModel: AuthViewModel
+    var onNotification: () -> Void = {}
     private let store = UserStore.shared
 
     @Environment(\.openURL) private var openURL
@@ -36,7 +37,7 @@ struct MyPageView: View {
             BoatHeader(
                 title: "mypage.title",
                 onSearch: { /* TODO: 검색 */ },
-                onNotification: { /* TODO: 알림 */ }
+                onNotification: onNotification
             )
 
             profile

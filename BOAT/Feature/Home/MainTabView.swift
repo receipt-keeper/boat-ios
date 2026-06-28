@@ -18,6 +18,7 @@ struct MainTabView: View {
     let viewModel: AuthViewModel
     @State private var selection: MainTab = .home
     @State private var showAddMenu = false
+    @State private var showNotifications = false
     // FAB 카메라/갤러리 → 영수증 등록 화면(자동 열기)
     @State private var showRegisterFromFab = false
     @State private var registerAutoOpen: ReceiptRegisterView.AutoOpen?
@@ -76,6 +77,10 @@ struct MainTabView: View {
                     autoOpen: registerAutoOpen
                 )
             }
+            // 어느 탭에서든 종 아이콘 → 알림 목록
+            .fullScreenCover(isPresented: $showNotifications) {
+                NotificationListView(onBack: { showNotifications = false })
+            }
     }
 
     private func openRegisterFromFab(_ action: ReceiptRegisterView.AutoOpen) {
@@ -88,15 +93,22 @@ struct MainTabView: View {
     private var content: some View {
         switch selection {
         case .list:
-            ReceiptListView(selectedTab: $listTab, selectedSort: $listSort)
+            ReceiptListView(
+                selectedTab: $listTab,
+                selectedSort: $listSort,
+                onNotification: { showNotifications = true }
+            )
         case .home:
-            HomeView(onOpenList: { tab, sort in
-                listTab = tab
-                if let sort { listSort = sort }
-                selection = .list
-            })
+            HomeView(
+                onOpenList: { tab, sort in
+                    listTab = tab
+                    if let sort { listSort = sort }
+                    selection = .list
+                },
+                onNotification: { showNotifications = true }
+            )
         case .my:
-            MyPageView(viewModel: viewModel)
+            MyPageView(viewModel: viewModel, onNotification: { showNotifications = true })
         }
     }
 
@@ -120,16 +132,16 @@ struct MainTabView: View {
 private struct HomeView: View {
     /// 목록 탭으로 이동 (탭, 정렬 지정). sort=nil이면 정렬 유지.
     var onOpenList: (ReceiptTab, ReceiptSort?) -> Void
+    var onNotification: () -> Void
 
     @State private var showReceiptRegister = false
-    @State private var showNotifications = false
     @State private var showGeneral = false // 임시: 초기(false) ↔ 일반(true) 전환
 
     var body: some View {
         VStack(spacing: 0) {
             BoatHeader(
                 onSearch: { /* TODO: 검색 */ },
-                onNotification: { showNotifications = true }
+                onNotification: onNotification
             )
 
             // 임시(개발용) 상태 전환 토글 — 백엔드 데이터 유무 분기 대용
@@ -158,9 +170,6 @@ private struct HomeView: View {
         .task { try? await CreditRepository.shared.fetchCredits() }
         .fullScreenCover(isPresented: $showReceiptRegister) {
             ReceiptRegisterView(onBack: { showReceiptRegister = false })
-        }
-        .fullScreenCover(isPresented: $showNotifications) {
-            NotificationListView(onBack: { showNotifications = false })
         }
     }
 

@@ -52,6 +52,7 @@ struct ReceiptListView: View {
 
     @Binding var selectedTab: ReceiptTab
     @Binding var selectedSort: ReceiptSort
+    var onNotification: () -> Void = {}
     @State private var selectedFilter: ReceiptFilter = .all
     @State private var sortExpanded = false
 
@@ -65,7 +66,7 @@ struct ReceiptListView: View {
                 BoatHeader(
                     title: "tab.list",
                     onSearch: { /* TODO: 검색 */ },
-                    onNotification: { /* TODO: 알림 */ }
+                    onNotification: onNotification
                 )
                 innerTabRow
             }
