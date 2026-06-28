@@ -9,19 +9,21 @@
 import Foundation
 
 struct NotificationItem: Identifiable, Codable {
-    let id: UUID
+    let id: String
     let productName: String
     let category: DeviceCategory
     let receivedAt: Date
     let message: String
+    let dDay: Int
     var isRead: Bool
 
     init(
-        id: UUID = UUID(),
+        id: String = UUID().uuidString,
         productName: String,
         category: DeviceCategory,
         receivedAt: Date = Date(),
         message: String,
+        dDay: Int,
         isRead: Bool = false
     ) {
         self.id = id
@@ -29,6 +31,7 @@ struct NotificationItem: Identifiable, Codable {
         self.category = category
         self.receivedAt = receivedAt
         self.message = message
+        self.dDay = dDay
         self.isRead = isRead
     }
 }
@@ -56,7 +59,7 @@ final class NotificationStore {
         save()
     }
 
-    func remove(id: UUID) {
+    func remove(id: String) {
         items.removeAll { $0.id == id }
         save()
     }
@@ -92,6 +95,7 @@ extension NotificationItem {
             category: .it,
             receivedAt: date(daysAgo: 0),
             message: "무상 AS 7일 남았어요! 일주일 뒤에는 무상 서비스 혜택이 종료됩니다.",
+            dDay: 7,
             isRead: false
         ),
         NotificationItem(
@@ -99,6 +103,7 @@ extension NotificationItem {
             category: .it,
             receivedAt: date(daysAgo: 0),
             message: "무상 AS 14일 남았어요! 기간이 지나기 전 영수증을 확인해보세요.",
+            dDay: 14,
             isRead: false
         ),
         NotificationItem(
@@ -106,6 +111,7 @@ extension NotificationItem {
             category: .it,
             receivedAt: date(daysAgo: 1),
             message: "무상 AS 30일 남았어요! 만료 전 서비스 센터를 방문해보세요.",
+            dDay: 30,
             isRead: true
         ),
         NotificationItem(
@@ -113,6 +119,7 @@ extension NotificationItem {
             category: .it,
             receivedAt: date(daysAgo: 2),
             message: "무상 AS 오늘이 만료예요! 마지막 무상 혜택을 확인하세요.",
+            dDay: 0,
             isRead: true
         ),
         NotificationItem(
@@ -120,6 +127,7 @@ extension NotificationItem {
             category: .it,
             receivedAt: date(daysAgo: 3),
             message: "무상 AS 오늘이 만료예요! 마지막 무상 혜택을 확인하세요.",
+            dDay: 0,
             isRead: true
         ),
     ]
