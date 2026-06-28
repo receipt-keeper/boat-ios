@@ -32,6 +32,10 @@ struct ReceiptRegisterView: View {
     @State private var activeSheet: AnalysisSheet?
     @State private var showManualInput = false
     @State private var didAutoOpen = false
+    // 진입 시 서버 이용 가능 여부 선제 조회
+    @State private var isUsageLoading = true
+    @State private var serverCanAnalyze = false
+    @State private var toast = BoatToastState()
 
     private var canAddMore: Bool { images.count < Self.maxPhotos }
     private var remainingSlots: Int { max(0, Self.maxPhotos - images.count) }
@@ -88,6 +92,7 @@ struct ReceiptRegisterView: View {
                 showGalleryPicker = true
             }
         }
+        .task { await checkUsage() }
         .alert("카메라를 사용할 수 없습니다.", isPresented: $cameraUnavailable) {
             Button("common.confirm", role: .cancel) {}
         }
@@ -119,6 +124,7 @@ struct ReceiptRegisterView: View {
         .fullScreenCover(isPresented: $showManualInput) {
             ReceiptManualInputView(images: images, onBack: { showManualInput = false })
         }
+        .boatToastHost(toast)
     }
 
     /// 시트 닫고 직접 입력 화면 열기
@@ -295,17 +301,32 @@ struct ReceiptRegisterView: View {
         }
     }
 
+    private func checkUsage() async {
+        do {
+            let usage = try await UsageRepository.shared.fetchUsage()
+            serverCanAnalyze = usage.canAnalyze
+        } catch {
+            serverCanAnalyze = false
+        }
+        isUsageLoading = false
+    }
+
     private func analyze() {
         guard !images.isEmpty else { return }
 
-        // 1) 토큰 체크 — 없으면 충전 안내 시트
-        guard remainingTokens > 0 else {
+        // 1) 이용 가능 여부 조회 중이면 네트워크 안내 토스트
+        guard !isUsageLoading else {
+            toast.showError(String(localized: "receipt.register.network_error"))
+            return
+        }
+
+        // 2) 서버 canAnalyze + 로컬 토큰 AND 조건
+        guard serverCanAnalyze && remainingTokens > 0 else {
             activeSheet = .noToken
             return
         }
 
-        // 2) OCR 분석 API 호출 (TODO: 백엔드 연동)
-        //    현재 API 미구현 → 실패 처리하여 분석 실패 시트 노출
+        // 3) OCR 분석 API 호출 (TODO: 백엔드 연동)
         activeSheet = .failed
     }
 }

@@ -498,6 +498,7 @@
       }
     },
     "login.logo_tbd" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
@@ -1307,6 +1308,16 @@
         }
       }
     },
+    "receipt.register.network_error" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "네트워크 연결상태를 확인해주세요"
+          }
+        }
+      }
+    },
     "receipt.register.uploaded" : {
       "localizations" : {
         "ko" : {
@@ -1576,6 +1587,9 @@
           }
         }
       }
+    },
+    "기기명 또는 메모를 검색해 보세요." : {
+
     },
     "수신된 알림 내역이 없습니다." : {
 
