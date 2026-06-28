@@ -76,6 +76,41 @@ final class APIClient {
         _ = try await request(target, as: EmptyData.self)
     }
 
+    /// multipart/form-data 업로드 + 공통 Envelope 디코딩.
+    @discardableResult
+    func uploadMultipart<T: Decodable>(
+        path: String,
+        requiresAuth: Bool = true,
+        builder: @escaping (MultipartFormData) -> Void,
+        as type: T.Type = T.self
+    ) async throws -> T {
+        let url = BaseURL.current.appendingPathComponent(path)
+        let session = requiresAuth ? authSession : publicSession
+        let response = await session
+            .upload(multipartFormData: builder, to: url, method: .post)
+            .validate(statusCode: 200..<300)
+            .serializingData()
+            .response
+
+        #if DEBUG
+        NetworkLogger.log(response)
+        #endif
+
+        switch response.result {
+        case .success(let data):
+            return try decode(T.self, from: data)
+        case .failure:
+            guard let statusCode = response.response?.statusCode else { throw APIError.network }
+            if statusCode >= 500 { throw APIError.network }
+            if let data = response.data,
+               let envelope = try? JSONDecoder().decode(APIResponse<APIErrorData>.self, from: data),
+               let message = envelope.data?.message, !message.isEmpty {
+                throw APIError.server(statusCode: statusCode, message: message)
+            }
+            throw APIError.unknown
+        }
+    }
+
     // MARK: - Private
 
     private func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
