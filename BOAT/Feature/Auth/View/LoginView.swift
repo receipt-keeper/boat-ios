@@ -27,13 +27,13 @@ struct LoginView: View {
 
             appleButton
 
-            #if DEBUG
-            Spacer().frame(height: .spacing20)
-            debugServerPanel
-            Spacer().frame(height: .spacing20)
-            #else
-            Spacer().frame(height: 64)
-            #endif
+            if showDebugPanel {
+                Spacer().frame(height: .spacing20)
+                debugServerPanel
+                Spacer().frame(height: .spacing20)
+            } else {
+                Spacer().frame(height: 64)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.horizontal, .spacing20)
@@ -91,9 +91,17 @@ struct LoginView: View {
         .buttonStyle(.plain)
     }
 
-    // MARK: - [DEBUG] 서버 URL 전환 패널
+    // MARK: - [DEBUG/TestFlight] 서버 URL 전환 패널
 
-    #if DEBUG
+    /// Debug 빌드 또는 TestFlight(sandboxReceipt) 환경에서만 노출
+    private var showDebugPanel: Bool {
+        #if DEBUG
+        return true
+        #else
+        return Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
+        #endif
+    }
+
     private var debugServerPanel: some View {
         HStack(spacing: .spacing12) {
             VStack(alignment: .leading, spacing: 4) {
@@ -137,7 +145,6 @@ struct LoginView: View {
             in: RoundedRectangle(cornerRadius: .roundedLg)
         )
     }
-    #endif
 
     // MARK: - Apple 버튼 (검정 배경)
 
