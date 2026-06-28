@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "img_banner_repair_service.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

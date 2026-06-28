@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "img_bluetooth_earphone.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

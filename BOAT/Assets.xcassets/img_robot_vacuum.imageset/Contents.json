@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "img_robot_vacuum.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
