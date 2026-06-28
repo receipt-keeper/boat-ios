@@ -37,7 +37,13 @@ struct LoginView: View {
 
             appleButton
 
+            #if DEBUG
+            Spacer().frame(height: .spacing20)
+            debugServerPanel
+            Spacer().frame(height: .spacing20)
+            #else
             Spacer().frame(height: 64)
+            #endif
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.horizontal, .spacing20)
@@ -99,6 +105,54 @@ struct LoginView: View {
         }
         .buttonStyle(.plain)
     }
+
+    // MARK: - [DEBUG] 서버 URL 전환 패널
+
+    #if DEBUG
+    private var debugServerPanel: some View {
+        HStack(spacing: .spacing12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("DEBUG")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(Color.colorWhite)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(Color.red, in: RoundedRectangle(cornerRadius: 3))
+
+                Text(DebugConfig.shared.useLocalServer
+                     ? "localhost:8000"
+                     : "boatlab-dev.luigi99.cloud")
+                    .font(.system(size: 12))
+                    .foregroundStyle(DebugConfig.shared.useLocalServer ? Color.red : Color.gray500)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+
+            Spacer()
+
+            Text("로컬 서버")
+                .font(.pretendard(.medium, size: 13))
+                .foregroundStyle(Color.gray600)
+
+            Toggle("", isOn: Binding(
+                get: { DebugConfig.shared.useLocalServer },
+                set: { DebugConfig.shared.useLocalServer = $0 }
+            ))
+            .labelsHidden()
+            .tint(Color.red)
+        }
+        .padding(.horizontal, .spacing16)
+        .padding(.vertical, .spacing12)
+        .background(
+            RoundedRectangle(cornerRadius: .roundedLg)
+                .stroke(Color.red.opacity(0.35), lineWidth: 1)
+        )
+        .background(
+            Color.red.opacity(0.04),
+            in: RoundedRectangle(cornerRadius: .roundedLg)
+        )
+    }
+    #endif
 
     // MARK: - Apple 버튼 (검정 배경)
 
