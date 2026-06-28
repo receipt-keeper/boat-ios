@@ -15,19 +15,9 @@ struct LoginView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Spacer().frame(height: 60)
-
-            logoPlaceholder
-
-            Spacer().frame(height: .spacing16)
-
-            Text("login.subtitle")
-                .font(.body2)
-                .foregroundStyle(Color.gray500)
-
             Spacer()
 
-            illustration
+            logoSection
 
             Spacer()
 
@@ -58,24 +48,19 @@ struct LoginView: View {
         }
     }
 
-    // MARK: - 로고 (미정 — 임시 플레이스홀더)
+    // MARK: - 로고 + 서브타이틀
 
-    private var logoPlaceholder: some View {
-        Text("login.logo_tbd")
-            .font(.pretendard(.semibold, size: 16))
-            .foregroundStyle(Color.colorWhite)
-            .frame(width: 140, height: 52)
-            .background(Color.brandPrimary, in: RoundedRectangle(cornerRadius: .roundedXl))
-    }
+    private var logoSection: some View {
+        VStack(spacing: .spacing16) {
+            Image("app_logo_text")
+                .resizable()
+                .scaledToFit()
+                .frame(height: 56)
 
-    // MARK: - 일러스트 (TODO: 보트 일러스트 에셋으로 교체)
-
-    private var illustration: some View {
-        Image(systemName: "sailboat.fill")
-            .resizable()
-            .scaledToFit()
-            .frame(width: 174, height: 174)
-            .foregroundStyle(Color.brandPrimary)
+            Text("login.subtitle")
+                .font(.pretendard(.regular, size: 15))
+                .foregroundStyle(Color.gray500)
+        }
     }
 
     // MARK: - Google 버튼 (흰 배경 + 파란 테두리)
