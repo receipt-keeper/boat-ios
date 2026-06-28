@@ -3,8 +3,9 @@
 //  BOAT
 //
 //  알림 설정 화면. Android NotificationSettingsScreen/ViewModel 대응.
-//  토글 변경 → PATCH /users/me 로 서버 반영 + 로컬 캐시(UserStore) 동기화.
-//  실패 시 에러 토스트 + 서버 기준 복구.
+//  GET /api/v1/notifications/settings 로 초기값 로드.
+//  토글 변경 → PATCH /api/v1/notifications/settings 반영.
+//  실패 시 에러 토스트 + 이전 값으로 복구.
 //
 
 import SwiftUI
@@ -13,7 +14,8 @@ struct NotificationSettingsView: View {
 
     let onBack: () -> Void
 
-    private let store = UserStore.shared
+    @State private var pushEnabled = false
+    @State private var marketingConsent = false
     @State private var toast = BoatToastState()
 
     var body: some View {
@@ -24,12 +26,12 @@ struct NotificationSettingsView: View {
 
             toggleRow(
                 label: "notif.settings.alarm",
-                isOn: store.current?.notificationEnabled ?? false,
-                onChange: setNotificationEnabled
+                isOn: pushEnabled,
+                onChange: setPushEnabled
             )
             toggleRow(
                 label: "notif.settings.marketing",
-                isOn: store.current?.marketingConsent ?? false,
+                isOn: marketingConsent,
                 onChange: setMarketingConsent
             )
 
@@ -39,38 +41,46 @@ struct NotificationSettingsView: View {
         .background(Color.colorWhite)
         .boatToastHost(toast)
         .task {
-            // 최신 서버 값 동기화
-            try? await UserRepository.shared.refreshUser()
+            if let settings = try? await NotificationSettingsRepository.shared.fetchSettings() {
+                pushEnabled = settings.pushEnabled
+                marketingConsent = settings.marketingConsent
+            }
         }
     }
 
-    // MARK: - 토글 동작 (PATCH + 실패 복구)
+    // MARK: - 토글 동작 (낙관적 반영 → PATCH → 서버 확정 or 복구)
 
-    private func setNotificationEnabled(_ enabled: Bool) {
-        guard store.current?.notificationEnabled != enabled else { return } // 변경 없음 → 불필요한 PATCH 방지
+    private func setPushEnabled(_ enabled: Bool) {
+        guard pushEnabled != enabled else { return }
+        let previous = pushEnabled
+        pushEnabled = enabled
         Task {
             do {
-                try await UserRepository.shared.updateMe(notificationEnabled: enabled)
+                let result = try await NotificationSettingsRepository.shared.updateSettings(pushEnabled: enabled)
+                pushEnabled = result.pushEnabled
             } catch {
+                pushEnabled = previous
                 toast.showError((error as? LocalizedError)?.errorDescription ?? "")
-                try? await UserRepository.shared.refreshUser() // 서버 기준 복구
             }
         }
     }
 
     private func setMarketingConsent(_ consent: Bool) {
-        guard store.current?.marketingConsent != consent else { return }
+        guard marketingConsent != consent else { return }
+        let previous = marketingConsent
+        marketingConsent = consent
         Task {
             do {
-                try await UserRepository.shared.updateMe(marketingConsent: consent)
+                let result = try await NotificationSettingsRepository.shared.updateSettings(marketingConsent: consent)
+                marketingConsent = result.marketingConsent
             } catch {
+                marketingConsent = previous
                 toast.showError((error as? LocalizedError)?.errorDescription ?? "")
-                try? await UserRepository.shared.refreshUser()
             }
         }
     }
 
-    // MARK: - Top Bar (뒤로가기 + 알림설정)
+    // MARK: - Top Bar
 
     private var topBar: some View {
         ZStack {

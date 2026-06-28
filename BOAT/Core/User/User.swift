@@ -2,7 +2,8 @@
 //  User.swift
 //  BOAT
 //
-//  앱 유저 데이터 — 프로필 + 알림/마케팅 설정 + 무료 분석 토큰.
+//  앱 유저 데이터 — 프로필 + 무료 분석 토큰.
+//  알림/마케팅 설정은 /api/v1/notifications/settings 로 분리됨.
 //
 
 import Foundation
@@ -16,10 +17,6 @@ struct User: Codable, Equatable {
     var nickname: String
     /// 프로필 이미지 URL
     var profileImageUrl: String
-    /// 알림 수신 설정. true면 푸시 알림을 받는다.
-    var notificationEnabled: Bool
-    /// 마케팅 수신 동의 여부.
-    var marketingConsent: Bool
     /// 남은 무료 분석 토큰 수.
     var freeAnalysisTokensRemaining: Int
 
@@ -33,8 +30,6 @@ struct User: Codable, Equatable {
         name: "",
         nickname: "",
         profileImageUrl: "",
-        notificationEnabled: false,
-        marketingConsent: false,
         freeAnalysisTokensRemaining: 0
     )
 }
