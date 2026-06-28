@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Network
 import FirebaseCore
 import FirebaseAuth
 import GoogleSignIn
@@ -24,6 +25,10 @@ class AuthViewModel {
 
     private let appleSignInHelper = AppleSignInHelper()
 
+    // 네트워크 상태 모니터
+    private let pathMonitor = NWPathMonitor()
+    private var isNetworkAvailable = true
+
     // 약관 동의 후 백엔드 로그인에 사용할 Firebase ID 토큰
     private var pendingFirebaseToken: String?
 
@@ -31,6 +36,14 @@ class AuthViewModel {
     private static let privacyVersion = "1.0"
 
     init() {
+        // 네트워크 상태 실시간 감지
+        pathMonitor.pathUpdateHandler = { [weak self] path in
+            DispatchQueue.main.async {
+                self?.isNetworkAvailable = path.status == .satisfied
+            }
+        }
+        pathMonitor.start(queue: DispatchQueue.global(qos: .background))
+
         // 이미 백엔드 토큰을 보유한 경우 바로 홈
         route = KeychainManager.shared.accessToken != nil ? .home : .login
 
@@ -70,6 +83,7 @@ class AuthViewModel {
     // MARK: - Google Sign In
 
     private func signInWithGoogle() {
+        guard isNetworkAvailable else { fail("error.api.network"); return }
         guard let clientID = FirebaseApp.app()?.options.clientID else { return }
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let rootViewController = windowScene.windows.first?.rootViewController else { return }
@@ -103,6 +117,7 @@ class AuthViewModel {
     // MARK: - Apple Sign In
 
     private func signInWithApple() {
+        guard isNetworkAvailable else { fail("error.api.network"); return }
         isLoading = true
 
         appleSignInHelper.startSignIn { [weak self] result in
