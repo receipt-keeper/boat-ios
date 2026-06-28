@@ -11,6 +11,7 @@ import SwiftUI
 struct MyPageView: View {
 
     let viewModel: AuthViewModel
+    var onSearch: () -> Void = {}
     var onNotification: () -> Void = {}
     private let store = UserStore.shared
 
@@ -36,7 +37,7 @@ struct MyPageView: View {
         VStack(spacing: 0) {
             BoatHeader(
                 title: "mypage.title",
-                onSearch: { /* TODO: 검색 */ },
+                onSearch: onSearch,
                 onNotification: onNotification
             )
 

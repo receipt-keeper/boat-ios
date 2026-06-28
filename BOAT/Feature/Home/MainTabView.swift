@@ -19,6 +19,7 @@ struct MainTabView: View {
     @State private var selection: MainTab = .home
     @State private var showAddMenu = false
     @State private var showNotifications = false
+    @State private var showSearch = false
     // FAB 카메라/갤러리 → 영수증 등록 화면(자동 열기)
     @State private var showRegisterFromFab = false
     @State private var registerAutoOpen: ReceiptRegisterView.AutoOpen?
@@ -81,6 +82,10 @@ struct MainTabView: View {
             .fullScreenCover(isPresented: $showNotifications) {
                 NotificationListView(onBack: { showNotifications = false })
             }
+            // 어느 탭에서든 돋보기 → 검색
+            .fullScreenCover(isPresented: $showSearch) {
+                SearchView(onBack: { showSearch = false })
+            }
     }
 
     private func openRegisterFromFab(_ action: ReceiptRegisterView.AutoOpen) {
@@ -96,6 +101,7 @@ struct MainTabView: View {
             ReceiptListView(
                 selectedTab: $listTab,
                 selectedSort: $listSort,
+                onSearch: { showSearch = true },
                 onNotification: { showNotifications = true }
             )
         case .home:
@@ -105,10 +111,15 @@ struct MainTabView: View {
                     if let sort { listSort = sort }
                     selection = .list
                 },
+                onSearch: { showSearch = true },
                 onNotification: { showNotifications = true }
             )
         case .my:
-            MyPageView(viewModel: viewModel, onNotification: { showNotifications = true })
+            MyPageView(
+                viewModel: viewModel,
+                onSearch: { showSearch = true },
+                onNotification: { showNotifications = true }
+            )
         }
     }
 
@@ -132,6 +143,7 @@ struct MainTabView: View {
 private struct HomeView: View {
     /// 목록 탭으로 이동 (탭, 정렬 지정). sort=nil이면 정렬 유지.
     var onOpenList: (ReceiptTab, ReceiptSort?) -> Void
+    var onSearch: () -> Void = {}
     var onNotification: () -> Void
 
     @State private var showReceiptRegister = false
@@ -140,7 +152,7 @@ private struct HomeView: View {
     var body: some View {
         VStack(spacing: 0) {
             BoatHeader(
-                onSearch: { /* TODO: 검색 */ },
+                onSearch: onSearch,
                 onNotification: onNotification
             )
 
