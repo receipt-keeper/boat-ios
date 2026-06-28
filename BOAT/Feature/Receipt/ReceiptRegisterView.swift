@@ -19,7 +19,7 @@ struct ReceiptRegisterView: View {
     /// 최대 등록 가능 장수 (Android MAX_PHOTOS와 동일)
     private static let maxPhotos = 5
 
-    private let store = UserStore.shared
+    private let creditStore = CreditStore.shared
     private let columns = Array(repeating: GridItem(.flexible(), spacing: .spacing8), count: 3)
 
     @State private var images: [UIImage] = []
@@ -36,7 +36,7 @@ struct ReceiptRegisterView: View {
     private var canAddMore: Bool { images.count < Self.maxPhotos }
     private var remainingSlots: Int { max(0, Self.maxPhotos - images.count) }
     /// 남은 무료 분석 토큰 (데이터 없으면 임시 3)
-    private var remainingTokens: Int { store.current?.freeAnalysisTokensRemaining ?? 3 }
+    private var remainingTokens: Int { creditStore.current?.remainingCount ?? 3 }
 
     var body: some View {
         VStack(spacing: 0) {

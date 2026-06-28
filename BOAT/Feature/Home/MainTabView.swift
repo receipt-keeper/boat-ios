@@ -155,6 +155,7 @@ private struct HomeView: View {
             }
         }
         .background(Color.gray50)
+        .task { try? await CreditRepository.shared.fetchCredits() }
         .fullScreenCover(isPresented: $showReceiptRegister) {
             ReceiptRegisterView(onBack: { showReceiptRegister = false })
         }
@@ -168,7 +169,7 @@ private struct HomeView: View {
         ScrollView {
             VStack(spacing: .spacing12) {
                 FreeAnalysisBanner(
-                    remaining: UserStore.shared.current?.freeAnalysisTokensRemaining ?? 3
+                    remaining: CreditStore.shared.current?.remainingCount ?? 3
                 )
 
                 Button {

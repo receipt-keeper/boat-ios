@@ -26,11 +26,6 @@ final class UserRepository {
         return user
     }
 
-    /// 남은 무료 분석 토큰 수만 갱신 (로컬)
-    func updateFreeAnalysisTokens(_ remaining: Int) {
-        store.update { $0.freeAnalysisTokensRemaining = remaining }
-    }
-
     /// 로그아웃/탈퇴 시 정리
     func clear() {
         store.clear()
