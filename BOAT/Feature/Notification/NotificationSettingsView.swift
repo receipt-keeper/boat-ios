@@ -116,12 +116,27 @@ struct NotificationSettingsView: View {
                 .font(.pretendard(.medium, size: 16))
                 .foregroundStyle(Color.gray900)
             Spacer()
-            Toggle("", isOn: Binding(get: { isOn }, set: onChange))
-                .labelsHidden()
-                .tint(Color.brandPrimary)
+            boatSwitch(isOn: isOn, onChange: onChange)
         }
         .padding(.horizontal, .spacing20)
         .padding(.vertical, .spacing16)
+    }
+
+    /// iOS/macOS 모두에서 동일하게 보이는 커스텀 스위치
+    private func boatSwitch(isOn: Bool, onChange: @escaping (Bool) -> Void) -> some View {
+        Button { onChange(!isOn) } label: {
+            ZStack {
+                Capsule()
+                    .fill(isOn ? Color.brandPrimary : Color.gray300)
+                    .frame(width: 51, height: 31)
+                Circle()
+                    .fill(Color.colorWhite)
+                    .frame(width: 27, height: 27)
+                    .offset(x: isOn ? 10 : -10)
+            }
+        }
+        .buttonStyle(.plain)
+        .animation(.spring(response: 0.25, dampingFraction: 0.75), value: isOn)
     }
 }
 
