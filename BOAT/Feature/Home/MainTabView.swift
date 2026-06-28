@@ -251,6 +251,8 @@ private struct RepairServiceCard: View {
                 Text("home.card.popular.title")
                     .font(.pretendard(.bold, size: 16))
                     .foregroundStyle(Color.brandPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
                 Text("home.card.popular.desc")
                     .font(.pretendard(.regular, size: 13))
                     .foregroundStyle(Color.gray500)
@@ -267,7 +269,7 @@ private struct RepairServiceCard: View {
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
         .overlay(
             RoundedRectangle(cornerRadius: .rounded2xl)
-                .stroke(Color.brandQuinary, lineWidth: 1)
+                .strokeBorder(Color.brandTertiary, lineWidth: 1)
         )
     }
 }
