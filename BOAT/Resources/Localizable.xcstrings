@@ -1460,16 +1460,6 @@
         }
       }
     },
-    "receipt.token.image" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "임시"
-          }
-        }
-      }
-    },
     "receipt.token.later" : {
       "localizations" : {
         "ko" : {

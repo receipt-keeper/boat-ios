@@ -16,34 +16,6 @@ enum AnalysisSheet: Identifiable {
     var id: Int { hashValue }
 }
 
-// MARK: - 임시 이미지 placeholder (에셋 전)
-
-private struct TempImagePlaceholder: View {
-    var error: Bool = false
-    var body: some View {
-        RoundedRectangle(cornerRadius: .roundedLg)
-            .fill(Color.gray300)
-            .frame(width: 88, height: 88)
-            .overlay {
-                Text("receipt.token.image")
-                    .font(.pretendard(.bold, size: 22))
-                    .foregroundStyle(Color.gray900)
-            }
-            .overlay {
-                if error {
-                    Circle()
-                        .fill(Color.systemError.opacity(0.25))
-                        .frame(width: 56, height: 56)
-                        .overlay {
-                            Image(systemName: "exclamationmark")
-                                .font(.system(size: 22, weight: .bold))
-                                .foregroundStyle(Color.systemError)
-                        }
-                }
-            }
-    }
-}
-
 // MARK: - 토큰 소진 시트
 
 struct NoTokenSheet: View {
@@ -53,7 +25,7 @@ struct NoTokenSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            TempImagePlaceholder()
+            noTokenIcon
 
             Spacer().frame(height: .spacing20)
             Text("receipt.token.title")
@@ -88,6 +60,23 @@ struct NoTokenSheet: View {
         .padding(.bottom, .spacing16)
         .frame(maxWidth: .infinity)
     }
+
+    // 큰 스파클 + 작은 스파클 조합 아이콘
+    private var noTokenIcon: some View {
+        ZStack(alignment: .bottomTrailing) {
+            Image("icSparkle")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 60, height: 60)
+                .offset(x: -10, y: -10)
+
+            Image("icSparkle")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 30, height: 30)
+        }
+        .frame(width: 80, height: 80)
+    }
 }
 
 // MARK: - 분석 실패 시트
@@ -98,7 +87,7 @@ struct AnalysisFailedSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            TempImagePlaceholder(error: true)
+            failedIcon
 
             Spacer().frame(height: .spacing20)
             Text("receipt.fail.title")
@@ -131,6 +120,30 @@ struct AnalysisFailedSheet: View {
         .padding(.bottom, .spacing16)
         .frame(maxWidth: .infinity)
     }
+
+    // 영수증 문서 아이콘 + 빨간 X 배지
+    private var failedIcon: some View {
+        ZStack(alignment: .bottomTrailing) {
+            Image(systemName: "doc.text.fill")
+                .font(.system(size: 64))
+                .foregroundStyle(Color.brandPrimary)
+                .frame(width: 72, height: 72)
+
+            ZStack {
+                Circle()
+                    .fill(Color.systemError)
+                    .frame(width: 28, height: 28)
+                    .overlay(
+                        Circle()
+                            .stroke(Color.colorWhite, lineWidth: 2)
+                    )
+                Image(systemName: "xmark")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(Color.colorWhite)
+            }
+            .offset(x: 4, y: 4)
+        }
+    }
 }
 
 // MARK: - 공통 버튼
@@ -161,4 +174,16 @@ private func outlinedButton(_ label: LocalizedStringKey, action: @escaping () ->
             )
     }
     .buttonStyle(.plain)
+}
+
+// MARK: - Preview
+
+#Preview("토큰 소진") {
+    NoTokenSheet(onRecharge: {}, onManualInput: {}, onLater: {})
+        .background(Color.colorWhite)
+}
+
+#Preview("분석 실패") {
+    AnalysisFailedSheet(onManualInput: {}, onRetry: {})
+        .background(Color.colorWhite)
 }
