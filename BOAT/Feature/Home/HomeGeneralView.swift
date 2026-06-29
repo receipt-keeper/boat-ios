@@ -18,6 +18,14 @@ struct HomeGeneralView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
+                // ── 무료 분석 배너 ──
+                FreeAnalysisBanner(
+                    remaining: CreditStore.shared.current?.remainingCount ?? 3
+                )
+                .padding(.horizontal, .spacing20)
+                .padding(.top, .spacing12)
+                .padding(.bottom, .spacing4)
+
                 // ── AS 만료 예정 헤더 ──
                 Spacer().frame(height: .spacing16)
                 expiringHeader

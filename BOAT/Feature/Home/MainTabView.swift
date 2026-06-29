@@ -170,8 +170,8 @@ private struct HomeView: View {
                 HomeGeneralView(
                     expiring: HomeMock.expiringWarranties,
                     recent: HomeMock.recentReceipts,
-                    // 만료예정 > → 목록 만료예정 탭
-                    onExpiringMore: { onOpenList(.expiring, nil) },
+                    // 만료예정 > → 목록 만료예정 탭 + 만료 임박순 정렬 자동 선택
+                    onExpiringMore: { onOpenList(.expiring, .expiring) },
                     // 더보기 → 목록 전체 탭 + 최근 등록 순
                     onRecentMore: { onOpenList(.all, .recent) }
                 )
