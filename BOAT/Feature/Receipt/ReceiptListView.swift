@@ -57,6 +57,7 @@ struct ReceiptListView: View {
     var onNotification: () -> Void = {}
     @State private var selectedFilter: ReceiptFilter = .all
     @State private var sortExpanded = false
+    @State private var menuReceiptId: String?
     @State private var viewModel = ReceiptListViewModel()
 
     var body: some View {
@@ -116,6 +117,50 @@ struct ReceiptListView: View {
                 }
             }
         }
+        // 케밥 → 삭제 메뉴 (선택 카드만 떠오르고 나머지는 딤)
+        .overlayPreferenceValue(CardAnchorKey.self) { anchors in
+            if let id = menuReceiptId,
+               let receipt = viewModel.receipts.first(where: { $0.receiptId == id }),
+               let anchor = anchors[id] {
+                GeometryReader { proxy in
+                    let rect = proxy[anchor]
+                    ZStack(alignment: .topLeading) {
+                        Color.systemDim
+                            .ignoresSafeArea()
+                            .onTapGesture { menuReceiptId = nil }
+
+                        // 선택된 카드 복제본 — 딤 위로 떠오름
+                        ReceiptCard(receipt: receipt) { menuReceiptId = nil }
+                            .frame(width: rect.width, height: rect.height)
+                            .offset(x: rect.minX, y: rect.minY)
+
+                        // 삭제 메뉴 — 카드 우상단 위로
+                        deleteMenu(id: id)
+                            .frame(width: 240)
+                            .offset(x: rect.maxX - 240, y: max(0, rect.minY - 64))
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - 삭제 메뉴
+
+    private func deleteMenu(id: String) -> some View {
+        Button {
+            viewModel.deleteLocally(id: id)
+            menuReceiptId = nil
+        } label: {
+            Text("receipt.menu.delete")
+                .font(.pretendard(.medium, size: 16))
+                .foregroundStyle(Color.systemError)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, .spacing24)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+        .shadow(color: .black.opacity(0.12), radius: 16, y: 4)
     }
 
     // MARK: - 정렬 드롭다운 (커스텀)
@@ -228,8 +273,13 @@ struct ReceiptListView: View {
             ScrollView {
                 LazyVStack(spacing: .spacing12) {
                     ForEach(viewModel.receipts) { receipt in
-                        ReceiptCard(receipt: receipt)
-                            .task { await viewModel.loadMoreIfNeeded(currentItem: receipt) }
+                        ReceiptCard(receipt: receipt) {
+                            menuReceiptId = receipt.receiptId
+                        }
+                        .anchorPreference(key: CardAnchorKey.self, value: .bounds) {
+                            [receipt.receiptId: $0]
+                        }
+                        .task { await viewModel.loadMoreIfNeeded(currentItem: receipt) }
                     }
 
                     if viewModel.isLoadingMore {
@@ -250,6 +300,7 @@ struct ReceiptListView: View {
 
 private struct ReceiptCard: View {
     let receipt: Receipt
+    var onKebab: () -> Void = {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -349,9 +400,7 @@ private struct ReceiptCard: View {
     }
 
     private var kebab: some View {
-        Button {
-            // TODO: 영수증 액션 메뉴 (수정/삭제 등)
-        } label: {
+        Button(action: onKebab) {
             Image(systemName: "ellipsis")
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(Color.gray400)
@@ -379,6 +428,14 @@ private struct SortAnchorKey: PreferenceKey {
     static let defaultValue: Anchor<CGRect>? = nil
     static func reduce(value: inout Anchor<CGRect>?, nextValue: () -> Anchor<CGRect>?) {
         value = value ?? nextValue()
+    }
+}
+
+// 영수증 카드별 위치 앵커 (receiptId → bounds)
+private struct CardAnchorKey: PreferenceKey {
+    static let defaultValue: [String: Anchor<CGRect>] = [:]
+    static func reduce(value: inout [String: Anchor<CGRect>], nextValue: () -> [String: Anchor<CGRect>]) {
+        value.merge(nextValue()) { _, new in new }
     }
 }
 

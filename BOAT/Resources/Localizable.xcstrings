@@ -1190,6 +1190,16 @@
         }
       }
     },
+    "receipt.menu.delete" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "삭제하기"
+          }
+        }
+      }
+    },
     "receipt.list.dday %lld" : {
       "localizations" : {
         "ko" : {

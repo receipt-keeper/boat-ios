@@ -73,6 +73,15 @@ final class ReceiptListViewModel {
         didLoadOnce = true
     }
 
+    /// 로컬 삭제 (API/DB 미연동 — 화면 목록에서만 제거)
+    func deleteLocally(id: String) {
+        let before = receipts.count
+        receipts.removeAll { $0.receiptId == id }
+        if receipts.count != before {
+            totalCount = max(0, totalCount - 1)
+        }
+    }
+
     /// 마지막 근처 카드가 보일 때 호출 — 다음 페이지 추가 로드
     func loadMoreIfNeeded(currentItem item: Receipt) async {
         guard hasNext, !isLoading, !isLoadingMore else { return }
