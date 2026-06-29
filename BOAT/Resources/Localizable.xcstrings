@@ -10,6 +10,9 @@
     " *" : {
 
     },
+    "[TEST] 파일 업로드" : {
+
+    },
     "%lld" : {
 
     },
@@ -17,6 +20,9 @@
 
     },
     "|" : {
+
+    },
+    "boatlab-dev.luigi99.cloud" : {
 
     },
     "common.cancel" : {
@@ -48,6 +54,9 @@
           }
         }
       }
+    },
+    "DEBUG" : {
+
     },
     "dialog.delete.cancel" : {
       "localizations" : {
@@ -446,6 +455,9 @@
           }
         }
       }
+    },
+    "localhost:8000" : {
+
     },
     "login.button.apple" : {
       "localizations" : {
@@ -1168,6 +1180,36 @@
         }
       }
     },
+    "receipt.list.expiry_label" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AS 만료일"
+          }
+        }
+      }
+    },
+    "receipt.list.dday %lld" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "D-%lld"
+          }
+        }
+      }
+    },
+    "receipt.list.expired" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "만료"
+          }
+        }
+      }
+    },
     "receipt.fail.manual" : {
       "localizations" : {
         "ko" : {
@@ -1589,6 +1631,9 @@
       }
     },
     "기기명 또는 메모를 검색해 보세요." : {
+
+    },
+    "로컬 서버" : {
 
     },
     "수신된 알림 내역이 없습니다." : {

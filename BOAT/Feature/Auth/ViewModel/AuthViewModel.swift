@@ -36,16 +36,16 @@ class AuthViewModel {
     private static let privacyVersion = "1.0"
 
     init() {
-        // 네트워크 상태 실시간 감지
+        // 이미 백엔드 토큰을 보유한 경우 바로 홈
+        route = KeychainManager.shared.accessToken != nil ? .home : .login
+
+        // 네트워크 상태 실시간 감지 (self 초기화 완료 후 설정)
         pathMonitor.pathUpdateHandler = { [weak self] path in
             DispatchQueue.main.async {
                 self?.isNetworkAvailable = path.status == .satisfied
             }
         }
         pathMonitor.start(queue: DispatchQueue.global(qos: .background))
-
-        // 이미 백엔드 토큰을 보유한 경우 바로 홈
-        route = KeychainManager.shared.accessToken != nil ? .home : .login
 
         // 앱 시작 시 이미 로그인 상태면 사용자 정보 동기화
         if route == .home {

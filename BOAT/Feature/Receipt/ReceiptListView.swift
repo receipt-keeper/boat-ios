@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 // 보증 상태 inner tab
 enum ReceiptTab: CaseIterable {
@@ -56,9 +57,7 @@ struct ReceiptListView: View {
     var onNotification: () -> Void = {}
     @State private var selectedFilter: ReceiptFilter = .all
     @State private var sortExpanded = false
-
-    // TODO: 실제 영수증 데이터 연동
-    private let receiptCount = 0
+    @State private var viewModel = ReceiptListViewModel()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -91,18 +90,15 @@ struct ReceiptListView: View {
             // 카운트 + 정렬
             countSortRow
 
-            // 리스트 영역 (데이터 없으면 placeholder)
-            ZStack {
-                if receiptCount == 0 {
-                    Text("receipt.empty")
-                        .font(.pretendard(.medium, size: 16))
-                        .foregroundStyle(Color.gray500)
-                }
-                // TODO: 영수증 카드 리스트
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            // 리스트 영역
+            listContent
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .background(Color.gray50)
+        .task { await viewModel.reload(tab: selectedTab, sort: selectedSort, filter: selectedFilter) }
+        .onChange(of: selectedTab) { _, _ in reload() }
+        .onChange(of: selectedSort) { _, _ in reload() }
+        .onChange(of: selectedFilter) { _, _ in reload() }
         // 정렬 드롭다운 — 버튼 위치 기준으로 배치
         .overlayPreferenceValue(SortAnchorKey.self) { anchor in
             if sortExpanded, let anchor {
@@ -128,9 +124,8 @@ struct ReceiptListView: View {
         VStack(spacing: 0) {
             ForEach(ReceiptSort.allCases, id: \.self) { sort in
                 Button {
-                    selectedSort = sort
+                    selectedSort = sort  // onChange(selectedSort) → reload
                     sortExpanded = false
-                    // TODO: 정렬 적용
                 } label: {
                     Text(sort.label)
                         .font(.pretendard(sort == selectedSort ? .bold : .regular, size: 16))
@@ -185,7 +180,7 @@ struct ReceiptListView: View {
                 Text("|")
                     .font(.pretendard(.regular, size: 14))
                     .foregroundStyle(Color.gray300)
-                Text("\(receiptCount)")
+                Text("\(viewModel.totalCount)")
                     .font(.pretendard(.bold, size: 14))
                     .foregroundStyle(Color.brandPrimary)
             }
@@ -210,6 +205,172 @@ struct ReceiptListView: View {
         }
         .padding(.horizontal, .spacing20)
         .padding(.vertical, .spacing8)
+    }
+
+    private func reload() {
+        Task { await viewModel.reload(tab: selectedTab, sort: selectedSort, filter: selectedFilter) }
+    }
+
+    // MARK: - 리스트 영역 (로딩 / 빈 상태 / 카드 목록)
+
+    @ViewBuilder
+    private var listContent: some View {
+        if viewModel.isLoading {
+            ProgressView()
+                .tint(Color.brandPrimary)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if viewModel.receipts.isEmpty {
+            Text("receipt.empty")
+                .font(.pretendard(.medium, size: 16))
+                .foregroundStyle(Color.gray500)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+            ScrollView {
+                LazyVStack(spacing: .spacing12) {
+                    ForEach(viewModel.receipts) { receipt in
+                        ReceiptCard(receipt: receipt)
+                            .task { await viewModel.loadMoreIfNeeded(currentItem: receipt) }
+                    }
+
+                    if viewModel.isLoadingMore {
+                        ProgressView()
+                            .tint(Color.brandPrimary)
+                            .padding(.vertical, .spacing16)
+                    }
+                }
+                .padding(.horizontal, .spacing20)
+                .padding(.top, .spacing4)
+                .padding(.bottom, .spacing24)
+            }
+        }
+    }
+}
+
+// MARK: - 영수증 카드
+
+private struct ReceiptCard: View {
+    let receipt: Receipt
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top, spacing: 14) {
+                thumbnail
+
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(alignment: .center, spacing: .spacing8) {
+                        Text(receipt.itemName)
+                            .font(.pretendard(.bold, size: 16))
+                            .foregroundStyle(Color.gray900)
+                            .lineLimit(1)
+                        Spacer(minLength: .spacing8)
+                        dayBadge
+                        kebab
+                    }
+
+                    expiryRow
+                }
+            }
+
+            if let memo = receipt.memo, !memo.isEmpty {
+                memoBox(memo)
+            }
+        }
+        .padding(.spacing16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+    }
+
+    // 썸네일 — imageUrl 있으면 원격 이미지, 없으면 회색 플레이스홀더
+    private var thumbnail: some View {
+        RoundedRectangle(cornerRadius: .roundedLg)
+            .fill(Color.gray100)
+            .frame(width: 64, height: 64)
+            .overlay {
+                if let urlString = receipt.imageUrl,
+                   let url = URL(string: urlString) {
+                    KFImage(url)
+                        .placeholder { placeholderIcon }
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    placeholderIcon
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
+    }
+
+    private var placeholderIcon: some View {
+        Image(systemName: "photo")
+            .font(.system(size: 22))
+            .foregroundStyle(Color.gray400)
+    }
+
+    // AS 만료일 | yyyy. MM. dd
+    private var expiryRow: some View {
+        HStack(spacing: 0) {
+            Text("receipt.list.expiry_label")
+                .font(.pretendard(.regular, size: 14))
+                .foregroundStyle(Color.gray500)
+            Text("  |  ")
+                .font(.pretendard(.regular, size: 14))
+                .foregroundStyle(Color.gray300)
+            Text(receipt.formattedExpiresOn)
+                .font(.pretendard(.regular, size: 14))
+                .foregroundStyle(Color.gray500)
+                .lineLimit(1)
+        }
+    }
+
+    // D-day 배지 (여유=파랑 / 임박=빨강 / 만료=회색)
+    @ViewBuilder
+    private var dayBadge: some View {
+        switch receipt.warrantyBadge {
+        case .safe(let dDay):
+            badge(text: Text("receipt.list.dday \(dDay)"),
+                  bg: .badgeSafeBg, border: .badgeSafeBorder, fg: .badgeSafeText)
+        case .expiring(let dDay):
+            badge(text: Text("receipt.list.dday \(dDay)"),
+                  bg: .badgeWarningBg, border: .badgeWarningBorder, fg: .badgeWarningText)
+        case .expired:
+            badge(text: Text("receipt.list.expired"),
+                  bg: .badgeExpiredBg, border: .badgeExpiredBorder, fg: .badgeExpiredText)
+        }
+    }
+
+    private func badge(text: Text, bg: Color, border: Color, fg: Color) -> some View {
+        text
+            .font(.pretendard(.bold, size: 13))
+            .foregroundStyle(fg)
+            .padding(.horizontal, .spacing12)
+            .padding(.vertical, 6)
+            .background(bg, in: Capsule())
+            .overlay(Capsule().stroke(border, lineWidth: 1))
+            .fixedSize()
+    }
+
+    private var kebab: some View {
+        Button {
+            // TODO: 영수증 액션 메뉴 (수정/삭제 등)
+        } label: {
+            Image(systemName: "ellipsis")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(Color.gray400)
+                .rotationEffect(.degrees(90))
+                .frame(width: 24, height: 24)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func memoBox(_ memo: String) -> some View {
+        Text(memo)
+            .font(.pretendard(.regular, size: 14))
+            .foregroundStyle(Color.gray500)
+            .lineLimit(1)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, .spacing16)
+            .padding(.vertical, .spacing12)
+            .background(Color.gray50, in: RoundedRectangle(cornerRadius: .roundedLg))
     }
 }
 
