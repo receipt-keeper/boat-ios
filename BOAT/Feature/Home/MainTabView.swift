@@ -148,6 +148,7 @@ private struct HomeView: View {
 
     @State private var showReceiptRegister = false
     @State private var showGeneral = false // 임시: 초기(false) ↔ 일반(true) 전환
+    @State private var isInitializing = true
 
     var body: some View {
         VStack(spacing: 0) {
@@ -157,30 +158,51 @@ private struct HomeView: View {
                 onNotification: onNotification
             )
 
-            // 임시(개발용) 상태 전환 토글 — 백엔드 데이터 유무 분기 대용
-            Picker("", selection: $showGeneral) {
-                Text("초기").tag(false)
-                Text("일반").tag(true)
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal, .spacing20)
-            .padding(.bottom, .spacing8)
+            // 헤더 아래 컨텐츠 영역 — 초기 로딩 중에는 HomeLoadingView가 덮음
+            ZStack {
+                VStack(spacing: 0) {
+                    // 임시(개발용) 상태 전환 토글 — 백엔드 데이터 유무 분기 대용
+                    Picker("", selection: $showGeneral) {
+                        Text("초기").tag(false)
+                        Text("일반").tag(true)
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal, .spacing20)
+                    .padding(.bottom, .spacing8)
 
-            if showGeneral {
-                HomeGeneralView(
-                    expiring: HomeMock.expiringWarranties,
-                    recent: HomeMock.recentReceipts,
-                    // 만료예정 > → 목록 만료예정 탭 + 만료 임박순 정렬 자동 선택
-                    onExpiringMore: { onOpenList(.expiring, .expiring) },
-                    // 더보기 → 목록 전체 탭 + 최근 등록 순
-                    onRecentMore: { onOpenList(.all, .recent) }
-                )
-            } else {
-                initialContent
+                    if showGeneral {
+                        HomeGeneralView(
+                            expiring: HomeMock.expiringWarranties,
+                            recent: HomeMock.recentReceipts,
+                            // 만료예정 > → 목록 만료예정 탭 + 만료 임박순 정렬 자동 선택
+                            onExpiringMore: { onOpenList(.expiring, .expiring) },
+                            // 더보기 → 목록 전체 탭 + 최근 등록 순
+                            onRecentMore: { onOpenList(.all, .recent) }
+                        )
+                    } else {
+                        initialContent
+                    }
+                }
+
+                if isInitializing {
+                    HomeLoadingView()
+                        .transition(.opacity)
+                }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .background(Color.gray50)
-        .task { try? await CreditRepository.shared.fetchCredits() }
+        .task {
+            // 첫 홈 진입 시 초기 API 병렬 호출 — 모두 완료되면 로딩 해제
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask { try? await CreditRepository.shared.fetchCredits() }
+                group.addTask { try? await UserRepository.shared.refreshUser() }
+                for await _ in group {}
+            }
+            withAnimation(.easeOut(duration: 0.3)) {
+                isInitializing = false
+            }
+        }
         .fullScreenCover(isPresented: $showReceiptRegister) {
             ReceiptRegisterView(onBack: { showReceiptRegister = false })
         }
