@@ -1430,6 +1430,46 @@
         }
       }
     },
+    "search.empty.register" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지금 영수증 등록하기"
+          }
+        }
+      }
+    },
+    "search.empty.subtitle" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "등록하지 않은 제품이라면\n지금 등록해 볼까요?"
+          }
+        }
+      }
+    },
+    "search.empty.title" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "검색 결과가 없습니다."
+          }
+        }
+      }
+    },
+    "search.placeholder" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "제품명 또는 메모를 검색해 보세요."
+          }
+        }
+      }
+    },
     "receipt.tab.all" : {
       "localizations" : {
         "ko" : {
