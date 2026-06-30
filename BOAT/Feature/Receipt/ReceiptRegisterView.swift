@@ -247,18 +247,18 @@ struct ReceiptRegisterView: View {
             Color.black.opacity(0.5)
                 .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
 
-            VStack(spacing: .spacing8) {
+            VStack(spacing: .spacing4) {
                 ZStack {
                     Circle()
-                        .stroke(Color.systemError, lineWidth: 2)
-                        .frame(width: 36, height: 36)
+                        .stroke(Color.systemError, lineWidth: 1.5)
+                        .frame(width: 24, height: 24)
                     Text("!")
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.system(size: 13, weight: .bold))
                         .foregroundStyle(Color.systemError)
                 }
 
                 Text("다시 업로드해 주세요")
-                    .font(.pretendard(.medium, size: 11))
+                    .font(.pretendard(.medium, size: 9))
                     .foregroundStyle(Color.systemError)
                     .multilineTextAlignment(.center)
             }
