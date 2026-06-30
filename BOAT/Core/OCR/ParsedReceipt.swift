@@ -12,6 +12,16 @@ enum DeviceCategory: String, CaseIterable, Codable {
     case it      = "IT 기기"
     case other   = "기타 기기"
 
+    var imageName: String {
+        switch self {
+        case .kitchen: return "img_kitchen"
+        case .laundry: return "img_laundry_room"
+        case .living:  return "img_living_room"
+        case .it:      return "img_digital_device"
+        case .other:   return "img_misc"
+        }
+    }
+
     // 대표 기기명 리스트 (확정본). 리스트에 없는 기기명은 대분류 기본 이미지로 폴백.
     var keywords: [String] {
         switch self {

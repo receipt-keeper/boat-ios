@@ -31,9 +31,7 @@ struct ReceiptRegisterView: View {
     @State private var isAnalyzing = false
     @State private var activeSheet: AnalysisSheet?
     @State private var showManualInput = false
-    // OCR 분석 결과 → 결과 화면 표시
-    @State private var analysisResult: OcrAnalysis?
-    @State private var showResult = false
+    @State private var ocrResult: OcrAnalysis?
     @State private var didAutoOpen = false
     // 진입 시 서버 이용 가능 여부 선제 조회
     @State private var isUsageLoading = true
@@ -140,15 +138,9 @@ struct ReceiptRegisterView: View {
             .presentationDragIndicator(.hidden)
             .presentationBackground(Color.colorWhite)
         }
-        // 직접 입력 화면 — 등록한 이미지를 그대로 전달
+        // 직접 입력 / OCR 성공 — 이미지 + 분석 결과(있으면 프리필) 전달
         .fullScreenCover(isPresented: $showManualInput) {
-            ReceiptManualInputView(images: images, onBack: { showManualInput = false })
-        }
-        // OCR 분석 성공 → 결과 화면
-        .fullScreenCover(isPresented: $showResult) {
-            if let analysisResult {
-                ReceiptAnalysisResultView(result: analysisResult, onBack: { showResult = false })
-            }
+            ReceiptManualInputView(images: images, ocrResult: ocrResult, onBack: { showManualInput = false })
         }
         .boatToastHost(toast)
     }
@@ -437,8 +429,8 @@ struct ReceiptRegisterView: View {
                 let result = try await OcrRepository.shared.analyze(images)
                 // 성공 시 로컬 캐시 토큰 1 차감 (UI에 노출 없이 백그라운드 처리)
                 Task.detached { await MainActor.run { CreditStore.shared.deductOne() } }
-                analysisResult = result
-                showResult = true
+                ocrResult = result
+                showManualInput = true
             } catch {
                 analyzeFailed = true
                 activeSheet = .failed
