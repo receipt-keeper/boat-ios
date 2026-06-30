@@ -48,29 +48,38 @@ struct ReceiptRegisterView: View {
     private var remainingTokens: Int { creditStore.current?.remainingCount ?? 3 }
 
     var body: some View {
-        VStack(spacing: 0) {
-            topBar
+        ZStack {
+            VStack(spacing: 0) {
+                topBar
 
-            VStack(alignment: .leading, spacing: .spacing20) {
-                FreeAnalysisBanner(remaining: remainingTokens)
-                uploadedSection
+                VStack(alignment: .leading, spacing: .spacing20) {
+                    FreeAnalysisBanner(remaining: remainingTokens)
+                    uploadedSection
+                }
+                .padding(.horizontal, .spacing20)
+                .padding(.top, .spacing8)
+
+                Spacer(minLength: .spacing20)
+
+                VStack(spacing: .spacing12) {
+                    cameraButton
+                    galleryButton
+                    uploadTestButton  // [TEST]
+                    analyzeButton
+                }
+                .padding(.horizontal, .spacing20)
+                .padding(.bottom, .spacing12)
             }
-            .padding(.horizontal, .spacing20)
-            .padding(.top, .spacing8)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.colorWhite)
 
-            Spacer(minLength: .spacing20)
-
-            VStack(spacing: .spacing12) {
-                cameraButton
-                galleryButton
-                uploadTestButton  // [TEST]
-                analyzeButton
+            if isAnalyzing {
+                HomeLoadingView(message: "receipt.analyze.loading")
+                    .transition(.opacity)
             }
-            .padding(.horizontal, .spacing20)
-            .padding(.bottom, .spacing12)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.colorWhite)
+        .animation(.easeOut(duration: 0.2), value: isAnalyzing)
         .fullScreenCover(isPresented: $showCamera) {
             CameraPicker { image in addImages([image]) }
                 .ignoresSafeArea()
@@ -307,22 +316,15 @@ struct ReceiptRegisterView: View {
         return Button {
             analyze()
         } label: {
-            Group {
-                if isAnalyzing {
-                    ProgressView()
-                        .tint(Color.colorWhite)
-                } else {
-                    Text("receipt.register.analyze")
-                        .font(.pretendard(.semibold, size: 16))
-                        .foregroundStyle(enabled ? Color.colorWhite : Color.gray500)
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 56)
-            .background(
-                (enabled || isAnalyzing) ? Color.brandPrimary : Color.gray200,
-                in: RoundedRectangle(cornerRadius: .roundedXl)
-            )
+            Text("receipt.register.analyze")
+                .font(.pretendard(.semibold, size: 16))
+                .foregroundStyle(enabled ? Color.colorWhite : Color.gray500)
+                .frame(maxWidth: .infinity)
+                .frame(height: 56)
+                .background(
+                    enabled ? Color.brandPrimary : Color.gray200,
+                    in: RoundedRectangle(cornerRadius: .roundedXl)
+                )
         }
         .buttonStyle(.plain)
         .disabled(!enabled)

@@ -10,6 +10,8 @@ import SwiftUI
 
 struct HomeLoadingView: View {
 
+    var message: LocalizedStringKey = "home.loading"
+
     var body: some View {
         ZStack {
             Color.colorWhite
@@ -18,7 +20,7 @@ struct HomeLoadingView: View {
                 GifImageView(name: "zero_preview")
                     .frame(width: 200, height: 200)
 
-                Text("home.loading")
+                Text(message)
                     .font(.pretendard(.medium, size: 16))
                     .foregroundStyle(Color.gray500)
             }

@@ -435,6 +435,16 @@
         }
       }
     },
+    "receipt.analyze.loading" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영수증을 분석하고 있어요."
+          }
+        }
+      }
+    },
     "home.login_success" : {
       "extractionState" : "stale",
       "localizations" : {
