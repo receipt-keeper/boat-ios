@@ -33,14 +33,20 @@ struct HomeGeneralView: View {
 
                 Spacer().frame(height: .spacing16)
 
-                // 가로 스크롤 카드 (D-day 뱃지가 위로 겹치므로 상단 여유 확보)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: .spacing16) {
-                        ForEach(expiring) { item in
-                            ExpiringWarrantyCard(item: item)
+                if expiring.isEmpty {
+                    // 0건 — 안전 상태 배너
+                    expiringEmptyBanner
+                        .padding(.horizontal, .spacing20)
+                } else {
+                    // 가로 스크롤 카드 (D-day 뱃지가 위로 겹치므로 상단 여유 확보)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: .spacing16) {
+                            ForEach(expiring) { item in
+                                ExpiringWarrantyCard(item: item)
+                            }
                         }
+                        .padding(.horizontal, .spacing20)
                     }
-                    .padding(.horizontal, .spacing20)
                 }
 
                 // ── 최근 등록된 영수증 ──
@@ -63,6 +69,33 @@ struct HomeGeneralView: View {
                 Spacer().frame(height: .spacing16)
             }
         }
+    }
+
+    // MARK: - AS 만료 예정 0건 배너
+
+    private var expiringEmptyBanner: some View {
+        VStack(spacing: .spacing12) {
+            Image("img_safe_banner")
+                .resizable()
+                .scaledToFit()
+                .frame(height: 80)
+
+            (
+                Text("등록된 영수증이 ")
+                    .foregroundStyle(Color.gray700)
+                + Text("안전하게\n관리")
+                    .foregroundStyle(Color.brandPrimary)
+                    .bold()
+                + Text("되고 있습니다.")
+                    .foregroundStyle(Color.gray700)
+            )
+            .font(.pretendard(.regular, size: 15))
+            .multilineTextAlignment(.center)
+            .lineSpacing(4)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, .spacing24)
+        .background(Color.brandSenary, in: RoundedRectangle(cornerRadius: .rounded2xl))
     }
 
     // MARK: - AS 만료 예정 헤더
