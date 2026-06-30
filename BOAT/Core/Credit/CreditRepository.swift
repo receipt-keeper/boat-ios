@@ -27,6 +27,16 @@ final class CreditStore {
 
     func save(_ credit: Credit) { current = credit }
     func clear() { current = nil }
+
+    /// OCR 분석 성공 시 로컬 캐시에서 토큰 1개 차감 (서버 동기화 전 즉시 반영용)
+    func deductOne() {
+        guard let c = current, c.remainingCount > 0 else { return }
+        current = Credit(
+            remainingCount:    c.remainingCount - 1,
+            totalGrantedCount: c.totalGrantedCount,
+            usedCount:         c.usedCount + 1
+        )
+    }
 }
 
 // MARK: - Repository

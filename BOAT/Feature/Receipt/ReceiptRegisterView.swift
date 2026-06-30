@@ -402,6 +402,8 @@ struct ReceiptRegisterView: View {
             defer { isAnalyzing = false }
             do {
                 let result = try await OcrRepository.shared.analyze(images)
+                // 성공 시 로컬 캐시 토큰 1 차감 (UI에 노출 없이 백그라운드 처리)
+                Task.detached { await MainActor.run { CreditStore.shared.deductOne() } }
                 analysisResult = result
                 showResult = true
             } catch {
