@@ -31,6 +31,9 @@ struct ReceiptRegisterView: View {
     @State private var isAnalyzing = false
     @State private var activeSheet: AnalysisSheet?
     @State private var showManualInput = false
+    // OCR 분석 결과 → 결과 화면 표시
+    @State private var analysisResult: OcrAnalysis?
+    @State private var showResult = false
     @State private var didAutoOpen = false
     // 진입 시 서버 이용 가능 여부 선제 조회
     @State private var isUsageLoading = true
@@ -115,7 +118,10 @@ struct ReceiptRegisterView: View {
                 case .failed:
                     AnalysisFailedSheet(
                         onManualInput: { openManualInput() },
-                        onRetry: { activeSheet = nil }
+                        onRetry: {
+                            activeSheet = nil
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { analyze() }
+                        }
                     )
                     .presentationDetents([.height(360)])
                 }
@@ -126,6 +132,12 @@ struct ReceiptRegisterView: View {
         // 직접 입력 화면 — 등록한 이미지를 그대로 전달
         .fullScreenCover(isPresented: $showManualInput) {
             ReceiptManualInputView(images: images, onBack: { showManualInput = false })
+        }
+        // OCR 분석 성공 → 결과 화면
+        .fullScreenCover(isPresented: $showResult) {
+            if let analysisResult {
+                ReceiptAnalysisResultView(result: analysisResult, onBack: { showResult = false })
+            }
         }
         .boatToastHost(toast)
     }
@@ -295,15 +307,22 @@ struct ReceiptRegisterView: View {
         return Button {
             analyze()
         } label: {
-            Text("receipt.register.analyze")
-                .font(.pretendard(.semibold, size: 16))
-                .foregroundStyle(enabled ? Color.colorWhite : Color.gray500)
-                .frame(maxWidth: .infinity)
-                .frame(height: 56)
-                .background(
-                    enabled ? Color.brandPrimary : Color.gray200,
-                    in: RoundedRectangle(cornerRadius: .roundedXl)
-                )
+            Group {
+                if isAnalyzing {
+                    ProgressView()
+                        .tint(Color.colorWhite)
+                } else {
+                    Text("receipt.register.analyze")
+                        .font(.pretendard(.semibold, size: 16))
+                        .foregroundStyle(enabled ? Color.colorWhite : Color.gray500)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 56)
+            .background(
+                (enabled || isAnalyzing) ? Color.brandPrimary : Color.gray200,
+                in: RoundedRectangle(cornerRadius: .roundedXl)
+            )
         }
         .buttonStyle(.plain)
         .disabled(!enabled)
@@ -375,8 +394,18 @@ struct ReceiptRegisterView: View {
             return
         }
 
-        // 3) OCR 분석 API 호출 (TODO: 백엔드 연동)
-        activeSheet = .failed
+        // 3) OCR 분석 API 호출 → 성공 시 결과 화면, 실패 시 실패 시트
+        Task {
+            isAnalyzing = true
+            defer { isAnalyzing = false }
+            do {
+                let result = try await OcrRepository.shared.analyze(images)
+                analysisResult = result
+                showResult = true
+            } catch {
+                activeSheet = .failed
+            }
+        }
     }
 }
 
