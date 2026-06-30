@@ -60,14 +60,16 @@ final class APIClient {
             if statusCode >= 500 {
                 throw APIError.network
             }
-            // 4xx → 서버 본문의 data.message
+            // 4xx → 상태코드는 항상 보존 (404 판별 등에 필요), 메시지는 서버 본문 우선
+            let serverMessage: String
             if let data = response.data,
                let envelope = try? JSONDecoder().decode(APIResponse<APIErrorData>.self, from: data),
-               let message = envelope.data?.message, !message.isEmpty {
-                throw APIError.server(statusCode: statusCode, message: message)
+               let msg = envelope.data?.message, !msg.isEmpty {
+                serverMessage = msg
+            } else {
+                serverMessage = String(localized: "error.api.unknown")
             }
-            // 메시지 파싱 불가 → 일반 오류
-            throw APIError.unknown
+            throw APIError.server(statusCode: statusCode, message: serverMessage)
         }
     }
 
@@ -102,12 +104,15 @@ final class APIClient {
         case .failure:
             guard let statusCode = response.response?.statusCode else { throw APIError.network }
             if statusCode >= 500 { throw APIError.network }
+            let serverMessage: String
             if let data = response.data,
                let envelope = try? JSONDecoder().decode(APIResponse<APIErrorData>.self, from: data),
-               let message = envelope.data?.message, !message.isEmpty {
-                throw APIError.server(statusCode: statusCode, message: message)
+               let msg = envelope.data?.message, !msg.isEmpty {
+                serverMessage = msg
+            } else {
+                serverMessage = String(localized: "error.api.unknown")
             }
-            throw APIError.unknown
+            throw APIError.server(statusCode: statusCode, message: serverMessage)
         }
     }
 

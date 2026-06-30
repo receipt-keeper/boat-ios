@@ -2,8 +2,12 @@
 //  AuthViewModel.swift
 //  BOAT
 //
-//  Android AuthViewModel과 동일 플로우:
-//  소셜 로그인 → Firebase 인증 → 약관 화면 → 백엔드 로그인 → 토큰 저장 → 홈
+//  소셜 로그인 플로우:
+//  Firebase 인증 → POST /auth/login
+//    ├─ 200 기존 회원 → 토큰 저장 → 홈
+//    ├─ 404 미가입 → 약관 화면 (pendingFirebaseToken 보관)
+//    └─ 기타 오류 → 에러 토스트
+//  약관 동의 완료 → POST /auth/signup → 토큰 저장 → 홈
 //
 
 import Foundation
@@ -29,17 +33,17 @@ class AuthViewModel {
     private let pathMonitor = NWPathMonitor()
     private var isNetworkAvailable = true
 
-    // 약관 동의 후 백엔드 로그인에 사용할 Firebase ID 토큰
+    // 404(미가입) 시 약관 화면에서 signup 호출에 사용할 Firebase ID 토큰
     private var pendingFirebaseToken: String?
 
-    private static let termsVersion = "1.0"
-    private static let privacyVersion = "1.0"
+    private static let termsVersion   = "2026-06-01"
+    private static let privacyVersion = "2026-06-01"
 
     init() {
         // 이미 백엔드 토큰을 보유한 경우 바로 홈
         route = KeychainManager.shared.accessToken != nil ? .home : .login
 
-        // 네트워크 상태 실시간 감지 (self 초기화 완료 후 설정)
+        // 네트워크 상태 실시간 감지
         pathMonitor.pathUpdateHandler = { [weak self] path in
             DispatchQueue.main.async {
                 self?.isNetworkAvailable = path.status == .satisfied
@@ -133,7 +137,7 @@ class AuthViewModel {
         }
     }
 
-    // MARK: - Firebase 인증 → Firebase ID 토큰 확보 → 약관 화면
+    // MARK: - Firebase 인증 → Firebase ID 토큰 확보 → 백엔드 로그인 시도
 
     private func firebaseSignIn(with credential: AuthCredential, failKey: String.LocalizationValue) {
         Auth.auth().signIn(with: credential) { [weak self] authResult, error in
@@ -142,21 +146,53 @@ class AuthViewModel {
                 self.fail(failKey)
                 return
             }
-            // 약관 동의 후 백엔드 로그인에 쓸 Firebase ID 토큰 확보
             authResult?.user.getIDToken { [weak self] token, _ in
                 guard let self else { return }
                 guard let token else {
                     self.fail(failKey)
                     return
                 }
-                self.pendingFirebaseToken = token
-                self.isLoading = false
-                self.route = .terms
+                // Firebase 토큰 확보 → 백엔드 login 시도
+                Task { await self.attemptBackendLogin(firebaseToken: token, failKey: failKey) }
             }
         }
     }
 
-    // MARK: - 약관 동의 완료 → 백엔드 로그인
+    // MARK: - 백엔드 login 시도 (Android loginOrRedirectToSignup 대응)
+
+    private func attemptBackendLogin(firebaseToken: String, failKey: String.LocalizationValue) async {
+        do {
+            let tokens: LoginTokenData = try await APIClient.shared.request(
+                AuthTarget.login(idToken: firebaseToken)
+            )
+            // 200 기존 회원 → 토큰 저장 후 홈
+            KeychainManager.shared.accessToken = tokens.accessToken
+            KeychainManager.shared.refreshToken = tokens.refreshToken
+            try? await UserRepository.shared.refreshUser()
+            await MainActor.run {
+                self.isLoading = false
+                self.route = .home
+            }
+        } catch {
+            if let apiError = error as? APIError, case .server(404, _) = apiError {
+                // 404 미가입 → 약관 동의 화면으로
+                await MainActor.run {
+                    self.pendingFirebaseToken = firebaseToken
+                    self.isLoading = false
+                    self.route = .terms
+                }
+            } else {
+                // 그 외 오류 → 에러 토스트
+                await MainActor.run {
+                    self.isLoading = false
+                    self.errorMessage = (error as? LocalizedError)?.errorDescription
+                        ?? String(localized: failKey)
+                }
+            }
+        }
+    }
+
+    // MARK: - 약관 동의 완료 → 회원가입 API
 
     private func completeTerms(terms: Bool, privacy: Bool, marketing: Bool) {
         guard let firebaseToken = pendingFirebaseToken else { return }
@@ -165,28 +201,24 @@ class AuthViewModel {
         Task {
             do {
                 let tokens: LoginTokenData = try await APIClient.shared.request(
-                    AuthTarget.login(
-                        idToken: firebaseToken,
-                        termsVersion: Self.termsVersion,
-                        privacyVersion: Self.privacyVersion,
-                        termsAccepted: terms,
-                        privacyAccepted: privacy,
+                    AuthTarget.signup(
+                        idToken:          firebaseToken,
+                        termsVersion:     Self.termsVersion,
+                        privacyVersion:   Self.privacyVersion,
+                        termsAccepted:    terms,
+                        privacyAccepted:  privacy,
                         marketingConsent: marketing
                     )
                 )
                 KeychainManager.shared.accessToken = tokens.accessToken
                 KeychainManager.shared.refreshToken = tokens.refreshToken
-
-                // 로그인 직후 사용자 정보 조회 (best-effort)
                 try? await UserRepository.shared.refreshUser()
-
                 await MainActor.run {
                     self.pendingFirebaseToken = nil
                     self.isLoading = false
                     self.route = .home
                 }
             } catch {
-                // 서버가 준 에러 문구가 있으면 우선 노출, 없으면 일반 문구
                 let message = (error as? LocalizedError)?.errorDescription
                     ?? String(localized: "terms.login_failed")
                 await MainActor.run {
@@ -204,13 +236,11 @@ class AuthViewModel {
 
         Task {
             do {
-                // 서버 계정 삭제 성공(204) 시에만 로컬 세션/토큰 정리
                 try await APIClient.shared.requestVoid(AuthTarget.deleteAccount)
                 try? Auth.auth().signOut()
                 GIDSignIn.sharedInstance.signOut()
                 KeychainManager.shared.clearAll()
                 UserStore.shared.clear()
-
                 await MainActor.run {
                     self.pendingFirebaseToken = nil
                     self.isLoading = false
@@ -228,8 +258,6 @@ class AuthViewModel {
     // MARK: - Sign Out
 
     private func signOut() {
-        // 서버 세션 revoke (best-effort) — 토큰을 지우기 전에 호출.
-        // API 성공 여부와 무관하게 로컬 로그아웃은 항상 진행한다.
         if let refreshToken = KeychainManager.shared.refreshToken, !refreshToken.isEmpty {
             Task {
                 try? await APIClient.shared.requestVoid(AuthTarget.logout(refreshToken: refreshToken))

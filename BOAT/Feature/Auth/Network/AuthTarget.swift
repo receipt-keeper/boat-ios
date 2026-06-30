@@ -3,14 +3,18 @@
 //  BOAT
 //
 //  인증 관련 엔드포인트. Android AuthApiService에 대응.
+//  login — 기존 회원 로그인 (idToken만 전송, 404이면 미가입)
+//  signup — 신규 회원가입 (idToken + 약관 동의 정보)
 //
 
 import Foundation
 import Alamofire
 
 enum AuthTarget {
-    /// 가입 겸 로그인 — Firebase ID 토큰 + 약관 동의 정보 전송
-    case login(
+    /// 기존 회원 로그인 — Firebase ID 토큰만 전송 (404 → 미가입 → signup 화면)
+    case login(idToken: String)
+    /// 신규 회원가입 — Firebase ID 토큰 + 약관 동의 정보
+    case signup(
         idToken: String,
         termsVersion: String,
         privacyVersion: String,
@@ -31,6 +35,7 @@ extension AuthTarget: TargetType {
     var path: String {
         switch self {
         case .login:         return "/api/v1/auth/login"
+        case .signup:        return "/api/v1/auth/signup"
         case .logout:        return "/api/v1/auth/logout"
         case .refresh:       return "/api/v1/auth/refresh"
         case .deleteAccount: return "/api/v1/auth/me"
@@ -39,26 +44,32 @@ extension AuthTarget: TargetType {
 
     var method: HTTPMethod {
         switch self {
-        case .login, .logout, .refresh: return .post
-        case .deleteAccount:            return .delete
+        case .login, .signup, .logout, .refresh: return .post
+        case .deleteAccount:                     return .delete
         }
     }
 
     var task: RequestTask {
         switch self {
-        case let .login(idToken, termsVersion, privacyVersion, termsAccepted, privacyAccepted, marketingConsent):
+        case let .login(idToken):
+            return .body(["idToken": idToken])
+
+        case let .signup(idToken, termsVersion, privacyVersion, termsAccepted, privacyAccepted, marketingConsent):
             return .body([
-                "idToken": idToken,
-                "termsVersion": termsVersion,
-                "privacyVersion": privacyVersion,
-                "termsAccepted": termsAccepted,
-                "privacyAccepted": privacyAccepted,
-                "marketingConsent": marketingConsent
+                "idToken":           idToken,
+                "termsVersion":      termsVersion,
+                "privacyVersion":    privacyVersion,
+                "termsAccepted":     termsAccepted,
+                "privacyAccepted":   privacyAccepted,
+                "marketingConsent":  marketingConsent
             ])
+
         case let .logout(refreshToken):
             return .body(["refreshToken": refreshToken])
+
         case let .refresh(refreshToken):
             return .body(["refreshToken": refreshToken])
+
         case .deleteAccount:
             return .plain
         }
@@ -66,10 +77,8 @@ extension AuthTarget: TargetType {
 
     var requiresAuth: Bool {
         switch self {
-        // 토큰을 body로 직접 전달하는 인증 엔드포인트는 헤더 주입/갱신 제외
-        case .login, .logout, .refresh: return false
-        // 탈퇴는 Bearer AccessToken 필요
-        case .deleteAccount: return true
+        case .login, .signup, .logout, .refresh: return false
+        case .deleteAccount:                     return true
         }
     }
 }
