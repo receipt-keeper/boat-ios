@@ -39,6 +39,8 @@ struct ReceiptRegisterView: View {
     @State private var isUsageLoading = true
     @State private var serverCanAnalyze = false
     @State private var toast = BoatToastState()
+    // OCR 실패 시 썸네일 실패 오버레이 표시
+    @State private var analyzeFailed = false
     // [TEST] 파일 업로드 임시 테스트
     @State private var isUploading = false
 
@@ -219,19 +221,48 @@ struct ReceiptRegisterView: View {
                     .scaledToFill()
             }
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
+            .overlay {
+                if analyzeFailed {
+                    failOverlay
+                }
+            }
             .overlay(alignment: .topTrailing) {
                 Button {
                     images.remove(at: index)
+                    analyzeFailed = false
                 } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 11, weight: .bold))
                         .foregroundStyle(Color.colorWhite)
                         .frame(width: 22, height: 22)
-                        .background(Color.gray500, in: Circle())
+                        .background(analyzeFailed ? Color.systemError : Color.gray500, in: Circle())
                 }
                 .buttonStyle(.plain)
                 .padding(6)
             }
+    }
+
+    private var failOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.5)
+                .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
+
+            VStack(spacing: .spacing8) {
+                ZStack {
+                    Circle()
+                        .stroke(Color.systemError, lineWidth: 2)
+                        .frame(width: 36, height: 36)
+                    Text("!")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(Color.systemError)
+                }
+
+                Text("다시 업로드해 주세요")
+                    .font(.pretendard(.medium, size: 11))
+                    .foregroundStyle(Color.systemError)
+                    .multilineTextAlignment(.center)
+            }
+        }
     }
 
     // MARK: - 버튼
@@ -338,6 +369,7 @@ struct ReceiptRegisterView: View {
         let slots = remainingSlots
         guard slots > 0 else { showMaxAlert = true; return }
         images.append(contentsOf: new.prefix(slots))
+        analyzeFailed = false
     }
 
     private func loadGalleryImages(_ items: [PhotosPickerItem]) {
@@ -397,6 +429,7 @@ struct ReceiptRegisterView: View {
         }
 
         // 3) OCR 분석 API 호출 → 성공 시 결과 화면, 실패 시 실패 시트
+        analyzeFailed = false
         Task {
             isAnalyzing = true
             defer { isAnalyzing = false }
@@ -407,6 +440,7 @@ struct ReceiptRegisterView: View {
                 analysisResult = result
                 showResult = true
             } catch {
+                analyzeFailed = true
                 activeSheet = .failed
             }
         }
