@@ -75,7 +75,8 @@ struct MainTabView: View {
             .fullScreenCover(isPresented: $showRegisterFromFab) {
                 ReceiptRegisterView(
                     onBack: { showRegisterFromFab = false },
-                    autoOpen: registerAutoOpen
+                    autoOpen: registerAutoOpen,
+                    onComplete: { showRegisterFromFab = false }
                 )
             }
             // 어느 탭에서든 종 아이콘 → 알림 목록
@@ -204,7 +205,10 @@ private struct HomeView: View {
             }
         }
         .fullScreenCover(isPresented: $showReceiptRegister) {
-            ReceiptRegisterView(onBack: { showReceiptRegister = false })
+            ReceiptRegisterView(
+                onBack: { showReceiptRegister = false },
+                onComplete: { showReceiptRegister = false }
+            )
         }
     }
 

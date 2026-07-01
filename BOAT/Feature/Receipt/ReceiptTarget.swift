@@ -18,13 +18,20 @@ enum ReceiptTarget {
         category: String?,
         q: String?
     )
+    /// POST /api/v1/receipts — OCR 결과 수정본/수동 입력값으로 영수증 등록
+    case create(body: [String: Any])
 }
 
 extension ReceiptTarget: TargetType {
 
     var path: String { "/api/v1/receipts" }
 
-    var method: HTTPMethod { .get }
+    var method: HTTPMethod {
+        switch self {
+        case .list:   return .get
+        case .create: return .post
+        }
+    }
 
     var task: RequestTask {
         switch self {
@@ -38,6 +45,9 @@ extension ReceiptTarget: TargetType {
             if let category, !category.isEmpty { params["category"] = category }
             if let q, !q.isEmpty               { params["q"] = q }
             return .query(params)
+
+        case let .create(body):
+            return .body(body)
         }
     }
 }

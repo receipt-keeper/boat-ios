@@ -20,6 +20,7 @@ struct Receipt: Decodable, Identifiable, Hashable {
     let periodMonths: Int?
     let expiresOn: String?         // "yyyy-MM-dd" — AS 만료일
     let category: String?          // DeviceCategory rawValue
+    let subCategory: String?       // 세부 기기명 (예: 냉장고)
     let memo: String?
     let requiresPhysicalReceipt: Bool?
     let receiptFileIds: [String]?

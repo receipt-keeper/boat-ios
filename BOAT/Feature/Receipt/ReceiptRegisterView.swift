@@ -15,6 +15,8 @@ struct ReceiptRegisterView: View {
 
     let onBack: () -> Void
     var autoOpen: AutoOpen? = nil
+    /// 영수증 등록 완료 → 등록 플로우 전체를 닫고 홈으로 복귀
+    var onComplete: () -> Void = {}
 
     /// 최대 등록 가능 장수 (Android MAX_PHOTOS와 동일)
     private static let maxPhotos = 5
@@ -140,7 +142,15 @@ struct ReceiptRegisterView: View {
         }
         // 직접 입력 / OCR 성공 — 이미지 + 분석 결과(있으면 프리필) 전달
         .fullScreenCover(isPresented: $showManualInput) {
-            ReceiptManualInputView(images: images, ocrResult: ocrResult, onBack: { showManualInput = false })
+            ReceiptManualInputView(
+                images: images,
+                ocrResult: ocrResult,
+                onBack: { showManualInput = false },
+                onComplete: {
+                    showManualInput = false
+                    onComplete()
+                }
+            )
         }
         .boatToastHost(toast)
     }

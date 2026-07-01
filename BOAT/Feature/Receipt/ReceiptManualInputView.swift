@@ -14,6 +14,8 @@ import PhotosUI
 struct ReceiptManualInputView: View {
 
     let onBack: () -> Void
+    /// 영수증 등록 성공 → 홈으로 복귀 처리 (상위에서 등록 플로우 전체를 닫음)
+    var onComplete: () -> Void = {}
 
     private static let maxPhotos = 5
     private static let warrantyOptions: [LocalizedStringKey] = [
@@ -36,10 +38,13 @@ struct ReceiptManualInputView: View {
     @State private var serial = ""
     @State private var keepReceipt = true
     @State private var showDatePicker = false
+    @State private var isSubmitting = false
+    @State private var toast = BoatToastState()
 
-    init(images: [UIImage], ocrResult: OcrAnalysis? = nil, onBack: @escaping () -> Void) {
+    init(images: [UIImage], ocrResult: OcrAnalysis? = nil, onBack: @escaping () -> Void, onComplete: @escaping () -> Void = {}) {
         _images = State(initialValue: images)
         self.onBack = onBack
+        self.onComplete = onComplete
 
         guard let ocr = ocrResult else { return }
 
@@ -109,38 +114,47 @@ struct ReceiptManualInputView: View {
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: 0) {
-            topBar
+        ZStack {
+            VStack(spacing: 0) {
+                topBar
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    sectionTitle("manual.image_section")
-                    Spacer().frame(height: .spacing12)
-                    imagePager
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        sectionTitle("manual.image_section")
+                        Spacer().frame(height: .spacing12)
+                        imagePager
 
-                    Spacer().frame(height: .spacing20)
-                    mainCard
+                        Spacer().frame(height: .spacing20)
+                        mainCard
 
-                    Spacer().frame(height: .spacing20)
-                    sectionTitle("manual.warranty_section")
-                    Spacer().frame(height: .spacing12)
-                    warrantyInfoCard
+                        Spacer().frame(height: .spacing20)
+                        sectionTitle("manual.warranty_section")
+                        Spacer().frame(height: .spacing12)
+                        warrantyInfoCard
 
-                    Spacer().frame(height: .spacing20)
-                    sectionTitle("manual.as_section")
-                    Spacer().frame(height: .spacing12)
-                    asGuideCard
+                        Spacer().frame(height: .spacing20)
+                        sectionTitle("manual.as_section")
+                        Spacer().frame(height: .spacing12)
+                        asGuideCard
 
-                    Spacer().frame(height: .spacing24)
-                    submitButton
+                        Spacer().frame(height: .spacing24)
+                        submitButton
 
-                    Spacer().frame(height: .spacing16)
+                        Spacer().frame(height: .spacing16)
+                    }
+                    .padding(.horizontal, .spacing20)
                 }
-                .padding(.horizontal, .spacing20)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.gray50)
+
+            if isSubmitting {
+                HomeLoadingView(message: "receipt.register.loading")
+                    .transition(.opacity)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.gray50)
+        .animation(.easeOut(duration: 0.2), value: isSubmitting)
         .onChange(of: galleryItems) { _, items in loadGalleryImages(items) }
         .sheet(isPresented: $showDatePicker) {
             PurchaseDatePickerSheet(
@@ -149,6 +163,7 @@ struct ReceiptManualInputView: View {
             )
             .presentationDetents([.medium])
         }
+        .boatToastHost(toast)
     }
 
     // MARK: - Top Bar
@@ -401,21 +416,22 @@ struct ReceiptManualInputView: View {
     // MARK: - 등록 버튼
 
     private var submitButton: some View {
-        Button {
-            // TODO: 영수증 정보 등록 API
+        let enabled = canSubmit && !isSubmitting
+        return Button {
+            submit()
         } label: {
             Text("manual.submit")
                 .font(.pretendard(.semibold, size: 16))
-                .foregroundStyle(canSubmit ? Color.colorWhite : Color.gray500)
+                .foregroundStyle(enabled ? Color.colorWhite : Color.gray500)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
                 .background(
-                    canSubmit ? Color.brandPrimary : Color.gray200,
+                    enabled ? Color.brandPrimary : Color.gray200,
                     in: RoundedRectangle(cornerRadius: .roundedXl)
                 )
         }
         .buttonStyle(.plain)
-        .disabled(!canSubmit)
+        .disabled(!enabled)
     }
 
     // MARK: - 작은 컴포넌트
@@ -516,6 +532,42 @@ struct ReceiptManualInputView: View {
     }
 
     // MARK: - Actions
+
+    /// "yyyy.MM.dd" → "yyyy-MM-dd" (서버 전송 포맷)
+    private var apiPaymentDate: String? {
+        guard !purchaseDate.isEmpty else { return nil }
+        return purchaseDate.replacingOccurrences(of: ".", with: "-")
+    }
+
+    /// 영수증 등록: 파일 업로드 → 생성 API → 로컬 저장 → 홈 복귀. 실패 시 Toast.
+    private func submit() {
+        guard canSubmit, !isSubmitting else { return }
+
+        let fields = ReceiptCreateFields(
+            itemName: productName.trimmingCharacters(in: .whitespaces),
+            brandName: brand.trimmingCharacters(in: .whitespaces),
+            paymentLocation: nil,
+            paymentDate: apiPaymentDate,
+            totalAmount: Int(price),
+            periodMonths: totalWarrantyMonths,
+            category: selectedCategory?.rawValue,
+            subCategory: nil,
+            memo: memo.trimmingCharacters(in: .whitespaces),
+            requiresPhysicalReceipt: keepReceipt
+        )
+        let imagesToUpload = images
+
+        Task {
+            isSubmitting = true
+            defer { isSubmitting = false }
+            do {
+                _ = try await ReceiptRepository.shared.createReceipt(images: imagesToUpload, fields: fields)
+                onComplete()
+            } catch {
+                toast.showError(String(localized: "receipt.register.fail"))
+            }
+        }
+    }
 
     private func loadGalleryImages(_ items: [PhotosPickerItem]) {
         guard !items.isEmpty else { return }
