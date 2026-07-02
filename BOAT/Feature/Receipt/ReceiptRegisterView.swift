@@ -41,8 +41,6 @@ struct ReceiptRegisterView: View {
     @State private var toast = BoatToastState()
     // OCR 실패 시 썸네일 실패 오버레이 표시
     @State private var analyzeFailed = false
-    // [TEST] 파일 업로드 임시 테스트
-    @State private var isUploading = false
 
     private var canAddMore: Bool { images.count < Self.maxPhotos }
     private var remainingSlots: Int { max(0, Self.maxPhotos - images.count) }
@@ -66,7 +64,6 @@ struct ReceiptRegisterView: View {
                 VStack(spacing: .spacing12) {
                     cameraButton
                     galleryButton
-                    uploadTestButton  // [TEST]
                     analyzeButton
                 }
                 .padding(.horizontal, .spacing20)
@@ -312,38 +309,6 @@ struct ReceiptRegisterView: View {
         )
     }
 
-    // [TEST] 파일 업로드 임시 테스트 버튼
-    private var uploadTestButton: some View {
-        let enabled = !images.isEmpty && !isUploading
-        return Button {
-            Task { await uploadTest() }
-        } label: {
-            HStack(spacing: .spacing8) {
-                if isUploading {
-                    ProgressView()
-                        .tint(Color.gray500)
-                        .frame(width: 20, height: 20)
-                } else {
-                    Image(systemName: "arrow.up.to.line")
-                        .frame(width: 20, height: 20)
-                        .foregroundStyle(enabled ? Color.gray700 : Color.gray400)
-                }
-                Text("[TEST] 파일 업로드")
-                    .font(.pretendard(.medium, size: 16))
-                    .foregroundStyle(enabled ? Color.gray700 : Color.gray400)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 56)
-            .background(Color.gray100, in: RoundedRectangle(cornerRadius: .roundedXl))
-            .overlay(
-                RoundedRectangle(cornerRadius: .roundedXl)
-                    .stroke(Color.gray300, lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
-        .disabled(!enabled)
-    }
-
     private var analyzeButton: some View {
         let enabled = !images.isEmpty && !isAnalyzing
         return Button {
@@ -388,20 +353,6 @@ struct ReceiptRegisterView: View {
                 addImages(loaded)
                 galleryItems = [] // 다음 선택을 위해 초기화
             }
-        }
-    }
-
-    // [TEST] 파일 업로드 임시 테스트
-    private func uploadTest() async {
-        guard !images.isEmpty else { return }
-        isUploading = true
-        defer { isUploading = false }
-        do {
-            let uploaded = try await FileRepository.shared.uploadImages(images)
-            let names = uploaded.map { $0.originalName }.joined(separator: ", ")
-            toast.showSuccess("업로드 완료 · \(uploaded.count)개\n\(names)")
-        } catch {
-            toast.showError("업로드 실패: \(error.localizedDescription)")
         }
     }
 
