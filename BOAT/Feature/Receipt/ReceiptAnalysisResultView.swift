@@ -90,15 +90,6 @@ struct ReceiptAnalysisResultView: View {
     }
 }
 
-private extension Int {
-    /// 천 단위 콤마 포맷 (실패 시 기본 문자열)
-    var formattedWithComma: String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter.string(from: NSNumber(value: self)) ?? "\(self)"
-    }
-}
-
 #Preview {
     ReceiptAnalysisResultView(
         result: OcrAnalysis(

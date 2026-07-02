@@ -111,6 +111,14 @@ struct ReceiptManualInputView: View {
             && totalWarrantyMonths != nil
     }
 
+    /// `price`(원본 숫자 문자열)를 콤마 포맷으로 표시하고, 입력값은 숫자만 남겨 저장.
+    private var priceDisplayBinding: Binding<String> {
+        Binding(
+            get: { Int(price)?.formattedWithComma ?? "" },
+            set: { price = $0.filter(\.isNumber) }
+        )
+    }
+
     // MARK: - Body
 
     var body: some View {
@@ -375,7 +383,7 @@ struct ReceiptManualInputView: View {
         VStack(alignment: .leading, spacing: .spacing16) {
             BoatInputField(text: $brand, label: "manual.brand", placeholder: "manual.brand_hint")
             BoatInputField(
-                text: Binding(get: { price }, set: { price = $0.filter(\.isNumber) }),
+                text: priceDisplayBinding,
                 label: "manual.price",
                 placeholder: "manual.price_hint",
                 keyboard: .numberPad

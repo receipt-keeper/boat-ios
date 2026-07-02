@@ -26,26 +26,22 @@ enum AuthTarget {
     case logout(refreshToken: String)
     /// AccessToken 재발급 — refreshToken 1회용 회전
     case refresh(refreshToken: String)
-    /// 회원 탈퇴 — 서버 계정 삭제 (204), Bearer 필요
-    case deleteAccount
 }
 
 extension AuthTarget: TargetType {
 
     var path: String {
         switch self {
-        case .login:         return "/api/v1/auth/login"
-        case .signup:        return "/api/v1/auth/signup"
-        case .logout:        return "/api/v1/auth/logout"
-        case .refresh:       return "/api/v1/auth/refresh"
-        case .deleteAccount: return "/api/v1/auth/me"
+        case .login:   return "/api/v1/auth/login"
+        case .signup:  return "/api/v1/auth/signup"
+        case .logout:  return "/api/v1/auth/logout"
+        case .refresh: return "/api/v1/auth/refresh"
         }
     }
 
     var method: HTTPMethod {
         switch self {
         case .login, .signup, .logout, .refresh: return .post
-        case .deleteAccount:                     return .delete
         }
     }
 
@@ -69,16 +65,12 @@ extension AuthTarget: TargetType {
 
         case let .refresh(refreshToken):
             return .body(["refreshToken": refreshToken])
-
-        case .deleteAccount:
-            return .plain
         }
     }
 
     var requiresAuth: Bool {
         switch self {
         case .login, .signup, .logout, .refresh: return false
-        case .deleteAccount:                     return true
         }
     }
 }

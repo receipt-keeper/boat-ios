@@ -3,7 +3,7 @@
 //  BOAT
 //
 //  Users 엔드포인트. Android UserApiService 대응.
-//  getMe는 Bearer 필요 (requiresAuth 기본 true → 401 자동 갱신 적용).
+//  getMe/deleteAccount 모두 Bearer 필요 (requiresAuth 기본 true → 401 자동 갱신 적용).
 //  알림/마케팅 설정 수정은 NotificationSettingsTarget 으로 분리됨.
 //
 
@@ -13,13 +13,20 @@ import Alamofire
 enum UserTarget {
     /// 현재 로그인 사용자 정보 조회
     case getMe
+    /// 회원 탈퇴 — 로그인 정보/계정 데이터 삭제 (204)
+    case deleteAccount
 }
 
 extension UserTarget: TargetType {
 
     var path: String { "/api/v1/users/me" }
 
-    var method: HTTPMethod { .get }
+    var method: HTTPMethod {
+        switch self {
+        case .getMe:         return .get
+        case .deleteAccount: return .delete
+        }
+    }
 
     var task: RequestTask { .plain }
 }

@@ -236,7 +236,7 @@ class AuthViewModel {
 
         Task {
             do {
-                try await APIClient.shared.requestVoid(AuthTarget.deleteAccount)
+                try await APIClient.shared.requestVoid(UserTarget.deleteAccount)
                 try? Auth.auth().signOut()
                 GIDSignIn.sharedInstance.signOut()
                 KeychainManager.shared.clearAll()
