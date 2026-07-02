@@ -20,16 +20,26 @@ enum ReceiptTarget {
     )
     /// POST /api/v1/receipts — OCR 결과 수정본/수동 입력값으로 영수증 등록
     case create(body: [String: Any])
+    /// DELETE /api/v1/receipts/{receipt_id} — 영수증 삭제
+    case delete(receiptId: String)
 }
 
 extension ReceiptTarget: TargetType {
 
-    var path: String { "/api/v1/receipts" }
+    var path: String {
+        switch self {
+        case .list, .create:
+            return "/api/v1/receipts"
+        case let .delete(receiptId):
+            return "/api/v1/receipts/\(receiptId)"
+        }
+    }
 
     var method: HTTPMethod {
         switch self {
         case .list:   return .get
         case .create: return .post
+        case .delete: return .delete
         }
     }
 
@@ -48,6 +58,9 @@ extension ReceiptTarget: TargetType {
 
         case let .create(body):
             return .body(body)
+
+        case .delete:
+            return .plain
         }
     }
 }

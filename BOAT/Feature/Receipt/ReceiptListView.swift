@@ -59,6 +59,7 @@ struct ReceiptListView: View {
     @State private var sortExpanded = false
     @State private var menuReceiptId: String?
     @State private var viewModel = ReceiptListViewModel()
+    @State private var toast = BoatToastState()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -142,14 +143,15 @@ struct ReceiptListView: View {
                 }
             }
         }
+        .boatToastHost(toast)
     }
 
     // MARK: - 삭제 메뉴
 
     private func deleteMenu(id: String) -> some View {
         Button {
-            viewModel.deleteLocally(id: id)
             menuReceiptId = nil
+            Task { await deleteReceipt(id: id) }
         } label: {
             Text("receipt.menu.delete")
                 .font(.pretendard(.medium, size: 16))
@@ -254,6 +256,14 @@ struct ReceiptListView: View {
 
     private func reload() {
         Task { await viewModel.reload(tab: selectedTab, sort: selectedSort, filter: selectedFilter) }
+    }
+
+    /// 삭제 API 호출 → 성공 시 로컬 DB/목록 갱신은 ViewModel에서 처리, 실패 시 에러 토스트만 노출.
+    private func deleteReceipt(id: String) async {
+        let success = await viewModel.deleteReceipt(id: id)
+        if !success {
+            toast.showError(String(localized: "receipt.delete.fail"))
+        }
     }
 
     // MARK: - 리스트 영역 (로딩 / 빈 상태 / 카드 목록)

@@ -2,10 +2,11 @@
 //  ReceiptRepository.swift
 //  BOAT
 //
-//  영수증 조회/등록.
-//  - GET  /api/v1/receipts — 커서 기반 페이지네이션. 첫 페이지는 로컬 캐시에 동기화하고,
-//                            네트워크 실패 시 로컬 캐시로 폴백(오프라인 조회).
-//  - POST /api/v1/receipts — 파일 업로드 → fileId 수집 → 영수증 생성 → 로컬 캐시 저장.
+//  영수증 조회/등록/삭제.
+//  - GET    /api/v1/receipts             — 커서 기반 페이지네이션. 첫 페이지는 로컬 캐시에 동기화하고,
+//                                          네트워크 실패 시 로컬 캐시로 폴백(오프라인 조회).
+//  - POST   /api/v1/receipts             — 파일 업로드 → fileId 수집 → 영수증 생성 → 로컬 캐시 저장.
+//  - DELETE /api/v1/receipts/{receiptId} — 영수증 삭제 → 로컬 캐시에서도 제거.
 //
 
 import UIKit
@@ -87,6 +88,12 @@ final class ReceiptRepository {
         // 3) 로컬 캐시 저장 (오프라인 조회용)
         local.upsert(receipt)
         return receipt
+    }
+
+    /// DELETE /api/v1/receipts/{receiptId} — 서버 삭제 성공 시에만 로컬 캐시에서도 제거.
+    func deleteReceipt(id: String) async throws {
+        try await APIClient.shared.requestVoid(ReceiptTarget.delete(receiptId: id))
+        local.delete(id: id)
     }
 }
 

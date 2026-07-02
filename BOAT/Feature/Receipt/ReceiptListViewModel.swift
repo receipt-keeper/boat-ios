@@ -73,13 +73,21 @@ final class ReceiptListViewModel {
         didLoadOnce = true
     }
 
-    /// 로컬 삭제 (API/DB 미연동 — 화면 목록에서만 제거)
-    func deleteLocally(id: String) {
+    /// 영수증 삭제 — DELETE API 성공 시 로컬 캐시 + 화면 목록에서 함께 제거.
+    /// 실패 시 목록은 그대로 유지하고 false를 반환 (호출부에서 에러 토스트 처리).
+    @discardableResult
+    func deleteReceipt(id: String) async -> Bool {
+        do {
+            try await repository.deleteReceipt(id: id)
+        } catch {
+            return false
+        }
         let before = receipts.count
         receipts.removeAll { $0.receiptId == id }
         if receipts.count != before {
             totalCount = max(0, totalCount - 1)
         }
+        return true
     }
 
     /// 마지막 근처 카드가 보일 때 호출 — 다음 페이지 추가 로드

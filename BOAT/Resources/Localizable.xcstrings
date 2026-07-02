@@ -13,9 +13,6 @@
     "!" : {
 
     },
-    "[TEST] 파일 업로드" : {
-
-    },
     "%lld" : {
 
     },
@@ -1218,26 +1215,6 @@
         }
       }
     },
-    "receipt.register.loading" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증을 등록하고 있어요."
-          }
-        }
-      }
-    },
-    "receipt.register.fail" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 등록에 실패했어요. 잠시 후 다시 시도해 주세요."
-          }
-        }
-      }
-    },
     "receipt.empty" : {
       "localizations" : {
         "ko" : {
@@ -1388,6 +1365,16 @@
         }
       }
     },
+    "receipt.delete.fail" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영수증 삭제에 실패했어요. 잠시 후 다시 시도해 주세요."
+          }
+        }
+      }
+    },
     "receipt.register.analyze" : {
       "localizations" : {
         "ko" : {
@@ -1408,12 +1395,32 @@
         }
       }
     },
+    "receipt.register.fail" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영수증 등록에 실패했어요. 잠시 후 다시 시도해 주세요."
+          }
+        }
+      }
+    },
     "receipt.register.gallery" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "갤러리에서 불러오기"
+          }
+        }
+      }
+    },
+    "receipt.register.loading" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영수증을 등록하고 있어요."
           }
         }
       }
