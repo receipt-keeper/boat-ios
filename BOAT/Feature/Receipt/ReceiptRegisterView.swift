@@ -39,6 +39,8 @@ struct ReceiptRegisterView: View {
     @State private var isUsageLoading = true
     @State private var serverCanAnalyze = false
     @State private var toast = BoatToastState()
+    // [TEST] 토큰 소진 시트의 무료 충전 버튼 — 중복 탭 방지
+    @State private var isRecharging = false
     // OCR 실패 시 썸네일 실패 오버레이 표시
     @State private var analyzeFailed = false
 
@@ -118,7 +120,10 @@ struct ReceiptRegisterView: View {
                 switch sheet {
                 case .noToken:
                     NoTokenSheet(
-                        onRecharge: { activeSheet = nil /* TODO: 충전 */ },
+                        onRecharge: {
+                            activeSheet = nil
+                            Task { await rechargeTestCredits() }
+                        },
                         onManualInput: { openManualInput() },
                         onLater: { activeSheet = nil }
                     )
@@ -364,6 +369,22 @@ struct ReceiptRegisterView: View {
             serverCanAnalyze = false
         }
         isUsageLoading = false
+    }
+
+    /// [TEST] 토큰 소진 시트 "N회 무료로 충전하기" — 크레딧 5회 임시 지급 후 이용 가능 여부/잔여 횟수 갱신.
+    /// TODO: 정식 충전/이벤트 지급 API가 나오면 ExampleTarget.ocrTestCredits 호출을 교체할 것.
+    private func rechargeTestCredits() async {
+        guard !isRecharging else { return }
+        isRecharging = true
+        defer { isRecharging = false }
+        do {
+            try await APIClient.shared.requestVoid(ExampleTarget.ocrTestCredits)
+            // 분석 가능 여부는 usage API로, 배너/게이트에 쓰이는 잔여 횟수는 credits API로 갱신
+            await checkUsage()
+            try? await CreditRepository.shared.fetchCredits()
+        } catch {
+            toast.showError(String(localized: "receipt.register.network_error"))
+        }
     }
 
     private func analyze() {
