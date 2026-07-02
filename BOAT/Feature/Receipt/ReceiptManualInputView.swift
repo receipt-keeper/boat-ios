@@ -63,7 +63,7 @@ struct ReceiptManualInputView: View {
         }
 
         if let cat = ocr.category {
-            _selectedCategory = State(initialValue: DeviceCategory(rawValue: cat))
+            _selectedCategory = State(initialValue: DeviceCategory.from(serverValue: cat))
         }
 
         if let months = ocr.periodMonths {

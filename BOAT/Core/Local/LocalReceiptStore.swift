@@ -107,7 +107,8 @@ final class LocalReceiptStore {
 
     private func matchesCategory(_ r: Receipt, category: String?) -> Bool {
         guard let category, !category.isEmpty else { return true }
-        return r.category == category
+        // 공백/표기 편차 흡수 후 비교 ("주방 가전"/"주방가전" 등)
+        return DeviceCategory.normalizeCategory(r.category) == DeviceCategory.normalizeCategory(category)
     }
 
     private func matchesQuery(_ r: Receipt, q: String?) -> Bool {

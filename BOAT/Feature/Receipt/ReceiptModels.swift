@@ -78,7 +78,12 @@ extension Receipt {
 
     /// imageUrl이 없을 때 폴백할 카테고리 기본 이미지 결정에 사용
     var deviceCategory: DeviceCategory? {
-        guard let category else { return nil }
-        return DeviceCategory(rawValue: category)
+        DeviceCategory.from(serverValue: category)
+    }
+
+    /// category + subCategory에 대응하는 로컬 이미지 에셋 이름.
+    /// 소분류(대표 기기명) 전용 이미지 → 대분류 기본 → 공통(img_misc) 순으로 폴백.
+    var deviceImageName: String {
+        DeviceImage.assetName(category: category, subCategory: subCategory)
     }
 }

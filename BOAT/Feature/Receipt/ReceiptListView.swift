@@ -331,7 +331,7 @@ private struct ReceiptCard: View {
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
     }
 
-    // 썸네일 — imageUrl 있으면 원격 이미지, 없으면 회색 플레이스홀더
+    // 썸네일 — imageUrl 있으면 원격 이미지, 없으면 카테고리/소분류 기본 이미지
     private var thumbnail: some View {
         RoundedRectangle(cornerRadius: .roundedLg)
             .fill(Color.gray100)
@@ -350,10 +350,12 @@ private struct ReceiptCard: View {
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
     }
 
+    /// imageUrl 부재/로딩 실패 시 category+subCategory 기반 로컬 이미지로 폴백
     private var placeholderIcon: some View {
-        Image(systemName: "photo")
-            .font(.system(size: 22))
-            .foregroundStyle(Color.gray400)
+        Image(receipt.deviceImageName)
+            .resizable()
+            .scaledToFit()
+            .padding(10)
     }
 
     // AS 만료일 | yyyy. MM. dd

@@ -78,15 +78,16 @@ extension ReceiptSort {
 }
 
 extension ReceiptFilter {
-    /// category 파라미터 값 (완전 일치). 전체면 nil → 파라미터 미전송
+    /// category 파라미터 값 (서버 필터 계약). 전체면 nil → 파라미터 미전송.
+    /// Android ReceiptListViewModel.toApiCategory()와 동일한 문자열 사용.
     var apiCategory: String? {
         switch self {
         case .all:     return nil
-        case .it:      return DeviceCategory.it.rawValue
-        case .laundry: return DeviceCategory.laundry.rawValue
-        case .kitchen: return DeviceCategory.kitchen.rawValue
-        case .living:  return DeviceCategory.living.rawValue
-        case .other:   return DeviceCategory.other.rawValue
+        case .it:      return "영상/IT 제품"
+        case .laundry: return "세탁/청소"
+        case .kitchen: return "주방가전"
+        case .living:  return "리빙/냉난방"
+        case .other:   return "기타"
         }
     }
 }
