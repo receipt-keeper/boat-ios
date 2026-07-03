@@ -36,39 +36,39 @@ struct MainTabView: View {
         content
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.colorWhite)
-            // 스크림 + FAB + 메뉴 카드를 같은 좌표계(바 위)에 배치
-            .overlay(alignment: .bottomTrailing) {
-                ZStack(alignment: .bottomTrailing) {
-                    // 스크림 (메뉴 열릴 때, 탭하면 닫힘)
-                    if showAddMenu {
-                        Color.black.opacity(0.35)
-                            .ignoresSafeArea()
-                            .onTapGesture { showAddMenu = false }
-                    }
-                    // FAB — 메뉴 열려도 계속 보이게 (스크림 위)
-                    if showFab {
-                        fabButton
-                            .padding(.trailing, .spacing16)
-                            .padding(.bottom, .spacing16)
-                    }
-                    // 메뉴 카드 — FAB 위쪽, 오른쪽 변을 FAB 중앙(우측 44pt)에 정렬
-                    if showAddMenu {
-                        ReceiptAddMenuCard(
-                            onCamera: { openRegisterFromFab(.camera) },
-                            onGallery: { openRegisterFromFab(.gallery) }
-                        )
-                        .padding(.trailing, 44) // FAB 중앙 (end 16 + 반지름 28)
-                        .padding(.bottom, 84) // FAB(56) + 하단 16 + 간격 12 위로
-                    }
+            // 스크림 (메뉴 열릴 때, 탭하면 닫힘) — 플로팅 바보다 아래 레이어
+            .overlay {
+                if showAddMenu {
+                    Color.black.opacity(0.35)
+                        .ignoresSafeArea()
+                        .onTapGesture { showAddMenu = false }
                 }
             }
-            // 커스텀 하단 바 (콘텐츠 + 오버레이를 자동으로 바 위로 인셋)
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                BoatBottomBar(
-                    selection: $selection,
-                    dimmed: showAddMenu,
-                    onDimTap: { showAddMenu = false }
-                )
+            // 플로팅 글래스 하단 바 (탭 pill + FAB) — 스크림 위로 떠오름
+            .overlay(alignment: .bottom) {
+                HStack(spacing: .spacing12) {
+                    BoatBottomBar(
+                        selection: $selection,
+                        dimmed: showAddMenu,
+                        onDimTap: { showAddMenu = false }
+                    )
+                    if showFab {
+                        fabButton
+                    }
+                }
+                .padding(.horizontal, .spacing16)
+                .padding(.bottom, .spacing8)
+            }
+            // 등록 메뉴 카드 — FAB 위쪽, 오른쪽 변을 FAB 중앙(우측 44pt)에 정렬
+            .overlay(alignment: .bottomTrailing) {
+                if showAddMenu {
+                    ReceiptAddMenuCard(
+                        onCamera: { openRegisterFromFab(.camera) },
+                        onGallery: { openRegisterFromFab(.gallery) }
+                    )
+                    .padding(.trailing, 44) // FAB 중앙 (end 16 + 반지름 28)
+                    .padding(.bottom, 76)   // FAB(하단 8 + 56) + 간격 12 위로
+                }
             }
             .animation(.easeInOut(duration: 0.2), value: showAddMenu)
             // FAB 카메라/갤러리 → 영수증 등록 화면(진입 즉시 해당 소스 열림)
@@ -130,10 +130,13 @@ struct MainTabView: View {
         } label: {
             Image("icPlus")
                 .renderingMode(.template)
-                .foregroundStyle(Color.colorWhite)
+                .foregroundStyle(Color.gray900)
                 .frame(width: 56, height: 56)
-                .background(Color.gray900, in: Circle())
-                .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
+                .background(.ultraThinMaterial, in: Circle())
+                .overlay(
+                    Circle().stroke(Color.colorWhite.opacity(0.6), lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.12), radius: 16, y: 6)
         }
         .accessibilityLabel(Text("receipt.add"))
     }
@@ -230,7 +233,8 @@ private struct HomeView: View {
                 RepairServiceCard()
             }
             .padding(.horizontal, .spacing20)
-            .padding(.vertical, .spacing12)
+            .padding(.top, .spacing12)
+            .padding(.bottom, 92) // 플로팅 하단 바 높이만큼 여백
         }
     }
 }

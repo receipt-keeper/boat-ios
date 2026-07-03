@@ -62,7 +62,7 @@ struct MyPageView: View {
             Spacer()
 
             bottomButtons
-                .padding(.bottom, .spacing24)
+                .padding(.bottom, 92) // 플로팅 하단 바 높이만큼 여백
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.colorWhite)

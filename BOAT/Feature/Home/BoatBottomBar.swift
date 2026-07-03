@@ -2,8 +2,9 @@
 //  BoatBottomBar.swift
 //  BOAT
 //
-//  커스텀 하단 Bottom Navigation. Android BoatBottomBar 디자인 동일.
-//  흰 배경 + 상단 헤어라인, 아이콘 위 라벨, 선택=brandPrimary / 비선택=gray400.
+//  플로팅 글래스모피즘 하단 탭 (목록/홈/마이).
+//  화면 하단에 떠 있는 pill 형태 — .ultraThinMaterial 블러 + 글래스 엣지 + 그림자.
+//  선택=brandPrimary / 비선택=gray400. FAB(+)는 MainTabView에서 pill 우측에 별도 배치.
 //
 
 import SwiftUI
@@ -14,32 +15,35 @@ struct BoatBottomBar: View {
     var dimmed: Bool = false
     var onDimTap: () -> Void = {}
 
+    private let cornerRadius: CGFloat = 28
+
     var body: some View {
         HStack(spacing: 0) {
             item(.list, icon: "icList", label: "tab.list")
             item(.home, icon: "icHome", label: "tab.home")
             item(.my, icon: "icProfile", label: "tab.my")
         }
+        .padding(.vertical, 10)
+        .padding(.horizontal, .spacing8)
         .frame(maxWidth: .infinity)
-        .padding(.top, .spacing8)
-        .padding(.bottom, .spacing4)
         .background(
-            Color.colorWhite
-                .ignoresSafeArea(edges: .bottom) // 홈 인디케이터 영역까지 흰색
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .fill(.ultraThinMaterial)
         )
-        .overlay(alignment: .top) {
-            Rectangle()
-                .fill(Color.gray200)
-                .frame(height: 0.5)
-        }
-        // 등록 메뉴 노출 시 바도 함께 dim 처리 (탭하면 닫힘)
+        .overlay(
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .stroke(Color.colorWhite.opacity(0.6), lineWidth: 1)
+        )
+        // 등록 메뉴 노출 시 pill도 함께 dim 처리 (탭하면 닫힘)
         .overlay {
             if dimmed {
-                Color.black.opacity(0.35)
-                    .ignoresSafeArea(edges: .bottom)
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(Color.black.opacity(0.35))
                     .onTapGesture { onDimTap() }
             }
         }
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+        .shadow(color: .black.opacity(0.12), radius: 16, y: 6)
     }
 
     private func item(
@@ -56,7 +60,7 @@ struct BoatBottomBar: View {
                     .renderingMode(.template)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 26, height: 26)
+                    .frame(width: 24, height: 24)
                 Text(label)
                     .font(.pretendard(.medium, size: 11))
             }

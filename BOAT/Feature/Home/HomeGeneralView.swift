@@ -66,7 +66,7 @@ struct HomeGeneralView: View {
                 }
                 .padding(.horizontal, .spacing20)
 
-                Spacer().frame(height: .spacing16)
+                Spacer().frame(height: 92) // 플로팅 하단 바 높이만큼 여백
             }
         }
     }
