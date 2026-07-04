@@ -23,7 +23,8 @@ struct BoatBottomBar: View {
             item(.home, icon: "icHome", label: "tab.home")
             item(.my, icon: "icProfile", label: "tab.my")
         }
-        .padding(.vertical, 10)
+        .animation(.easeOut(duration: 0.2), value: selection)
+        .padding(.vertical, .spacing8)
         .padding(.horizontal, .spacing8)
         .frame(maxWidth: .infinity)
         .background(
@@ -66,6 +67,14 @@ struct BoatBottomBar: View {
             }
             .foregroundStyle(selected ? Color.brandPrimary : Color.gray400)
             .frame(maxWidth: .infinity)
+            .padding(.vertical, 6)
+            // 선택 탭 뒤 연한 파란 라운드 하이라이트 (탭 전환 시 페이드)
+            .background {
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(Color.brandQuaternary)
+                    .opacity(selected ? 1 : 0)
+                    .padding(.horizontal, .spacing8)
+            }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
