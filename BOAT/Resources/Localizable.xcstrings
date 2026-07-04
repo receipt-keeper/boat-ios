@@ -900,7 +900,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "알림 설정"
+            "value" : "알림"
           }
         }
       }
@@ -940,7 +940,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "알림 설정"
+            "value" : "알림"
           }
         }
       }
@@ -960,7 +960,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "알림설정"
+            "value" : "알림"
           }
         }
       }
@@ -1215,6 +1215,86 @@
         }
       }
     },
+    "receipt.delete.fail" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영수증 삭제에 실패했어요. 잠시 후 다시 시도해 주세요."
+          }
+        }
+      }
+    },
+    "detail.edit" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "수정" } }
+      }
+    },
+    "detail.product_name" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "제품명" } }
+      }
+    },
+    "detail.purchase_date" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "구매일" } }
+      }
+    },
+    "detail.expiry" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "무상 AS 만료일" } }
+      }
+    },
+    "detail.memo" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "메모" } }
+      }
+    },
+    "detail.memo_placeholder" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "제품 관련 특이사항을 입력하세요." } }
+      }
+    },
+    "detail.physical_receipt_title" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "실물 영수증 필요" } }
+      }
+    },
+    "detail.physical_receipt_desc" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "AS 센터 방문 시, 실물 영수증을 꼭 지참하세요!" } }
+      }
+    },
+    "detail.warranty_info" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "보증 정보" } }
+      }
+    },
+    "detail.brand" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "브랜드명" } }
+      }
+    },
+    "detail.price" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "구매 가격" } }
+      }
+    },
+    "detail.serial" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "시리얼 넘버" } }
+      }
+    },
+    "detail.original_receipt" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "원본 영수증" } }
+      }
+    },
+    "detail.support" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "공식 AS 센터에서 접수하기" } }
+      }
+    },
     "receipt.empty" : {
       "localizations" : {
         "ko" : {
@@ -1361,16 +1441,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "삭제하기"
-          }
-        }
-      }
-    },
-    "receipt.delete.fail" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 삭제에 실패했어요. 잠시 후 다시 시도해 주세요."
           }
         }
       }

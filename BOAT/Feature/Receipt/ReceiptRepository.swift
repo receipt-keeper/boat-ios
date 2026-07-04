@@ -95,6 +95,19 @@ final class ReceiptRepository {
         try await APIClient.shared.requestVoid(ReceiptTarget.delete(receiptId: id))
         local.delete(id: id)
     }
+
+    /// GET /api/v1/receipts/{receiptId} — 상세 조회.
+    /// 성공 시 로컬 캐시 갱신. 네트워크 실패 시 로컬 캐시로 폴백(오프라인 조회).
+    func fetchReceiptDetail(id: String) async throws -> Receipt {
+        do {
+            let receipt: Receipt = try await APIClient.shared.request(ReceiptTarget.detail(receiptId: id))
+            local.upsert(receipt)
+            return receipt
+        } catch {
+            if let cached = local.receipt(id: id) { return cached }
+            throw error
+        }
+    }
 }
 
 // MARK: - 등록 요청 필드

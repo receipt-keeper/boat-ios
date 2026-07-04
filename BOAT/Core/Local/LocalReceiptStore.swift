@@ -80,6 +80,11 @@ final class LocalReceiptStore {
 
     var isEmpty: Bool { fetchAll().isEmpty }
 
+    /// 단일 영수증 로컬 조회 (상세 화면 오프라인 폴백용)
+    func receipt(id: String) -> Receipt? {
+        fetchEntity(id: id)?.toReceipt()
+    }
+
     // MARK: - Private
 
     private func fetchEntity(id: String) -> ReceiptEntity? {

@@ -58,6 +58,7 @@ struct ReceiptListView: View {
     @State private var selectedFilter: ReceiptFilter = .all
     @State private var sortExpanded = false
     @State private var menuReceiptId: String?
+    @State private var detailReceipt: Receipt?
     @State private var viewModel = ReceiptListViewModel()
     @State private var toast = BoatToastState()
 
@@ -144,6 +145,10 @@ struct ReceiptListView: View {
             }
         }
         .boatToastHost(toast)
+        // 카드 탭 → 영수증 상세
+        .fullScreenCover(item: $detailReceipt) { receipt in
+            ReceiptDetailView(receiptId: receipt.receiptId, onBack: { detailReceipt = nil })
+        }
     }
 
     // MARK: - 삭제 메뉴
@@ -283,9 +288,11 @@ struct ReceiptListView: View {
             ScrollView {
                 LazyVStack(spacing: .spacing12) {
                     ForEach(viewModel.receipts) { receipt in
-                        ReceiptCard(receipt: receipt) {
-                            menuReceiptId = receipt.receiptId
-                        }
+                        ReceiptCard(
+                            receipt: receipt,
+                            onKebab: { menuReceiptId = receipt.receiptId },
+                            onTap: { detailReceipt = receipt }
+                        )
                         .anchorPreference(key: CardAnchorKey.self, value: .bounds) {
                             [receipt.receiptId: $0]
                         }
@@ -311,6 +318,7 @@ struct ReceiptListView: View {
 private struct ReceiptCard: View {
     let receipt: Receipt
     var onKebab: () -> Void = {}
+    var onTap: () -> Void = {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -339,6 +347,8 @@ private struct ReceiptCard: View {
         .padding(.spacing16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+        .contentShape(Rectangle())
+        .onTapGesture { onTap() }
     }
 
     // 썸네일 — imageUrl 있으면 원격 이미지, 없으면 카테고리/소분류 기본 이미지

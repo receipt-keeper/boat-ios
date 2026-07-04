@@ -22,6 +22,8 @@ enum ReceiptTarget {
     case create(body: [String: Any])
     /// DELETE /api/v1/receipts/{receipt_id} — 영수증 삭제
     case delete(receiptId: String)
+    /// GET /api/v1/receipts/{receipt_id} — 영수증 상세 조회
+    case detail(receiptId: String)
 }
 
 extension ReceiptTarget: TargetType {
@@ -32,14 +34,16 @@ extension ReceiptTarget: TargetType {
             return "/api/v1/receipts"
         case let .delete(receiptId):
             return "/api/v1/receipts/\(receiptId)"
+        case let .detail(receiptId):
+            return "/api/v1/receipts/\(receiptId)"
         }
     }
 
     var method: HTTPMethod {
         switch self {
-        case .list:   return .get
-        case .create: return .post
-        case .delete: return .delete
+        case .list, .detail: return .get
+        case .create:        return .post
+        case .delete:        return .delete
         }
     }
 
@@ -59,7 +63,7 @@ extension ReceiptTarget: TargetType {
         case let .create(body):
             return .body(body)
 
-        case .delete:
+        case .delete, .detail:
             return .plain
         }
     }
