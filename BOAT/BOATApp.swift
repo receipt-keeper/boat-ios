@@ -10,6 +10,9 @@ import GoogleSignIn
 @main
 struct BOATApp: App {
 
+    // FCM 푸시 수신(APNs 등록 / MessagingDelegate / UNUserNotificationCenterDelegate)
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
     @Environment(\.scenePhase) private var scenePhase
 
     @State private var permissionManager = PermissionManager()

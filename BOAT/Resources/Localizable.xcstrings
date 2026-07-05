@@ -1300,6 +1300,21 @@
         "ko" : { "stringUnit" : { "state" : "translated", "value" : "설정 열기" } }
       }
     },
+    "notif.list.title" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "알림" } }
+      }
+    },
+    "notif.list.empty" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "수신된 알림 내역이 없습니다." } }
+      }
+    },
+    "notif.fallback_title" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "알림" } }
+      }
+    },
     "permission.camera.denied_title" : {
       "localizations" : {
         "ko" : { "stringUnit" : { "state" : "translated", "value" : "카메라 권한이 필요해요" } }

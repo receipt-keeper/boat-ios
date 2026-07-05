@@ -240,6 +240,7 @@ class AuthViewModel {
                 try? Auth.auth().signOut()
                 GIDSignIn.sharedInstance.signOut()
                 KeychainManager.shared.clearAll()
+                FCMTokenStore.registeredToken = nil // 서버는 계정 삭제 시 디바이스도 정리 — 로컬 캐시만 비움
                 UserStore.shared.clear()
                 await MainActor.run {
                     self.pendingFirebaseToken = nil
@@ -258,15 +259,21 @@ class AuthViewModel {
     // MARK: - Sign Out
 
     private func signOut() {
-        if let refreshToken = KeychainManager.shared.refreshToken, !refreshToken.isEmpty {
-            Task {
+        let refreshToken = KeychainManager.shared.refreshToken
+
+        // 인증 헤더가 필요한 정리(FCM 디바이스 해제 → 세션 revoke)를 토큰 삭제 "전"에 수행한다.
+        // 로컬 상태는 아래에서 즉시 초기화하므로 UX는 지연되지 않는다(best-effort 백그라운드).
+        Task {
+            await FCMDeviceManager.shared.unregister()
+            if let refreshToken, !refreshToken.isEmpty {
                 try? await APIClient.shared.requestVoid(AuthTarget.logout(refreshToken: refreshToken))
             }
+            try? Auth.auth().signOut()
+            GIDSignIn.sharedInstance.signOut()
+            KeychainManager.shared.clearAll()
         }
 
-        try? Auth.auth().signOut()
-        GIDSignIn.sharedInstance.signOut()
-        KeychainManager.shared.clearAll()
+        // 즉시 로컬 로그아웃 (네트워크 실패로 갇히지 않도록)
         UserStore.shared.clear()
         pendingFirebaseToken = nil
         isLoading = false

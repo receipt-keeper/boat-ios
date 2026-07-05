@@ -25,6 +25,10 @@
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>영수증을 촬영해 보증 정보를 자동으로 등록하기 위해 카메라를 사용합니다.</string>
 	<key>UIAppFonts</key>

@@ -2,27 +2,39 @@
 //  NotificationListView.swift
 //  BOAT
 //
-//  상단 종 아이콘 → 쌓인 푸시 알림 목록 화면. Android NotificationListScreen 대응.
-//  NotificationStore에서 최신순 items를 읽어 카드형 리스트로 표시.
-//  진입 시 전체 읽음 처리.
+//  상단 종 아이콘 → 수신 알림 목록. Android NotificationListScreen 대응.
+//  GET /api/v1/notifications 로 미읽음 알림을 불러와 카드형 리스트로 표시.
+//  카드 탭 → 읽음 처리(목록에서 제거) 후 리소스로 라우팅
+//  (receipt+resourceId → 상세 / kind=registration_prompt → 영수증 등록).
 //
 
 import SwiftUI
 
 struct NotificationListView: View {
+
     let onBack: () -> Void
-    private let store = NotificationStore.shared
+
+    @State private var viewModel = NotificationListViewModel()
+    @State private var detailReceipt: IdentifiedID?
+    @State private var showRegister = false
 
     var body: some View {
         VStack(spacing: 0) {
             topBar
-            if store.items.isEmpty {
+
+            if viewModel.isLoading {
+                ProgressView()
+                    .tint(Color.brandPrimary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if viewModel.notifications.isEmpty {
                 emptyContent
             } else {
                 ScrollView {
-                    VStack(spacing: .spacing12) {
-                        ForEach(store.items) { item in
+                    LazyVStack(spacing: .spacing12) {
+                        ForEach(viewModel.notifications) { item in
                             NotificationCard(item: item)
+                                .contentShape(Rectangle())
+                                .onTapGesture { handleTap(item) }
                         }
                     }
                     .padding(.horizontal, .spacing20)
@@ -33,19 +45,37 @@ struct NotificationListView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.gray50)
-        .onAppear {
-            if store.items.isEmpty {
-                NotificationItem.mocks.reversed().forEach { store.add($0) }
-            }
-            store.markAllRead()
+        .task { await viewModel.load() }
+        // 알림 → 영수증 상세
+        .fullScreenCover(item: $detailReceipt) { rid in
+            ReceiptDetailView(receiptId: rid.id, onBack: { detailReceipt = nil })
         }
+        // 알림 → 영수증 등록 (registration_prompt)
+        .fullScreenCover(isPresented: $showRegister) {
+            ReceiptRegisterView(
+                onBack: { showRegister = false },
+                onComplete: { showRegister = false }
+            )
+        }
+    }
+
+    // MARK: - 탭 라우팅 (Android route() 대응)
+
+    private func handleTap(_ item: AppNotification) {
+        viewModel.markReadAndRemove(item)
+        if item.resourceType == "receipt", let id = item.resourceId, !id.isEmpty {
+            detailReceipt = IdentifiedID(id: id)
+        } else if item.kind == "registration_prompt" {
+            showRegister = true
+        }
+        // 그 외: 특정 리소스를 가리키지 않는 알림 → 이동 없음 (목록에서만 제거)
     }
 
     // MARK: - Top Bar
 
     private var topBar: some View {
         ZStack {
-            Text("알림")
+            Text("notif.list.title")
                 .font(.pretendard(.bold, size: 18))
                 .foregroundStyle(Color.gray900)
             HStack {
@@ -68,18 +98,24 @@ struct NotificationListView: View {
     // MARK: - Empty State
 
     private var emptyContent: some View {
-        Text("수신된 알림 내역이 없습니다.")
-            .font(.pretendard(.regular, size: 14))
-            .foregroundStyle(Color.gray400)
+        Text("notif.list.empty")
+            .font(.pretendard(.regular, size: 15))
+            .foregroundStyle(Color.gray500)
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
 }
 
+// MARK: - fullScreenCover(item:)용 식별 래퍼
+
+private struct IdentifiedID: Identifiable {
+    let id: String
+}
+
 // MARK: - Notification Card
 
 private struct NotificationCard: View {
-    let item: NotificationItem
+    let item: AppNotification
 
     var body: some View {
         HStack(alignment: .center, spacing: 14) {
@@ -90,8 +126,8 @@ private struct NotificationCard: View {
                         .font(.pretendard(.bold, size: 16))
                         .foregroundStyle(Color.gray900)
                         .lineLimit(1)
-                    Spacer()
-                    Text(item.formattedDate)
+                    Spacer(minLength: .spacing8)
+                    Text(item.date)
                         .font(.pretendard(.regular, size: 14))
                         .foregroundStyle(Color.gray500)
                 }
@@ -99,60 +135,30 @@ private struct NotificationCard: View {
                     .font(.pretendard(.regular, size: 14))
                     .foregroundStyle(Color.gray500)
                     .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .padding(.spacing16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.colorWhite)
         .clipShape(RoundedRectangle(cornerRadius: .rounded2xl))
-        .shadow(color: Color(hex: "#007EFF").opacity(0.08), radius: 4, x: 0, y: 0)
+        .shadow(color: Color.brandPrimary.opacity(0.08), radius: 4, x: 0, y: 0)
     }
 
-    // 실제 썸네일이 없는 경우 카테고리 아이콘 placeholder (Android ic_gallery 대응)
     private var thumbnail: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.gray100)
-            Image(systemName: item.category.sfSymbol)
-                .font(.system(size: 24))
-                .foregroundStyle(Color.gray400)
-        }
-        .frame(width: 56, height: 56)
+        RoundedRectangle(cornerRadius: 14)
+            .fill(Color.gray100)
+            .frame(width: 56, height: 56)
+            .overlay {
+                Image(item.imageName)
+                    .resizable()
+                    .scaledToFit()
+                    .padding(8)
+            }
     }
 }
 
-// MARK: - Helpers
-
-private extension NotificationItem {
-    var formattedDate: String {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy.MM.dd"
-        return f.string(from: receivedAt)
-    }
-}
-
-private extension DeviceCategory {
-    var sfSymbol: String {
-        switch self {
-        case .kitchen: return "refrigerator"
-        case .laundry: return "washer"
-        case .living:  return "air.conditioner.horizontal"
-        case .it:      return "ipad"
-        case .other:   return "tag"
-        }
-    }
-}
-
-// MARK: - Preview
-
-#Preview("목록 있음") {
-    let store = NotificationStore.shared
-    store.clear()
-    NotificationItem.mocks.reversed().forEach { store.add($0) }
-    return NotificationListView(onBack: {})
-}
-
-#Preview("빈 목록") {
-    NotificationStore.shared.clear()
-    return NotificationListView(onBack: {})
+#Preview {
+    NotificationListView(onBack: {})
+        .environment(PermissionManager())
 }
