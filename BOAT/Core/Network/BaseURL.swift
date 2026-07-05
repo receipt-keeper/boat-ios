@@ -13,7 +13,8 @@ enum BaseURL {
     private static let production = URL(string: "https://boatlab-dev.luigi99.cloud")!
     private static let local      = URL(string: "http://localhost:8000")!
 
-    private static var isTestFlight: Bool {
+    /// TestFlight로 설치된 빌드인지 여부 (App Store 정식 배포와 구분). AppEnvironment에서도 재사용.
+    static var isTestFlight: Bool {
         Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
     }
 
