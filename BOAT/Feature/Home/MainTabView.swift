@@ -155,6 +155,11 @@ private struct HomeView: View {
     @State private var showReceiptRegister = false
     @State private var showGeneral = false // 임시: 초기(false) ↔ 일반(true) 전환
     @State private var isInitializing = true
+    // [TEST] 푸시 발송 다이얼로그 (DEBUG 전용)
+    @State private var showTestPushAlert = false
+    @State private var testPushTitle = "테스트 알림"
+    @State private var testPushBody = "푸시 연결 확인용 테스트 메시지입니다."
+    @State private var toast = BoatToastState()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -167,6 +172,21 @@ private struct HomeView: View {
             // 헤더 아래 컨텐츠 영역 — 초기 로딩 중에는 HomeLoadingView가 덮음
             ZStack {
                 VStack(spacing: 0) {
+                    #if DEBUG
+                    // [TEST] FCM 연동 확인용 — 등록된 모든 디바이스로 테스트 푸시 즉시 발송
+                    Button {
+                        showTestPushAlert = true
+                    } label: {
+                        Text("[TEST] 푸시")
+                            .font(.pretendard(.medium, size: 12))
+                            .foregroundStyle(Color.brandPrimary)
+                    }
+                    .buttonStyle(.plain)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .padding(.horizontal, .spacing20)
+                    .padding(.bottom, 2)
+                    #endif
+
                     // 임시(개발용) 상태 전환 토글 — 백엔드 데이터 유무 분기 대용
                     Picker("", selection: $showGeneral) {
                         Text("초기").tag(false)
@@ -215,7 +235,37 @@ private struct HomeView: View {
                 onComplete: { showReceiptRegister = false }
             )
         }
+        #if DEBUG
+        .alert("테스트 푸시 발송", isPresented: $showTestPushAlert) {
+            TextField("제목", text: $testPushTitle)
+            TextField("내용", text: $testPushBody)
+            Button("common.cancel", role: .cancel) {}
+            Button("발송") { sendTestPush() }
+        } message: {
+            Text("등록된 모든 디바이스로 즉시 발송됩니다.")
+        }
+        #endif
+        .boatToastHost(toast)
     }
+
+    #if DEBUG
+    /// [TEST] POST /api/v1/example/push — 로그인 사용자의 등록된 모든 디바이스로 테스트 푸시 발송.
+    private func sendTestPush() {
+        let title = testPushTitle.trimmingCharacters(in: .whitespaces)
+        let body = testPushBody.trimmingCharacters(in: .whitespaces)
+        guard !title.isEmpty, !body.isEmpty else { return }
+        Task {
+            do {
+                let result: TestPushData = try await APIClient.shared.request(
+                    ExampleTarget.testPush(title: title, body: body)
+                )
+                toast.showSuccess("발송 완료 (대상 \(result.targetedDeviceCount)대, 무효 \(result.invalidDeviceCount)대)")
+            } catch {
+                toast.showError((error as? LocalizedError)?.errorDescription ?? String(localized: "error.api.unknown"))
+            }
+        }
+    }
+    #endif
 
     // 초기 홈 (데이터 없을 때) — 무료 분석 배너 + 등록 카드 + 광고 배너
     private var initialContent: some View {
