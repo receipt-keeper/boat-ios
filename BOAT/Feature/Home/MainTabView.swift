@@ -73,6 +73,8 @@ struct MainTabView: View {
             .animation(.easeInOut(duration: 0.2), value: showAddMenu)
             // 로그인 상태로 메인 진입 시 FCM 디바이스 등록 (멱등 — 신규 로그인/앱 재실행 공통 커버)
             .task { await FCMDeviceManager.shared.register() }
+            // 알림 차단 상태면 앱 진입/복귀마다 권한 요청 또는 설정 유도
+            .background(NotificationPermissionGate())
             // FAB 카메라/갤러리 → 영수증 등록 화면(진입 즉시 해당 소스 열림)
             .fullScreenCover(isPresented: $showRegisterFromFab) {
                 ReceiptRegisterView(

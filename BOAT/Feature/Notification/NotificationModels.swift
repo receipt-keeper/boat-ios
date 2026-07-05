@@ -34,15 +34,14 @@ struct AppNotification: Identifiable, Hashable {
     let productName: String
     let message: String
     let date: String            // "yyyy.MM.dd"
-    let category: String?
     let subCategory: String?
     let resourceType: String?
     let resourceId: String?
     let kind: String?
 
-    /// 목록 썸네일용 에셋 — category/subCategory 기반 기기 이미지
+    /// 목록 썸네일용 에셋 — subCategory 기반 기기 이미지. Android DeviceImage.resolve(null, subCategory) 대응(category 미사용).
     var imageName: String {
-        DeviceImage.assetName(category: category, subCategory: subCategory)
+        DeviceImage.assetName(category: nil, subCategory: subCategory)
     }
 }
 
@@ -55,7 +54,6 @@ extension NotificationDto {
                 ?? String(localized: "notif.fallback_title"),
             message: message ?? "",
             date: Self.displayDate(createdAt),
-            category: metadata?["category"],
             subCategory: metadata?["subCategory"],
             resourceType: resourceType,
             resourceId: resourceId,

@@ -1355,6 +1355,16 @@
         "ko" : { "stringUnit" : { "state" : "translated", "value" : "설정 > 알림에서 보트랩 알림을 켜주세요." } }
       }
     },
+    "permission.notif.gate_message" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "무상 AS 만료 알림 등 중요한 소식을 받으려면 알림을 켜 주세요." } }
+      }
+    },
+    "permission.notif.gate_confirm" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "알림 켜기" } }
+      }
+    },
     "receipt.empty" : {
       "localizations" : {
         "ko" : {
