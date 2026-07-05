@@ -1295,6 +1295,51 @@
         "ko" : { "stringUnit" : { "state" : "translated", "value" : "공식 AS 센터에서 접수하기" } }
       }
     },
+    "permission.open_settings" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "설정 열기" } }
+      }
+    },
+    "permission.camera.denied_title" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "카메라 권한이 필요해요" } }
+      }
+    },
+    "permission.camera.denied_message" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "설정 > 보트랩에서 카메라 접근을 허용해 주세요." } }
+      }
+    },
+    "permission.notif.title" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "AS 만료 알림을 받으시겠어요?" } }
+      }
+    },
+    "permission.notif.message" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "무상 AS 만료가 다가오면 미리 알려드릴게요." } }
+      }
+    },
+    "permission.notif.confirm" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "알림 받기" } }
+      }
+    },
+    "permission.notif.later" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "나중에" } }
+      }
+    },
+    "permission.notif.denied_title" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "알림이 꺼져 있어요" } }
+      }
+    },
+    "permission.notif.denied_message" : {
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "설정 > 알림에서 보트랩 알림을 켜주세요." } }
+      }
+    },
     "receipt.empty" : {
       "localizations" : {
         "ko" : {

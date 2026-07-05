@@ -14,9 +14,14 @@ struct NotificationSettingsView: View {
 
     let onBack: () -> Void
 
+    @Environment(PermissionManager.self) private var permissions
+
     @State private var pushEnabled = false
     @State private var marketingConsent = false
     @State private var toast = BoatToastState()
+    // 알림 사전 설명(프리퍼미션) / 거부 시 설정 유도
+    @State private var showNotifPriming = false
+    @State private var showNotifDenied = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -40,6 +45,24 @@ struct NotificationSettingsView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.colorWhite)
         .boatToastHost(toast)
+        // 알림 사전 설명 → [알림 받기] 탭에서만 시스템 권한 요청 (1회성 프롬프트 보호)
+        .boatDialog(
+            isPresented: $showNotifPriming,
+            title: "permission.notif.title",
+            message: "permission.notif.message",
+            confirmText: "permission.notif.confirm",
+            cancelText: "permission.notif.later",
+            onConfirm: { confirmNotifPriming() }
+        )
+        // OS 알림이 거부된 상태 → 설정 앱으로 유도
+        .boatDialog(
+            isPresented: $showNotifDenied,
+            title: "permission.notif.denied_title",
+            message: "permission.notif.denied_message",
+            confirmText: "permission.open_settings",
+            cancelText: "common.cancel",
+            onConfirm: { permissions.openSettings() }
+        )
         .task {
             if let settings = try? await NotificationSettingsRepository.shared.fetchSettings() {
                 pushEnabled = settings.pushEnabled
@@ -52,6 +75,39 @@ struct NotificationSettingsView: View {
 
     private func setPushEnabled(_ enabled: Bool) {
         guard pushEnabled != enabled else { return }
+        if enabled {
+            // 켤 때는 OS 알림 권한을 먼저 확인/요청한 뒤 서버 설정을 반영
+            Task { await gateNotificationPermission() }
+        } else {
+            applyPush(false)
+        }
+    }
+
+    /// OS 알림 권한 상태에 따라 분기: 허용→서버 반영 / 미결정→사전 설명 / 거부→설정 유도
+    private func gateNotificationPermission() async {
+        await permissions.refreshAll()
+        switch permissions.notificationStatus {
+        case .granted:        applyPush(true)
+        case .notDetermined:  showNotifPriming = true
+        case .denied:         showNotifDenied = true
+        }
+    }
+
+    /// 사전 설명 [알림 받기] — 여기서만 실제 시스템 권한 다이얼로그 노출
+    private func confirmNotifPriming() {
+        Task {
+            let status = await permissions.requestNotificationPermission()
+            if status == .granted {
+                applyPush(true)
+            } else {
+                // 거부 시 토글은 off로 유지 (알림이 오지 않으므로)
+                showNotifDenied = true
+            }
+        }
+    }
+
+    /// 서버 push 설정 반영 (낙관적 업데이트 → 실패 시 복구)
+    private func applyPush(_ enabled: Bool) {
         let previous = pushEnabled
         pushEnabled = enabled
         Task {
@@ -142,4 +198,5 @@ struct NotificationSettingsView: View {
 
 #Preview {
     NotificationSettingsView(onBack: {})
+        .environment(PermissionManager())
 }

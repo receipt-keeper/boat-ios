@@ -18,6 +18,8 @@ struct ReceiptRegisterView: View {
     /// 영수증 등록 완료 → 등록 플로우 전체를 닫고 홈으로 복귀
     var onComplete: () -> Void = {}
 
+    @Environment(PermissionManager.self) private var permissions
+
     /// 최대 등록 가능 장수 (Android MAX_PHOTOS와 동일)
     private static let maxPhotos = 5
 
@@ -29,6 +31,7 @@ struct ReceiptRegisterView: View {
     @State private var showCamera = false
     @State private var showGalleryPicker = false
     @State private var cameraUnavailable = false
+    @State private var showCameraDenied = false
     @State private var showMaxAlert = false
     @State private var isAnalyzing = false
     @State private var activeSheet: AnalysisSheet?
@@ -99,11 +102,7 @@ struct ReceiptRegisterView: View {
             didAutoOpen = true
             switch autoOpen {
             case .camera:
-                if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                    showCamera = true
-                } else {
-                    cameraUnavailable = true
-                }
+                openCamera()
             case .gallery:
                 showGalleryPicker = true
             }
@@ -111,6 +110,13 @@ struct ReceiptRegisterView: View {
         .task { await checkUsage() }
         .alert("카메라를 사용할 수 없습니다.", isPresented: $cameraUnavailable) {
             Button("common.confirm", role: .cancel) {}
+        }
+        // 카메라 권한 거부 시 — 설정 앱으로 유도
+        .alert("permission.camera.denied_title", isPresented: $showCameraDenied) {
+            Button("permission.open_settings") { permissions.openSettings() }
+            Button("common.cancel", role: .cancel) {}
+        } message: {
+            Text("permission.camera.denied_message")
         }
         .alert("receipt.register.max", isPresented: $showMaxAlert) {
             Button("common.confirm", role: .cancel) {}
@@ -273,13 +279,7 @@ struct ReceiptRegisterView: View {
 
     private var cameraButton: some View {
         Button {
-            if !canAddMore {
-                showMaxAlert = true
-            } else if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                showCamera = true
-            } else {
-                cameraUnavailable = true
-            }
+            openCamera()
         } label: {
             outlinedLabel(icon: "icCamera", label: "receipt.register.camera")
         }
@@ -334,6 +334,28 @@ struct ReceiptRegisterView: View {
     }
 
     // MARK: - Actions
+
+    /// 카메라 실행 — 촬영 버튼 탭 시점에 권한 확인/요청 (App Store 심사 가이드 준수).
+    private func openCamera() {
+        guard canAddMore else { showMaxAlert = true; return }
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            cameraUnavailable = true // 시뮬레이터 등 카메라 미탑재
+            return
+        }
+        Task {
+            switch permissions.cameraStatus {
+            case .granted:
+                showCamera = true
+            case .notDetermined:
+                // 첫 진입 — 이 시점에만 시스템 권한 다이얼로그 노출
+                let status = await permissions.requestCameraPermission()
+                if status == .granted { showCamera = true }
+                else if status == .denied { showCameraDenied = true }
+            case .denied:
+                showCameraDenied = true
+            }
+        }
+    }
 
     /// 이미지 추가 (최대 5장 cap)
     private func addImages(_ new: [UIImage]) {
@@ -423,4 +445,5 @@ struct ReceiptRegisterView: View {
 
 #Preview {
     ReceiptRegisterView(onBack: {})
+        .environment(PermissionManager())
 }

@@ -31,15 +31,10 @@ struct BOATApp: App {
                 .onOpenURL { url in
                     GIDSignIn.sharedInstance.handle(url)
                 }
-                // 앱 최초 시작 시 권한 상태 확인 및 요청
+                // 앱 시작 시에는 권한 '상태 확인'만 한다. (실제 요청은 각 기능 진입 시점)
+                // 카메라=촬영 버튼 탭 시, 알림=AS 알림 설정 시 요청 — App Store 심사 가이드(5.1.1) 준수.
                 .task {
                     await permissionManager.refreshAll()
-                    if permissionManager.notificationStatus.canRequest {
-                        await permissionManager.requestNotificationPermission()
-                    }
-                    if permissionManager.photoStatus.canRequest {
-                        await permissionManager.requestPhotoPermission()
-                    }
                 }
                 // 포그라운드 복귀 시마다 권한 상태 재확인 (설정에서 바뀌었을 수 있음)
                 .onChange(of: scenePhase) { _, newPhase in
