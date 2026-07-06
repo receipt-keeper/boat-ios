@@ -147,7 +147,15 @@ struct ReceiptListView: View {
         .boatToastHost(toast)
         // 카드 탭 → 영수증 상세
         .fullScreenCover(item: $detailReceipt) { receipt in
-            ReceiptDetailView(receiptId: receipt.receiptId, onBack: { detailReceipt = nil })
+            ReceiptDetailView(
+                receiptId: receipt.receiptId,
+                onBack: { detailReceipt = nil },
+                onDeleted: {
+                    // 상세는 onBack으로 닫히므로 여기서는 목록 동기화 + 삭제 토스트만
+                    viewModel.removeFromList(id: receipt.receiptId)
+                    toast.show(String(localized: "detail.deleted_toast"), type: .info)
+                }
+            )
         }
     }
 

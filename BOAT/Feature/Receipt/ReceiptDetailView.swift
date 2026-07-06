@@ -13,6 +13,8 @@ struct ReceiptDetailView: View {
 
     let receiptId: String
     let onBack: () -> Void
+    /// 삭제 완료 콜백 — 상위(목록)에서 목록 갱신 + 삭제 토스트 + 상세 닫기 처리
+    var onDeleted: () -> Void = {}
 
     @Environment(\.openURL) private var openURL
 
@@ -20,6 +22,10 @@ struct ReceiptDetailView: View {
     @State private var isLoading = true
     @State private var loadFailed = false
     @State private var toast = BoatToastState()
+    // 케밥 메뉴(수정/삭제) + 삭제 확인 다이얼로그
+    @State private var showActionSheet = false
+    @State private var showDeleteConfirm = false
+    @State private var isDeleting = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -38,11 +44,73 @@ struct ReceiptDetailView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.colorWhite)
+        // 케밥 → 수정/삭제 액션 시트 (스크림 + 하단 카드 + 닫기)
+        .overlay {
+            if showActionSheet {
+                actionSheetOverlay
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: showActionSheet)
+        // 삭제 확인 다이얼로그
+        .boatDialog(
+            isPresented: $showDeleteConfirm,
+            title: "detail.delete_confirm_title",
+            message: "detail.delete_confirm_message",
+            confirmText: "detail.menu_delete",
+            confirmColor: .brandPrimary,
+            cancelText: "common.cancel",
+            onConfirm: { performDelete() }
+        )
         .task { await load() }
         .boatToastHost(toast)
     }
 
-    // MARK: - Top Bar (뒤로 + 수정)
+    // MARK: - 케밥 액션 시트 (수정하기 / 삭제하기 / 닫기)
+
+    private var actionSheetOverlay: some View {
+        ZStack(alignment: .bottom) {
+            Color.black.opacity(0.35)
+                .ignoresSafeArea()
+                .onTapGesture { showActionSheet = false }
+
+            VStack(spacing: .spacing8) {
+                VStack(spacing: 0) {
+                    actionRow("detail.menu_edit", color: .gray900) {
+                        showActionSheet = false
+                        // TODO: 영수증 수정 화면 연결 (편집 API/화면 준비되면)
+                    }
+                    Rectangle().fill(Color.gray200).frame(height: 1)
+                    actionRow("detail.menu_delete", color: .systemError) {
+                        showActionSheet = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                            showDeleteConfirm = true
+                        }
+                    }
+                }
+                .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+
+                actionRow("detail.menu_close", color: .gray900) { showActionSheet = false }
+                    .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+            }
+            .padding(.horizontal, .spacing16)
+            .padding(.bottom, .spacing16)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
+    }
+
+    private func actionRow(_ key: LocalizedStringKey, color: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(key)
+                .font(.pretendard(.medium, size: 16))
+                .foregroundStyle(color)
+                .frame(maxWidth: .infinity)
+                .frame(height: 56)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Top Bar (뒤로 + 케밥)
 
     private var topBar: some View {
         HStack {
@@ -57,13 +125,16 @@ struct ReceiptDetailView: View {
 
             Spacer()
 
-            // TODO: 영수증 수정 화면 연결 (편집 API/화면 준비되면 교체)
+            // 케밥 → 수정/삭제 액션 시트
             Button {
-                // TODO: 수정 화면으로 이동
+                showActionSheet = true
             } label: {
-                Text("detail.edit")
-                    .font(.pretendard(.medium, size: 16))
-                    .foregroundStyle(Color.brandPrimary)
+                Image(systemName: "ellipsis")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(Color.gray900)
+                    .rotationEffect(.degrees(90))
+                    .frame(width: 24, height: 24)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
         }
@@ -75,10 +146,8 @@ struct ReceiptDetailView: View {
 
     private func content(_ r: Receipt) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            // 제품 이미지 카드
-            deviceImageCard(r)
-                .padding(.horizontal, .spacing20)
-                .padding(.top, .spacing8)
+            // 제품 이미지 — 전체 너비 풀블리드
+            deviceImageBanner(r)
 
             Spacer().frame(height: .spacing24)
 
@@ -96,21 +165,12 @@ struct ReceiptDetailView: View {
 
             Spacer().frame(height: .spacing24)
 
-            // 실물 영수증 필요 (requiresPhysicalReceipt == true)
-            if r.requiresPhysicalReceipt == true {
-                sectionBand
-                VStack(alignment: .leading, spacing: .spacing12) {
-                    Text("detail.physical_receipt_title")
-                        .font(.pretendard(.bold, size: 18))
-                        .foregroundStyle(Color.gray900)
-                    Text("detail.physical_receipt_desc")
-                        .font(.pretendard(.semibold, size: 15))
-                        .foregroundStyle(Color.brandPrimary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+            // 실물 영수증 보관 여부 (저장값 라디오 표시)
+            sectionBand
+            physicalSection(r)
                 .padding(.horizontal, .spacing20)
-                .padding(.vertical, .spacing24)
-            }
+                .padding(.top, .spacing24)
+                .padding(.bottom, .spacing8)
 
             // 보증 정보
             sectionBand
@@ -122,7 +182,7 @@ struct ReceiptDetailView: View {
                 hairline
                 labeledValue("detail.price", priceText(r.totalAmount))
                 hairline
-                labeledValue("detail.serial", r.serialNumber ?? "-")
+                serialRow(r)
             }
             .padding(.horizontal, .spacing20)
             .padding(.top, .spacing24)
@@ -138,20 +198,65 @@ struct ReceiptDetailView: View {
         }
     }
 
-    private func deviceImageCard(_ r: Receipt) -> some View {
-        RoundedRectangle(cornerRadius: .rounded2xl)
-            .fill(Color.brandSenary)
+    private func deviceImageBanner(_ r: Receipt) -> some View {
+        Color.brandSenary
+            .frame(maxWidth: .infinity)
             .frame(height: 200)
             .overlay {
                 Image(r.deviceImageName)
                     .resizable()
                     .scaledToFit()
-                    .padding(40)
+                    .padding(44)
             }
-            .overlay(
-                RoundedRectangle(cornerRadius: .rounded2xl)
-                    .stroke(Color.brandTertiary, lineWidth: 1.5)
-            )
+    }
+
+    // MARK: - 실물 영수증 보관 여부 (읽기 전용 라디오)
+
+    private func physicalSection(_ r: Receipt) -> some View {
+        let kept = r.requiresPhysicalReceipt == true
+        return VStack(alignment: .leading, spacing: .spacing16) {
+            Text("manual.physical_section")
+                .font(.pretendard(.bold, size: 18))
+                .foregroundStyle(Color.gray900)
+            radioDisplay("manual.physical_yes", selected: kept)
+            radioDisplay("detail.physical_no", selected: !kept)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func radioDisplay(_ label: LocalizedStringKey, selected: Bool) -> some View {
+        HStack(spacing: .spacing12) {
+            ZStack {
+                Circle()
+                    .stroke(selected ? Color.brandPrimary : Color.gray300, lineWidth: 1.5)
+                    .frame(width: 22, height: 22)
+                if selected {
+                    Circle().fill(Color.brandPrimary).frame(width: 12, height: 12)
+                }
+            }
+            Text(label)
+                .font(.pretendard(.regular, size: 15))
+                .foregroundStyle(selected ? Color.gray900 : Color.gray500)
+            Spacer()
+        }
+    }
+
+    // 시리얼 넘버 (라벨 + 도움말(?))
+    private func serialRow(_ r: Receipt) -> some View {
+        VStack(alignment: .leading, spacing: .spacing8) {
+            HStack(spacing: 6) {
+                Text("detail.serial")
+                    .font(.pretendard(.regular, size: 13))
+                    .foregroundStyle(Color.gray500)
+                Image(systemName: "questionmark.circle")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.gray400)
+            }
+            Text(r.serialNumber ?? "-")
+                .font(.pretendard(.medium, size: 17))
+                .foregroundStyle(Color.gray900)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // 라벨(위) + 값(아래)
@@ -344,5 +449,21 @@ struct ReceiptDetailView: View {
             loadFailed = true
         }
         isLoading = false
+    }
+
+    /// DELETE /api/v1/receipts/{id} — 성공 시 상위(목록)에 위임(목록 갱신 + 삭제 토스트 + 상세 닫기).
+    private func performDelete() {
+        guard !isDeleting else { return }
+        Task {
+            isDeleting = true
+            defer { isDeleting = false }
+            do {
+                try await ReceiptRepository.shared.deleteReceipt(id: receiptId)
+                onDeleted()  // 목록 동기화 + 삭제 토스트 (상위)
+                onBack()     // 상세 닫기
+            } catch {
+                toast.showError(String(localized: "receipt.delete.fail"))
+            }
+        }
     }
 }

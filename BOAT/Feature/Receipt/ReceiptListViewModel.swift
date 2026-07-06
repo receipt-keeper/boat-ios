@@ -82,12 +82,17 @@ final class ReceiptListViewModel {
         } catch {
             return false
         }
+        removeFromList(id: id)
+        return true
+    }
+
+    /// 목록 배열에서만 제거 (서버 삭제는 이미 완료된 경우 — 상세 화면 삭제 후 동기화용).
+    func removeFromList(id: String) {
         let before = receipts.count
         receipts.removeAll { $0.receiptId == id }
         if receipts.count != before {
             totalCount = max(0, totalCount - 1)
         }
-        return true
     }
 
     /// 마지막 근처 카드가 보일 때 호출 — 다음 페이지 추가 로드

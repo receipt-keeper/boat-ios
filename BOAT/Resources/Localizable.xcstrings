@@ -2088,6 +2088,76 @@
           }
         }
       }
+    },
+    "detail.menu_edit": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "수정하기"
+          }
+        }
+      }
+    },
+    "detail.menu_delete": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "삭제하기"
+          }
+        }
+      }
+    },
+    "detail.menu_close": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "닫기"
+          }
+        }
+      }
+    },
+    "detail.delete_confirm_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 영수증을 삭제할까요?"
+          }
+        }
+      }
+    },
+    "detail.delete_confirm_message": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "관련 정보도 함께 사라지며\n삭제된 데이터는 복구되지 않아요"
+          }
+        }
+      }
+    },
+    "detail.deleted_toast": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증이 삭제되었습니다."
+          }
+        }
+      }
+    },
+    "detail.physical_no": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "필요없음"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
