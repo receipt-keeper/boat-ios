@@ -56,18 +56,18 @@ struct MainTabView: View {
                         fabButton
                     }
                 }
-                .padding(.horizontal, .spacing16)
+                .padding(.horizontal, .spacing20)
                 .padding(.bottom, .spacing8)
             }
-            // 등록 메뉴 카드 — FAB 위쪽, 오른쪽 변을 FAB 중앙(우측 44pt)에 정렬
+            // 등록 메뉴 카드 — FAB 위쪽, 오른쪽 변을 FAB 중앙에 정렬
             .overlay(alignment: .bottomTrailing) {
                 if showAddMenu {
                     ReceiptAddMenuCard(
                         onCamera: { openRegisterFromFab(.camera) },
                         onGallery: { openRegisterFromFab(.gallery) }
                     )
-                    .padding(.trailing, 44) // FAB 중앙 (end 16 + 반지름 28)
-                    .padding(.bottom, 76)   // FAB(하단 8 + 56) + 간격 12 위로
+                    .padding(.trailing, 51) // FAB 중앙 (외곽 20 + 반지름 31)
+                    .padding(.bottom, 82)   // FAB(하단 8 + 62) + 간격 12 위로
                 }
             }
             .animation(.easeInOut(duration: 0.2), value: showAddMenu)
@@ -135,7 +135,7 @@ struct MainTabView: View {
             Image("icPlus")
                 .renderingMode(.template)
                 .foregroundStyle(Color.gray900)
-                .frame(width: 56, height: 56)
+                .frame(width: 62, height: 62) // pill 높이와 동일
                 .background(.ultraThinMaterial, in: Circle())
                 .overlay(
                     Circle().stroke(Color.colorWhite.opacity(0.6), lineWidth: 1)
