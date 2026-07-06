@@ -69,6 +69,28 @@ enum DeviceCategory: String, CaseIterable, Codable {
     /// 대표 기기명 리스트 (확정본). 리스트에 없는 기기명은 대분류 기본 이미지로 폴백.
     var keywords: [String] { Array(subcategoryImages.keys) }
 
+    /// 카테고리 드롭다운 표시 라벨 (디자인 확정본 — enum rawValue와 다름: "주방가전"/"IT 제품"/"기타").
+    var pickerLabel: String {
+        switch self {
+        case .kitchen: return "주방가전"
+        case .laundry: return "세탁/청소"
+        case .living:  return "리빙/냉난방"
+        case .it:      return "IT 제품"
+        case .other:   return "기타"
+        }
+    }
+
+    /// 소분류 칩 노출 순서 (디자이너 확정본). 항상 "기타"로 끝난다. 아이콘은 DeviceImage로 해석.
+    var orderedSubcategories: [String] {
+        switch self {
+        case .kitchen: return ["전자레인지", "냉장고", "밥솥", "오븐", "정수기", "기타"]
+        case .laundry: return ["세탁기", "건조기", "청소기", "로봇청소기", "기타"]
+        case .living:  return ["에어컨", "선풍기", "공기청정기", "가습기", "기타"]
+        case .it:      return ["노트북", "핸드폰", "무선이어폰", "스마트워치", "데스크탑/TV", "카메라", "스피커", "게임기", "헤드셋", "기타"]
+        case .other:   return ["기타"]
+        }
+    }
+
     /// 서버 category 문자열 → enum. 공백 편차 + 라벨 변형(영상/IT 제품 등)을 흡수. Android DeviceImage.categoryDefault 대응.
     static func from(serverValue: String?) -> DeviceCategory? {
         let key = normalizeCategory(serverValue)

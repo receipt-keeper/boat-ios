@@ -2,10 +2,13 @@
 //  ReceiptManualInputView.swift
 //  BOAT
 //
-//  영수증 정보 입력 화면.
-//  OCR 성공 시 분석 결과 프리필, 직접 입력 시 빈 폼으로 진입.
-//  Android ReceiptManualInputScreen 대응.
-//  필수(*): 제품명 / 구매일 / 무상 AS 만료기간 → 모두 채워야 등록 버튼 활성화.
+//  영수증 직접 입력 화면. OCR 성공 시 분석 결과 프리필, 직접 입력 시 빈 폼으로 진입.
+//  Android ReceiptManualInputScreen 대응. 디자인 확정본 반영:
+//  - 등록된 이미지 확인: 추가하기 타일(+ 카메라/갤러리 메뉴 오버레이) + 썸네일(삭제)
+//  - 카테고리: 대분류 드롭다운 + 소분류 칩(지정 순서)
+//  - 제품 정보 / 보증 정보: 접이식 섹션
+//  - 실물 영수증 보관 여부: 라디오(필요함 / 필요하지 않음)
+//  필수(*): 제품명 / 구매일 / 무상 AS 만료기간.
 //
 
 import SwiftUI
@@ -17,27 +20,48 @@ struct ReceiptManualInputView: View {
     /// 영수증 등록 성공 → 홈으로 복귀 처리 (상위에서 등록 플로우 전체를 닫음)
     var onComplete: () -> Void = {}
 
+    @Environment(PermissionManager.self) private var permissions
+
     private static let maxPhotos = 5
     private static let warrantyOptions: [LocalizedStringKey] = [
         "manual.warranty_6m", "manual.warranty_1y", "manual.warranty_2y", "manual.warranty_3y", "manual.warranty_custom",
     ]
 
     @State private var images: [UIImage]
-    @State private var currentImagePage = 0
     @State private var galleryItems: [PhotosPickerItem] = []
 
-    @State private var selectedCategory: DeviceCategory?
+    // 이미지 추가 메뉴(카메라/갤러리) + 카메라 권한
+    @State private var showAddMenu = false
+    @State private var showCamera = false
+    @State private var showGalleryPicker = false
+    @State private var cameraUnavailable = false
+    @State private var showCameraDenied = false
+
+    // 카테고리
+    @State private var selectedCategory: DeviceCategory
+    @State private var selectedSubcategory: String?
+    @State private var categoryExpanded = false
+
+    // 제품 정보
     @State private var productName = ""
     @State private var purchaseDate = ""
     @State private var selectedWarranty: Int?
     @State private var customMonthsText = ""
     @State private var customIsYears = false
     @State private var memo = ""
+    @State private var showDatePicker = false
+    @State private var productExpanded = true
+
+    // 실물 영수증 보관 여부 (nil = 미선택)
+    @State private var physicalReceipt: Bool?
+    @State private var showPhysicalHelp = false
+
+    // 보증 정보
     @State private var brand = ""
     @State private var price = ""
     @State private var serial = ""
-    @State private var keepReceipt = true
-    @State private var showDatePicker = false
+    @State private var warrantyExpanded = true
+
     @State private var isSubmitting = false
     @State private var toast = BoatToastState()
 
@@ -45,6 +69,9 @@ struct ReceiptManualInputView: View {
         _images = State(initialValue: images)
         self.onBack = onBack
         self.onComplete = onComplete
+
+        // 기본 대분류는 주방가전 (디자인 기본값). OCR 카테고리가 있으면 그걸로.
+        _selectedCategory = State(initialValue: .kitchen)
 
         guard let ocr = ocrResult else { return }
 
@@ -57,15 +84,12 @@ struct ReceiptManualInputView: View {
                 _purchaseDate = State(initialValue: parts.joined(separator: "."))
             }
         }
-
         if let amount = ocr.totalAmount {
             _price = State(initialValue: "\(amount)")
         }
-
-        if let cat = ocr.category {
-            _selectedCategory = State(initialValue: DeviceCategory.from(serverValue: cat))
+        if let cat = ocr.category, let category = DeviceCategory.from(serverValue: cat) {
+            _selectedCategory = State(initialValue: category)
         }
-
         if let months = ocr.periodMonths {
             switch months {
             case 6:  _selectedWarranty = State(initialValue: 0)
@@ -82,6 +106,7 @@ struct ReceiptManualInputView: View {
     // MARK: - Computed
 
     private var remainingSlots: Int { max(0, Self.maxPhotos - images.count) }
+    private var canAddMore: Bool { images.count < Self.maxPhotos }
 
     private var totalWarrantyMonths: Int? {
         switch selectedWarranty {
@@ -111,7 +136,6 @@ struct ReceiptManualInputView: View {
             && totalWarrantyMonths != nil
     }
 
-    /// `price`(원본 숫자 문자열)를 콤마 포맷으로 표시하고, 입력값은 숫자만 남겨 저장.
     private var priceDisplayBinding: Binding<String> {
         Binding(
             get: { Int(price)?.formattedWithComma ?? "" },
@@ -127,30 +151,18 @@ struct ReceiptManualInputView: View {
                 topBar
 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 0) {
-                        sectionTitle("manual.image_section")
-                        Spacer().frame(height: .spacing12)
-                        imagePager
-
-                        Spacer().frame(height: .spacing20)
-                        mainCard
-
-                        Spacer().frame(height: .spacing20)
-                        sectionTitle("manual.warranty_section")
-                        Spacer().frame(height: .spacing12)
-                        warrantyInfoCard
-
-                        Spacer().frame(height: .spacing20)
-                        sectionTitle("manual.as_section")
-                        Spacer().frame(height: .spacing12)
-                        asGuideCard
-
-                        Spacer().frame(height: .spacing24)
+                    VStack(alignment: .leading, spacing: .spacing20) {
+                        imageSection
+                        categoryCard
+                        productCard
+                        physicalCard
+                        warrantyCard
                         submitButton
-
-                        Spacer().frame(height: .spacing16)
+                        Spacer().frame(height: .spacing8)
                     }
                     .padding(.horizontal, .spacing20)
+                    .padding(.top, .spacing8)
+                    .padding(.bottom, .spacing16)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -163,7 +175,37 @@ struct ReceiptManualInputView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .animation(.easeOut(duration: 0.2), value: isSubmitting)
+        .animation(.easeInOut(duration: 0.2), value: showAddMenu)
+        // 추가하기 타일 아래로 카메라/갤러리 메뉴 오버레이 (메인 FAB 메뉴와 동일)
+        .overlayPreferenceValue(AddTileAnchorKey.self) { anchor in
+            if showAddMenu, let anchor {
+                GeometryReader { proxy in
+                    let rect = proxy[anchor]
+                    ZStack(alignment: .topLeading) {
+                        Color.black.opacity(0.35)
+                            .ignoresSafeArea()
+                            .onTapGesture { showAddMenu = false }
+                        ReceiptAddMenuCard(
+                            onCamera: { showAddMenu = false; openCamera() },
+                            onGallery: { showAddMenu = false; showGalleryPicker = true }
+                        )
+                        .fixedSize()
+                        .offset(x: rect.minX, y: rect.maxY + 8)
+                    }
+                }
+            }
+        }
         .onChange(of: galleryItems) { _, items in loadGalleryImages(items) }
+        .photosPicker(
+            isPresented: $showGalleryPicker,
+            selection: $galleryItems,
+            maxSelectionCount: max(1, remainingSlots),
+            matching: .images
+        )
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraPicker { image in addImages([image]) }
+                .ignoresSafeArea()
+        }
         .sheet(isPresented: $showDatePicker) {
             PurchaseDatePickerSheet(
                 onConfirm: { purchaseDate = $0; showDatePicker = false },
@@ -171,168 +213,289 @@ struct ReceiptManualInputView: View {
             )
             .presentationDetents([.medium])
         }
+        .alert("카메라를 사용할 수 없습니다.", isPresented: $cameraUnavailable) {
+            Button("common.confirm", role: .cancel) {}
+        }
+        .alert("permission.camera.denied_title", isPresented: $showCameraDenied) {
+            Button("permission.open_settings") { permissions.openSettings() }
+            Button("common.cancel", role: .cancel) {}
+        } message: {
+            Text("permission.camera.denied_message")
+        }
+        .alert("manual.physical_section", isPresented: $showPhysicalHelp) {
+            Button("common.confirm", role: .cancel) {}
+        } message: {
+            Text("manual.as_guide")
+        }
         .boatToastHost(toast)
     }
 
     // MARK: - Top Bar
 
     private var topBar: some View {
-        HStack {
-            Button(action: onBack) {
-                Image("icChevronLeft")
-                    .renderingMode(.template)
-                    .foregroundStyle(Color.gray900)
-                    .frame(width: 24, height: 24)
-                    .contentShape(Rectangle())
+        ZStack {
+            Text("manual.title")
+                .font(.pretendard(.bold, size: 18))
+                .foregroundStyle(Color.gray900)
+            HStack {
+                Button(action: onBack) {
+                    Image("icChevronLeft")
+                        .renderingMode(.template)
+                        .foregroundStyle(Color.gray900)
+                        .frame(width: 24, height: 24)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                Spacer()
             }
-            .buttonStyle(.plain)
-            Spacer()
         }
         .frame(height: 56)
         .padding(.horizontal, .spacing20)
     }
 
-    // MARK: - 이미지 페이저
+    // MARK: - 등록된 이미지 확인
 
-    @ViewBuilder
-    private var imagePager: some View {
-        if images.isEmpty {
-            RoundedRectangle(cornerRadius: .roundedXl)
-                .strokeBorder(Color.gray300, style: StrokeStyle(lineWidth: 1, dash: [4]))
-                .frame(height: 220)
-                .overlay {
-                    Image(systemName: "photo")
-                        .font(.system(size: 36))
-                        .foregroundStyle(Color.gray400)
-                }
-        } else {
-            TabView(selection: $currentImagePage) {
-                ForEach(Array(images.enumerated()), id: \.offset) { index, image in
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .tag(index)
-                }
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .frame(height: 220)
-            .background(Color.gray100)
-            .clipShape(RoundedRectangle(cornerRadius: .roundedXl))
-            .overlay(alignment: .bottomTrailing) {
-                if images.count > 1 {
-                    Text("\(currentImagePage + 1) / \(images.count)")
-                        .font(.pretendard(.medium, size: 12))
-                        .foregroundStyle(Color.colorWhite)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(Color.black.opacity(0.5), in: Capsule())
-                        .padding(12)
+    private var imageSection: some View {
+        VStack(alignment: .leading, spacing: .spacing12) {
+            sectionTitle("manual.image_section")
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: .spacing12) {
+                    addTile
+                    ForEach(Array(images.enumerated()), id: \.offset) { index, image in
+                        imageThumbnail(image, index: index)
+                    }
                 }
             }
         }
     }
 
-    // MARK: - 메인 입력 카드
+    private var addTile: some View {
+        Button {
+            showAddMenu = true
+        } label: {
+            VStack(spacing: .spacing8) {
+                Image(systemName: "plus")
+                    .font(.system(size: 26, weight: .semibold))
+                    .foregroundStyle(Color.brandPrimary)
+                Text("manual.add_image")
+                    .font(.pretendard(.medium, size: 13))
+                    .foregroundStyle(Color.brandPrimary)
+            }
+            .frame(width: 100, height: 100)
+            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
+            .overlay(
+                RoundedRectangle(cornerRadius: .roundedLg)
+                    .stroke(Color.brandTertiary, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .anchorPreference(key: AddTileAnchorKey.self, value: .bounds) { $0 }
+    }
 
-    private var mainCard: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // 카테고리 칩
-            HStack(spacing: .spacing8) {
-                ForEach(DeviceCategory.allCases, id: \.self) { category in
-                    categoryItem(category)
+    private func imageThumbnail(_ image: UIImage, index: Int) -> some View {
+        Image(uiImage: image)
+            .resizable()
+            .scaledToFill()
+            .frame(width: 100, height: 100)
+            .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
+            .overlay(alignment: .topTrailing) {
+                Button {
+                    images.remove(at: index)
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(Color.colorWhite)
+                        .frame(width: 24, height: 24)
+                        .background(Color.gray900.opacity(0.5), in: Circle())
+                }
+                .buttonStyle(.plain)
+                .padding(6)
+            }
+    }
+
+    // MARK: - 카테고리 카드 (대분류 드롭다운 + 소분류 칩)
+
+    private var categoryCard: some View {
+        VStack(alignment: .leading, spacing: .spacing16) {
+            Text("manual.category")
+                .font(.pretendard(.bold, size: 18))
+                .foregroundStyle(Color.gray900)
+
+            // 대분류 드롭다운
+            VStack(spacing: 0) {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.18)) { categoryExpanded.toggle() }
+                } label: {
+                    HStack {
+                        Text(selectedCategory.pickerLabel)
+                            .font(.pretendard(.medium, size: 15))
+                            .foregroundStyle(Color.gray900)
+                        Spacer()
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(Color.gray500)
+                            .rotationEffect(.degrees(categoryExpanded ? 180 : 0))
+                    }
+                    .padding(.horizontal, .spacing16)
+                    .frame(height: 52)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+
+                if categoryExpanded {
+                    Divider().foregroundStyle(Color.gray200)
+                    ForEach(DeviceCategory.allCases, id: \.self) { category in
+                        categoryOption(category)
+                    }
                 }
             }
-
-            Spacer().frame(height: .spacing20)
-            BoatInputField(
-                text: $productName,
-                label: "manual.product_name",
-                required: true,
-                placeholder: "manual.product_name_hint"
+            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
+            .overlay(
+                RoundedRectangle(cornerRadius: .roundedLg)
+                    .stroke(categoryExpanded ? Color.brandPrimary : Color.gray300, lineWidth: 1)
             )
 
-            Spacer().frame(height: .spacing16)
-            fieldLabel("manual.purchase_date", required: true)
-            Spacer().frame(height: .spacing8)
-            fieldBox(onTap: { showDatePicker = true }) {
-                HStack(spacing: .spacing8) {
-                    Image(systemName: "calendar")
-                        .font(.system(size: 16))
-                        .foregroundStyle(Color.gray400)
-                    Text(purchaseDate.isEmpty ? String(localized: "manual.purchase_date_hint") : purchaseDate)
-                        .font(.pretendard(.regular, size: 15))
-                        .foregroundStyle(purchaseDate.isEmpty ? Color.gray400 : Color.gray900)
+            // 소분류 칩 (지정 순서)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: .spacing12) {
+                    ForEach(selectedCategory.orderedSubcategories, id: \.self) { name in
+                        subcategoryChip(name)
+                    }
                 }
             }
+        }
+        .padding(.spacing16)
+        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+    }
 
-            Spacer().frame(height: .spacing16)
-            fieldLabel("manual.warranty", required: true)
-            Spacer().frame(height: .spacing8)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: .spacing8) {
-                    ForEach(Array(Self.warrantyOptions.enumerated()), id: \.offset) { index, label in
-                        warrantyChip(label, selected: selectedWarranty == index) {
-                            selectedWarranty = index
-                            if index != 4 {
-                                customMonthsText = ""
-                                customIsYears = false
+    private func categoryOption(_ category: DeviceCategory) -> some View {
+        let selected = category == selectedCategory
+        return Button {
+            selectedCategory = category
+            selectedSubcategory = nil
+            withAnimation(.easeInOut(duration: 0.18)) { categoryExpanded = false }
+        } label: {
+            Text(category.pickerLabel)
+                .font(.pretendard(selected ? .semibold : .regular, size: 15))
+                .foregroundStyle(selected ? Color.brandPrimary : Color.gray900)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, .spacing16)
+                .frame(height: 48)
+                .background(selected ? Color.brandSenary : Color.clear)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func subcategoryChip(_ name: String) -> some View {
+        let selected = selectedSubcategory == name
+        return Button {
+            selectedSubcategory = selected ? nil : name
+        } label: {
+            VStack(spacing: 6) {
+                RoundedRectangle(cornerRadius: .roundedXl)
+                    .fill(selected ? Color.brandQuinary : Color.gray100)
+                    .frame(width: 64, height: 52)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: .roundedXl)
+                            .stroke(selected ? Color.brandPrimary : Color.clear, lineWidth: 1.5)
+                    )
+                    .overlay {
+                        Image(DeviceImage.assetName(category: selectedCategory.rawValue, subCategory: name))
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 30, height: 30)
+                    }
+                Text(name)
+                    .font(.pretendard(.regular, size: 11))
+                    .foregroundStyle(selected ? Color.brandPrimary : Color.gray600)
+                    .lineLimit(1)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - 제품 정보 카드 (접이식)
+
+    private var productCard: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            collapsibleHeader("manual.product_section", expanded: $productExpanded)
+
+            if productExpanded {
+                Spacer().frame(height: .spacing16)
+
+                BoatInputField(
+                    text: $productName,
+                    label: "manual.product_name",
+                    required: true,
+                    placeholder: "manual.product_name_hint"
+                )
+
+                Spacer().frame(height: .spacing16)
+                fieldLabel("manual.purchase_date", required: true)
+                Spacer().frame(height: .spacing8)
+                fieldBox(onTap: { showDatePicker = true }) {
+                    HStack(spacing: .spacing8) {
+                        Image(systemName: "calendar")
+                            .font(.system(size: 16))
+                            .foregroundStyle(Color.gray400)
+                        Text(purchaseDate.isEmpty ? String(localized: "manual.purchase_date_hint") : purchaseDate)
+                            .font(.pretendard(.regular, size: 15))
+                            .foregroundStyle(purchaseDate.isEmpty ? Color.gray400 : Color.gray900)
+                    }
+                }
+
+                Spacer().frame(height: .spacing16)
+                fieldLabel("manual.warranty", required: true)
+                Spacer().frame(height: .spacing8)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: .spacing8) {
+                        ForEach(Array(Self.warrantyOptions.enumerated()), id: \.offset) { index, label in
+                            warrantyChip(label, selected: selectedWarranty == index) {
+                                selectedWarranty = index
+                                if index != 4 {
+                                    customMonthsText = ""
+                                    customIsYears = false
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            // 직접입력 모드 — 숫자 입력 + 개월/년 단위 칩
-            if selectedWarranty == 4 {
-                Spacer().frame(height: .spacing8)
-                HStack(spacing: .spacing8) {
-                    TextField("0", text: $customMonthsText)
-                        .keyboardType(.numberPad)
-                        .font(.pretendard(.regular, size: 15))
-                        .foregroundStyle(Color.gray900)
-                        .padding(.horizontal, .spacing12)
-                        .frame(height: 44)
-                        .frame(maxWidth: .infinity)
-                        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: .roundedLg)
-                                .stroke(Color.gray300, lineWidth: 1)
-                        )
-                    customUnitChip("개월", selected: !customIsYears) { customIsYears = false }
-                    customUnitChip("년", selected: customIsYears)    { customIsYears = true  }
+                if selectedWarranty == 4 {
+                    Spacer().frame(height: .spacing8)
+                    HStack(spacing: .spacing8) {
+                        TextField("0", text: $customMonthsText)
+                            .keyboardType(.numberPad)
+                            .font(.pretendard(.regular, size: 15))
+                            .foregroundStyle(Color.gray900)
+                            .padding(.horizontal, .spacing12)
+                            .frame(height: 44)
+                            .frame(maxWidth: .infinity)
+                            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: .roundedLg)
+                                    .stroke(Color.gray300, lineWidth: 1)
+                            )
+                        customUnitChip("개월", selected: !customIsYears) { customIsYears = false }
+                        customUnitChip("년", selected: customIsYears)    { customIsYears = true  }
+                    }
                 }
-            }
 
-            // 만료일 정보 박스 — 보증기간+구매일 모두 유효할 때
-            if let expiresOn = expiresOnDisplay {
-                Spacer().frame(height: .spacing8)
-                HStack(spacing: .spacing8) {
-                    Image(systemName: "info.circle.fill")
-                        .font(.system(size: 13))
-                        .foregroundStyle(Color.brandPrimary)
-                    Text("무상 AS 만료일 \(expiresOn)")
-                        .font(.pretendard(.semibold, size: 13))
-                        .foregroundStyle(Color.brandPrimary)
+                if let expiresOn = expiresOnDisplay {
+                    Spacer().frame(height: .spacing8)
+                    infoBox(text: "무상 AS 만료일 \(expiresOn)", systemIcon: "info.circle.fill")
+                } else if needsWarrantyHint {
+                    Spacer().frame(height: .spacing8)
+                    infoBox(textKey: "manual.warranty_hint")
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, .spacing12)
-                .padding(.vertical, 10)
-                .background(Color.brandSenary, in: RoundedRectangle(cornerRadius: .roundedLg))
-            } else if needsWarrantyHint {
-                Spacer().frame(height: .spacing8)
-                Text("manual.warranty_hint")
-                    .font(.pretendard(.semibold, size: 13))
-                    .foregroundStyle(Color.brandPrimary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, .spacing12)
-                    .padding(.vertical, 10)
-                    .background(Color.brandSenary, in: RoundedRectangle(cornerRadius: .roundedLg))
-            }
 
-            Spacer().frame(height: .spacing16)
-            fieldLabel("manual.memo", required: false)
-            Spacer().frame(height: .spacing8)
-            memoField
+                Spacer().frame(height: .spacing16)
+                fieldLabel("manual.memo", required: false)
+                Spacer().frame(height: .spacing8)
+                memoField
+            }
         }
         .padding(.spacing16)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
@@ -340,10 +503,7 @@ struct ReceiptManualInputView: View {
 
     private var needsWarrantyHint: Bool {
         if selectedWarranty == nil { return true }
-        if selectedWarranty == 4 {
-            let n = Int(customMonthsText) ?? 0
-            return n <= 0
-        }
+        if selectedWarranty == 4 { return (Int(customMonthsText) ?? 0) <= 0 }
         return false
     }
 
@@ -377,47 +537,74 @@ struct ReceiptManualInputView: View {
         }
     }
 
-    // MARK: - 보증 정보 카드
+    // MARK: - 실물 영수증 보관 여부 (라디오)
 
-    private var warrantyInfoCard: some View {
+    private var physicalCard: some View {
         VStack(alignment: .leading, spacing: .spacing16) {
-            BoatInputField(text: $brand, label: "manual.brand", placeholder: "manual.brand_hint")
-            BoatInputField(
-                text: priceDisplayBinding,
-                label: "manual.price",
-                placeholder: "manual.price_hint",
-                keyboard: .numberPad
-            )
-            BoatInputField(text: $serial, label: "manual.serial", placeholder: "manual.serial_hint")
+            HStack(spacing: 6) {
+                Text("manual.physical_section")
+                    .font(.pretendard(.bold, size: 18))
+                    .foregroundStyle(Color.gray900)
+                Button {
+                    showPhysicalHelp = true
+                } label: {
+                    Image(systemName: "questionmark.circle")
+                        .font(.system(size: 16))
+                        .foregroundStyle(Color.gray400)
+                }
+                .buttonStyle(.plain)
+            }
+
+            radioRow("manual.physical_yes", selected: physicalReceipt == true) { physicalReceipt = true }
+            radioRow("manual.physical_no", selected: physicalReceipt == false) { physicalReceipt = false }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.spacing16)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
     }
 
-    // MARK: - 무상 AS 안내 카드
+    private func radioRow(_ label: LocalizedStringKey, selected: Bool, onTap: @escaping () -> Void) -> some View {
+        Button(action: onTap) {
+            HStack(spacing: .spacing12) {
+                ZStack {
+                    Circle()
+                        .stroke(selected ? Color.brandPrimary : Color.gray300, lineWidth: 1.5)
+                        .frame(width: 22, height: 22)
+                    if selected {
+                        Circle().fill(Color.brandPrimary).frame(width: 12, height: 12)
+                    }
+                }
+                Text(label)
+                    .font(.pretendard(.regular, size: 15))
+                    .foregroundStyle(selected ? Color.gray900 : Color.gray600)
+                Spacer()
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
 
-    private var asGuideCard: some View {
-        VStack(alignment: .leading, spacing: .spacing12) {
-            Text("manual.as_guide")
-                .font(.pretendard(.regular, size: 13))
-                .foregroundStyle(Color.gray600)
-                .lineSpacing(4)
-                .frame(maxWidth: .infinity, alignment: .leading)
+    // MARK: - 보증 정보 카드 (접이식)
 
-            Button { keepReceipt.toggle() } label: {
-                HStack(spacing: .spacing8) {
-                    Image(systemName: keepReceipt ? "checkmark.square.fill" : "square")
-                        .font(.system(size: 20))
-                        .foregroundStyle(keepReceipt ? Color.brandPrimary : Color.gray300)
-                    Text("manual.as_keep_receipt")
-                        .font(.pretendard(.regular, size: 14))
-                        .foregroundStyle(Color.gray700)
+    private var warrantyCard: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            collapsibleHeader("manual.warranty_section", expanded: $warrantyExpanded)
+
+            if warrantyExpanded {
+                Spacer().frame(height: .spacing16)
+                VStack(alignment: .leading, spacing: .spacing16) {
+                    BoatInputField(text: $brand, label: "manual.brand", placeholder: "manual.brand_hint")
+                    BoatInputField(
+                        text: priceDisplayBinding,
+                        label: "manual.price",
+                        placeholder: "manual.price_hint",
+                        keyboard: .numberPad
+                    )
+                    BoatInputField(text: $serial, label: "manual.serial", placeholder: "manual.serial_hint")
                 }
             }
-            .buttonStyle(.plain)
         }
         .padding(.spacing16)
-        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
     }
 
@@ -451,6 +638,25 @@ struct ReceiptManualInputView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
+    private func collapsibleHeader(_ key: LocalizedStringKey, expanded: Binding<Bool>) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) { expanded.wrappedValue.toggle() }
+        } label: {
+            HStack {
+                Text(key)
+                    .font(.pretendard(.bold, size: 18))
+                    .foregroundStyle(Color.gray900)
+                Spacer()
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color.gray500)
+                    .rotationEffect(.degrees(expanded.wrappedValue ? 180 : 0))
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
     private func fieldLabel(_ key: LocalizedStringKey, required: Bool) -> some View {
         HStack(spacing: 0) {
             Text(key)
@@ -462,6 +668,7 @@ struct ReceiptManualInputView: View {
                     .foregroundStyle(Color.systemError)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func fieldBox(onTap: @escaping () -> Void, @ViewBuilder content: () -> some View) -> some View {
@@ -481,33 +688,23 @@ struct ReceiptManualInputView: View {
         .buttonStyle(.plain)
     }
 
-    private func categoryItem(_ category: DeviceCategory) -> some View {
-        let selected = selectedCategory == category
-        return Button {
-            selectedCategory = category
-        } label: {
-            VStack(spacing: 6) {
-                RoundedRectangle(cornerRadius: .roundedXl)
-                    .fill(selected ? Color.brandQuinary : Color.gray100)
-                    .frame(height: 52)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: .roundedXl)
-                            .stroke(selected ? Color.brandPrimary : Color.clear, lineWidth: 1.5)
-                    )
-                    .overlay {
-                        Image(category.imageName)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 28, height: 28)
-                    }
-                Text(category.rawValue)
-                    .font(.pretendard(.regular, size: 11))
-                    .foregroundStyle(selected ? Color.brandPrimary : Color.gray600)
-                    .lineLimit(1)
+    private func infoBox(text: String? = nil, textKey: LocalizedStringKey? = nil, systemIcon: String? = nil) -> some View {
+        HStack(spacing: .spacing8) {
+            if let systemIcon {
+                Image(systemName: systemIcon)
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.brandPrimary)
             }
-            .frame(maxWidth: .infinity)
+            Group {
+                if let text { Text(text) } else if let textKey { Text(textKey) }
+            }
+            .font(.pretendard(.semibold, size: 13))
+            .foregroundStyle(Color.brandPrimary)
         }
-        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, .spacing12)
+        .padding(.vertical, 10)
+        .background(Color.brandSenary, in: RoundedRectangle(cornerRadius: .roundedLg))
     }
 
     private func warrantyChip(_ label: LocalizedStringKey, selected: Bool, onTap: @escaping () -> Void) -> some View {
@@ -541,16 +738,41 @@ struct ReceiptManualInputView: View {
 
     // MARK: - Actions
 
-    /// "yyyy.MM.dd" → "yyyy-MM-dd" (서버 전송 포맷)
     private var apiPaymentDate: String? {
         guard !purchaseDate.isEmpty else { return nil }
         return purchaseDate.replacingOccurrences(of: ".", with: "-")
     }
 
-    /// 영수증 등록: 파일 업로드 → 생성 API → 로컬 저장 → 홈 복귀. 실패 시 Toast.
+    /// 카메라 실행 — 촬영 시점에 권한 확인/요청 (App Store 심사 가이드 준수).
+    private func openCamera() {
+        guard canAddMore else { return }
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            cameraUnavailable = true
+            return
+        }
+        Task {
+            switch permissions.cameraStatus {
+            case .granted:
+                showCamera = true
+            case .notDetermined:
+                let status = await permissions.requestCameraPermission()
+                if status == .granted { showCamera = true }
+                else if status == .denied { showCameraDenied = true }
+            case .denied:
+                showCameraDenied = true
+            }
+        }
+    }
+
+    private func addImages(_ new: [UIImage]) {
+        guard !new.isEmpty else { return }
+        images.append(contentsOf: new.prefix(remainingSlots))
+    }
+
     private func submit() {
         guard canSubmit, !isSubmitting else { return }
 
+        let sub = (selectedSubcategory == "기타" ? nil : selectedSubcategory)
         let fields = ReceiptCreateFields(
             itemName: productName.trimmingCharacters(in: .whitespaces),
             brandName: brand.trimmingCharacters(in: .whitespaces),
@@ -558,10 +780,10 @@ struct ReceiptManualInputView: View {
             paymentDate: apiPaymentDate,
             totalAmount: Int(price),
             periodMonths: totalWarrantyMonths,
-            category: selectedCategory?.rawValue,
-            subCategory: nil,
+            category: selectedCategory.rawValue,
+            subCategory: sub,
             memo: memo.trimmingCharacters(in: .whitespaces),
-            requiresPhysicalReceipt: keepReceipt
+            requiresPhysicalReceipt: physicalReceipt ?? false
         )
         let imagesToUpload = images
 
@@ -588,10 +810,19 @@ struct ReceiptManualInputView: View {
                 }
             }
             await MainActor.run {
-                images.append(contentsOf: loaded.prefix(remainingSlots))
+                addImages(loaded)
                 galleryItems = []
             }
         }
+    }
+}
+
+// MARK: - 추가하기 타일 위치 앵커
+
+private struct AddTileAnchorKey: PreferenceKey {
+    static let defaultValue: Anchor<CGRect>? = nil
+    static func reduce(value: inout Anchor<CGRect>?, nextValue: () -> Anchor<CGRect>?) {
+        value = value ?? nextValue()
     }
 }
 
@@ -633,4 +864,5 @@ private struct PurchaseDatePickerSheet: View {
 
 #Preview {
     ReceiptManualInputView(images: [], onBack: {})
+        .environment(PermissionManager())
 }

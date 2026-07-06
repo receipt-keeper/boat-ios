@@ -1,1932 +1,2094 @@
 {
-  "sourceLanguage" : "ko",
-  "strings" : {
-    "" : {
-
-    },
-    "  |  " : {
-
-    },
-    " *" : {
-
-    },
-    "!" : {
-
-    },
-    "%lld" : {
-
-    },
-    "%lld / %lld" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld / %2$lld"
+  "sourceLanguage": "ko",
+  "strings": {
+    "": {},
+    "  |  ": {},
+    " *": {},
+    "!": {},
+    "[TEST] 푸시": {},
+    "%lld": {},
+    "%lld / %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld / %2$lld"
           }
         }
       }
-    },
-    "• %@" : {
-
     },
-    "|" : {
-
-    },
-    "0" : {
-
-    },
-    "boatlab-dev.luigi99.cloud" : {
-
-    },
-    "common.cancel" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "취소"
+    "• %@": {},
+    "|": {},
+    "0": {},
+    "boatlab-dev.luigi99.cloud": {},
+    "common.cancel": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "취소"
           }
         }
       }
     },
-    "common.confirm" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "확인"
+    "common.confirm": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "확인"
           }
         }
       }
     },
-    "common.ocr_test" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OCR 테스트"
+    "common.ocr_test": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OCR 테스트"
           }
         }
       }
     },
-    "DEBUG" : {
-
-    },
-    "dialog.delete.cancel" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "돌아가기"
+    "DEBUG": {},
+    "detail.brand": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "브랜드명"
           }
         }
       }
     },
-    "dialog.delete.confirm" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "탈퇴하기"
+    "detail.edit": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "수정"
           }
         }
       }
     },
-    "dialog.delete.message" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "탈퇴 시 모든 영수증과 계정 정보가\n삭제되며 복구할 수 없어요"
+    "detail.expiry": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "무상 AS 만료일"
           }
         }
       }
     },
-    "dialog.delete.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "회원 탈퇴를 진행할까요?"
+    "detail.memo": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "메모"
           }
         }
       }
     },
-    "dialog.logout.message" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "데이터는 안전하게 보관되며\n언제든 다시 로그인 할 수 있어요"
+    "detail.memo_placeholder": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제품 관련 특이사항을 입력하세요."
           }
         }
       }
     },
-    "dialog.logout.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "로그아웃 할까요?"
+    "detail.original_receipt": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "원본 영수증"
           }
         }
       }
     },
-    "error.api.decode_failed" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "데이터를 해석하는 데 실패했습니다."
+    "detail.physical_receipt_desc": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AS 센터 방문 시, 실물 영수증을 꼭 지참하세요!"
           }
         }
       }
     },
-    "error.api.empty_response" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "서버 응답이 비어 있습니다."
+    "detail.physical_receipt_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "실물 영수증 필요"
           }
         }
       }
     },
-    "error.api.invalid_url" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "잘못된 요청 주소입니다."
+    "detail.price": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매 가격"
           }
         }
       }
     },
-    "error.api.network" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "네트워크 연결상태를 확인해주세요"
+    "detail.product_name": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제품명"
           }
         }
       }
     },
-    "error.api.unknown" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오류가 발생했습니다. 잠시 후 다시 시도해주세요"
+    "detail.purchase_date": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매일"
           }
         }
       }
     },
-    "error.auth.apple_token_missing" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "애플 로그인 토큰을 가져올 수 없습니다."
+    "detail.serial": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시리얼 넘버"
           }
         }
       }
     },
-    "error.auth.google_token_missing" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "구글 로그인 토큰을 가져올 수 없습니다."
+    "detail.support": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "공식 AS 센터에서 접수하기"
           }
         }
       }
     },
-    "error.delete_account" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "회원 탈퇴에 실패했습니다. 잠시 후 다시 시도해 주세요."
+    "detail.warranty_info": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보증 정보"
           }
         }
       }
     },
-    "error.ocr.invalid_image" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "유효하지 않은 이미지입니다."
+    "dialog.delete.cancel": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "돌아가기"
           }
         }
       }
     },
-    "error.ocr.no_text_found" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이미지에서 텍스트를 찾을 수 없습니다."
+    "dialog.delete.confirm": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "탈퇴하기"
           }
         }
       }
     },
-    "error.ocr.recognition_failed %@" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "텍스트 인식에 실패했습니다: %@"
+    "dialog.delete.message": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "탈퇴 시 모든 영수증과 계정 정보가\n삭제되며 복구할 수 없어요"
           }
         }
       }
     },
-    "header.logo" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "로고"
+    "dialog.delete.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "회원 탈퇴를 진행할까요?"
           }
         }
       }
     },
-    "header.notification" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "알림"
+    "dialog.logout.message": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "데이터는 안전하게 보관되며\n언제든 다시 로그인 할 수 있어요"
           }
         }
       }
     },
-    "header.search" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "검색"
+    "dialog.logout.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "로그아웃 할까요?"
           }
         }
       }
     },
-    "Hello, world!" : {
-
-    },
-    "home.card.popular.desc" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "전국 출장 수리와\n보증 혜택을 한눈에 확인하세요."
+    "error.api.decode_failed": {
+      "extractionState": "stale",
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "데이터를 해석하는 데 실패했습니다."
           }
         }
       }
     },
-    "home.card.popular.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "가전제품 AS가 필요할 때!"
+    "error.api.empty_response": {
+      "extractionState": "stale",
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서버 응답이 비어 있습니다."
           }
         }
       }
     },
-    "home.card.register.desc" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증을 등록하고 보증 기간과\n구매 정보를 관리해 보세요."
+    "error.api.invalid_url": {
+      "extractionState": "stale",
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "잘못된 요청 주소입니다."
           }
         }
       }
     },
-    "home.card.register.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 등록하기"
+    "error.api.network": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "네트워크 연결상태를 확인해주세요"
           }
         }
       }
     },
-    "home.days_ago %lld" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld일 전"
+    "error.api.unknown": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오류가 발생했습니다. 잠시 후 다시 시도해주세요"
           }
         }
       }
     },
-    "home.dday %lld" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "D - %lld"
+    "error.auth.apple_token_missing": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "애플 로그인 토큰을 가져올 수 없습니다."
           }
         }
       }
     },
-    "home.delete_account" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "회원 탈퇴"
+    "error.auth.google_token_missing": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구글 로그인 토큰을 가져올 수 없습니다."
           }
         }
       }
     },
-    "home.expiring_caption" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "한달 안에 끝나요!"
+    "error.delete_account": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "회원 탈퇴에 실패했습니다. 잠시 후 다시 시도해 주세요."
           }
         }
       }
     },
-    "home.expiring_count %lld" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 건"
+    "error.ocr.invalid_image": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "유효하지 않은 이미지입니다."
           }
         }
       }
     },
-    "home.expiring_empty" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "등록된 영수증이 안전하게\n관리되고 있습니다."
+    "error.ocr.no_text_found": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이미지에서 텍스트를 찾을 수 없습니다."
           }
         }
       }
     },
-    "home.expiring_title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AS만료 예정"
+    "error.ocr.recognition_failed %@": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "텍스트 인식에 실패했습니다: %@"
           }
         }
       }
     },
-    "home.free_analysis" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 무료 분석"
+    "header.logo": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "로고"
           }
         }
       }
     },
-    "home.free_analysis_remaining %lld" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "잔여 %lld회"
+    "header.notification": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "알림"
           }
         }
       }
     },
-    "home.label.purchase" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "구매일"
+    "header.search": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "검색"
           }
         }
       }
     },
-    "home.label.vendor" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "구매처"
+    "Hello, world!": {},
+    "home.card.popular.desc": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전국 출장 수리와\n보증 혜택을 한눈에 확인하세요."
           }
         }
       }
     },
-    "home.label.warranty" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "보증 기간"
+    "home.card.popular.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "가전제품 AS가 필요할 때!"
           }
         }
       }
     },
-    "home.loading" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "잠시만 기다려 주세요."
+    "home.card.register.desc": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증을 등록하고 보증 기간과\n구매 정보를 관리해 보세요."
           }
         }
       }
     },
-    "home.login_success" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "로그인 성공! 🎉"
+    "home.card.register.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 등록하기"
           }
         }
       }
     },
-    "home.more" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "더보기"
+    "home.days_ago %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld일 전"
           }
         }
       }
     },
-    "home.recent_title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "최근 등록된 영수증"
+    "home.dday %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "D - %lld"
           }
         }
       }
     },
-    "home.sign_out_button" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "로그아웃"
+    "home.delete_account": {
+      "extractionState": "stale",
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "회원 탈퇴"
           }
         }
       }
-    },
-    "localhost:8000" : {
-
     },
-    "login.button.apple" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apple 계정으로 시작하기"
+    "home.expiring_caption": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "한달 안에 끝나요!"
           }
         }
       }
     },
-    "login.button.google" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Google 계정으로 시작하기"
+    "home.expiring_count %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld 건"
           }
         }
       }
     },
-    "login.error.apple" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apple 로그인에 실패했습니다."
+    "home.expiring_empty": {
+      "extractionState": "stale",
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "등록된 영수증이 안전하게\n관리되고 있습니다."
           }
         }
       }
     },
-    "login.error.cancelled" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "회원가입이 취소되었습니다."
+    "home.expiring_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AS만료 예정"
           }
         }
       }
     },
-    "login.error.google" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Google 로그인에 실패했습니다."
+    "home.free_analysis": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 무료 분석"
           }
         }
       }
     },
-    "login.logo_tbd" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "로고 미정"
+    "home.free_analysis_remaining %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "잔여 %lld회"
           }
         }
       }
     },
-    "login.subtitle" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사진 한 장으로 관리하는 무상 AS 케어"
+    "home.label.purchase": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매일"
           }
         }
       }
     },
-    "manual.as_guide" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "일부 제조사의 경우, 추후 수리 접수 시\n실물 영수증 증빙을 추가로 요구할 수 있습니다."
+    "home.label.vendor": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매처"
           }
         }
       }
     },
-    "manual.as_keep_receipt" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "실물 영수증도 함께 보관"
+    "home.label.warranty": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보증 기간"
           }
         }
       }
     },
-    "manual.as_section" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "무상 AS 안내"
+    "home.loading": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "잠시만 기다려 주세요."
           }
         }
       }
     },
-    "manual.brand" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "브랜드명"
+    "home.login_success": {
+      "extractionState": "stale",
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "로그인 성공! 🎉"
           }
         }
       }
     },
-    "manual.brand_hint" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "브랜드명을 입력하세요."
+    "home.more": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "더보기"
           }
         }
       }
     },
-    "manual.image_add" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "등록하기"
+    "home.recent_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최근 등록된 영수증"
           }
         }
       }
     },
-    "manual.image_section" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "등록된 이미지 확인"
+    "home.sign_out_button": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "로그아웃"
           }
         }
       }
     },
-    "manual.memo" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "메모"
+    "localhost:8000": {},
+    "login.button.apple": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple 계정으로 시작하기"
           }
         }
       }
     },
-    "manual.memo_counter" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "최대 100자"
+    "login.button.google": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google 계정으로 시작하기"
           }
         }
       }
     },
-    "manual.memo_hint" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기기 관련 특이사항을 입력하세요."
+    "login.error.apple": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple 로그인에 실패했습니다."
           }
         }
       }
     },
-    "manual.price" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "구매 가격"
+    "login.error.cancelled": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "회원가입이 취소되었습니다."
           }
         }
       }
     },
-    "manual.price_hint" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "구매 가격을 입력하세요."
+    "login.error.google": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google 로그인에 실패했습니다."
           }
         }
       }
     },
-    "manual.product_name" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "제품명"
+    "login.logo_tbd": {
+      "extractionState": "stale",
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "로고 미정"
           }
         }
       }
     },
-    "manual.product_name_hint" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "제품명을 입력하세요."
+    "login.subtitle": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사진 한 장으로 관리하는 무상 AS 케어"
           }
         }
       }
     },
-    "manual.purchase_date" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "구매일"
+    "manual.as_guide": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "일부 제조사의 경우, 추후 수리 접수 시\n실물 영수증 증빙을 추가로 요구할 수 있습니다."
           }
         }
       }
     },
-    "manual.purchase_date_hint" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "구매일을 입력하세요."
+    "manual.as_keep_receipt": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "실물 영수증도 함께 보관"
           }
         }
       }
     },
-    "manual.serial" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "시리얼 넘버"
+    "manual.as_section": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "무상 AS 안내"
           }
         }
       }
     },
-    "manual.serial_hint" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "시리얼 넘버를 입력하세요."
+    "manual.brand": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "브랜드명"
           }
         }
       }
     },
-    "manual.submit" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 정보 등록하기"
+    "manual.brand_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "브랜드명을 입력하세요."
           }
         }
       }
     },
-    "manual.warranty" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "무상 AS 만료기간"
+    "manual.image_add": {
+      "extractionState": "stale",
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "등록하기"
           }
         }
       }
     },
-    "manual.warranty_1y" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1년"
+    "manual.image_section": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "등록된 이미지 확인"
           }
         }
       }
     },
-    "manual.warranty_2y" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2년"
+    "manual.memo": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "메모"
           }
         }
       }
     },
-    "manual.warranty_3y" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3년"
+    "manual.memo_counter": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최대 100자"
           }
         }
       }
     },
-    "manual.warranty_6m" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6개월"
+    "manual.memo_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기기 관련 특이사항을 입력하세요."
           }
         }
       }
     },
-    "manual.warranty_custom" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "직접입력"
+    "manual.price": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매 가격"
           }
         }
       }
     },
-    "manual.warranty_hint" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AS 만료기간을 입력해 주세요."
+    "manual.price_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매 가격을 입력하세요."
           }
         }
       }
     },
-    "manual.warranty_section" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "보증 정보"
+    "manual.product_name": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제품명"
           }
         }
       }
     },
-    "mypage.email_placeholder" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "email@naver.com"
+    "manual.product_name_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제품명을 입력하세요."
           }
         }
       }
     },
-    "mypage.inquiry" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1:1 문의하기"
+    "manual.purchase_date": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매일"
           }
         }
       }
     },
-    "mypage.inquiry_mail_failed" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "메일 앱을 열 수 없습니다."
+    "manual.purchase_date_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매일을 입력하세요."
           }
         }
       }
     },
-    "mypage.inquiry_subject" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[보트랩] 1:1 문의"
+    "manual.serial": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시리얼 넘버"
           }
         }
       }
     },
-    "mypage.name_placeholder" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이름"
+    "manual.serial_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시리얼 넘버를 입력하세요."
           }
         }
       }
     },
-    "mypage.section.help" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "도움말"
+    "manual.submit": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 정보 등록하기"
           }
         }
       }
     },
-    "mypage.section.notification" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "알림"
+    "manual.warranty": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "무상 AS 만료기간"
           }
         }
       }
     },
-    "mypage.terms" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "서비스 이용약관"
+    "manual.warranty_1y": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1년"
           }
         }
       }
     },
-    "mypage.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "마이페이지"
+    "manual.warranty_2y": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2년"
           }
         }
       }
     },
-    "mypage.withdraw" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "회원탈퇴"
+    "manual.warranty_3y": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3년"
           }
         }
       }
     },
-    "notif.settings.alarm" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "알림"
+    "manual.warranty_6m": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "6개월"
           }
         }
       }
     },
-    "notif.settings.marketing" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "마케팅 정보 수신 동의"
+    "manual.warranty_custom": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "직접입력"
           }
         }
       }
     },
-    "notif.settings.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "알림"
+    "manual.warranty_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AS 만료기간을 입력해 주세요."
           }
         }
       }
     },
-    "ocr_test.fallback.not_recognized" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "(미인식)"
+    "manual.warranty_section": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보증 정보"
           }
         }
       }
     },
-    "ocr_test.fallback.recognition_failed" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "(인식 실패 — 직접 입력)"
+    "mypage.email_placeholder": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "email@naver.com"
           }
         }
       }
     },
-    "ocr_test.fallback.today_default" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오늘 날짜 (기본값)"
+    "mypage.inquiry": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1:1 문의하기"
           }
         }
       }
     },
-    "ocr_test.fallback.warranty_default" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "12개월 (기본값)"
+    "mypage.inquiry_mail_failed": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "메일 앱을 열 수 없습니다."
           }
         }
       }
     },
-    "ocr_test.field.brand" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "브랜드"
+    "mypage.inquiry_subject": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "[보트랩] 1:1 문의"
           }
         }
       }
     },
-    "ocr_test.field.category" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "대분류"
+    "mypage.name_placeholder": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이름"
           }
         }
       }
     },
-    "ocr_test.field.expiry_date" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "만료일"
+    "mypage.section.help": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "도움말"
           }
         }
       }
     },
-    "ocr_test.field.price" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "가격"
+    "mypage.section.notification": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "알림"
           }
         }
       }
     },
-    "ocr_test.field.product_name" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "제품명"
+    "mypage.terms": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서비스 이용약관"
           }
         }
       }
     },
-    "ocr_test.field.purchase_date" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "구매일"
+    "mypage.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "마이페이지"
           }
         }
       }
     },
-    "ocr_test.field.serial" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "시리얼"
+    "mypage.withdraw": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "회원탈퇴"
           }
         }
       }
     },
-    "ocr_test.field.warranty" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "보증기간"
+    "notif.fallback_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "알림"
           }
         }
       }
     },
-    "ocr_test.format.price %@" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@원"
+    "notif.list.empty": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "수신된 알림 내역이 없습니다."
           }
         }
       }
     },
-    "ocr_test.format.warranty_months %lld" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld개월"
+    "notif.list.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "알림"
           }
         }
       }
     },
-    "ocr_test.image_size_warning" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10MB를 초과하는 이미지입니다."
+    "notif.settings.alarm": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "알림"
           }
         }
       }
     },
-    "ocr_test.original_text_header %lld" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "원본 텍스트 (%lld줄)"
+    "notif.settings.marketing": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "마케팅 정보 수신 동의"
           }
         }
       }
     },
-    "ocr_test.parse_result_header" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "파싱 결과"
+    "notif.settings.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "알림"
           }
         }
       }
     },
-    "ocr_test.recognized_text_header %lld" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "인식 결과 (%lld줄)"
+    "ocr_test.fallback.not_recognized": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(미인식)"
           }
         }
       }
     },
-    "ocr_test.run_recognition_button" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "텍스트 인식 실행"
+    "ocr_test.fallback.recognition_failed": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(인식 실패 — 직접 입력)"
           }
         }
       }
     },
-    "ocr_test.select_image_button" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 이미지 선택"
+    "ocr_test.fallback.today_default": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오늘 날짜 (기본값)"
           }
         }
       }
     },
-    "ocr_test.selected_image_label" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "선택된 이미지"
+    "ocr_test.fallback.warranty_default": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "12개월 (기본값)"
           }
         }
       }
     },
-    "receipt.add" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 등록"
+    "ocr_test.field.brand": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "브랜드"
           }
         }
       }
     },
-    "receipt.add.camera" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사진으로 찍기"
+    "ocr_test.field.category": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대분류"
           }
         }
       }
     },
-    "receipt.add.gallery" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "갤러리에서 불러오기"
+    "ocr_test.field.expiry_date": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "만료일"
           }
         }
       }
     },
-    "receipt.analyze.loading" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증을 분석하고 있어요."
+    "ocr_test.field.price": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "가격"
           }
         }
       }
     },
-    "receipt.delete.fail" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 삭제에 실패했어요. 잠시 후 다시 시도해 주세요."
+    "ocr_test.field.product_name": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제품명"
           }
         }
       }
     },
-    "detail.edit" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "수정" } }
+    "ocr_test.field.purchase_date": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매일"
+          }
+        }
       }
     },
-    "detail.product_name" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "제품명" } }
+    "ocr_test.field.serial": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시리얼"
+          }
+        }
       }
     },
-    "detail.purchase_date" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "구매일" } }
+    "ocr_test.field.warranty": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보증기간"
+          }
+        }
       }
     },
-    "detail.expiry" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "무상 AS 만료일" } }
+    "ocr_test.format.price %@": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@원"
+          }
+        }
       }
     },
-    "detail.memo" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "메모" } }
+    "ocr_test.format.warranty_months %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld개월"
+          }
+        }
       }
     },
-    "detail.memo_placeholder" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "제품 관련 특이사항을 입력하세요." } }
+    "ocr_test.image_size_warning": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "10MB를 초과하는 이미지입니다."
+          }
+        }
       }
     },
-    "detail.physical_receipt_title" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "실물 영수증 필요" } }
+    "ocr_test.original_text_header %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "원본 텍스트 (%lld줄)"
+          }
+        }
       }
     },
-    "detail.physical_receipt_desc" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "AS 센터 방문 시, 실물 영수증을 꼭 지참하세요!" } }
+    "ocr_test.parse_result_header": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "파싱 결과"
+          }
+        }
       }
     },
-    "detail.warranty_info" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "보증 정보" } }
+    "ocr_test.recognized_text_header %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "인식 결과 (%lld줄)"
+          }
+        }
       }
     },
-    "detail.brand" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "브랜드명" } }
+    "ocr_test.run_recognition_button": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "텍스트 인식 실행"
+          }
+        }
       }
     },
-    "detail.price" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "구매 가격" } }
+    "ocr_test.select_image_button": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 이미지 선택"
+          }
+        }
       }
     },
-    "detail.serial" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "시리얼 넘버" } }
+    "ocr_test.selected_image_label": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "선택된 이미지"
+          }
+        }
       }
     },
-    "detail.original_receipt" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "원본 영수증" } }
+    "permission.camera.denied_message": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설정 > 보트랩에서 카메라 접근을 허용해 주세요."
+          }
+        }
       }
     },
-    "detail.support" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "공식 AS 센터에서 접수하기" } }
+    "permission.camera.denied_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "카메라 권한이 필요해요"
+          }
+        }
       }
     },
-    "permission.open_settings" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "설정 열기" } }
+    "permission.notif.confirm": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "알림 받기"
+          }
+        }
       }
     },
-    "notif.list.title" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "알림" } }
+    "permission.notif.denied_message": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설정 > 알림에서 보트랩 알림을 켜주세요."
+          }
+        }
       }
     },
-    "notif.list.empty" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "수신된 알림 내역이 없습니다." } }
+    "permission.notif.denied_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "알림이 꺼져 있어요"
+          }
+        }
       }
     },
-    "notif.fallback_title" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "알림" } }
+    "permission.notif.gate_confirm": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "알림 켜기"
+          }
+        }
       }
     },
-    "permission.camera.denied_title" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "카메라 권한이 필요해요" } }
+    "permission.notif.gate_message": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "무상 AS 만료 알림 등 중요한 소식을 받으려면 알림을 켜 주세요."
+          }
+        }
       }
     },
-    "permission.camera.denied_message" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "설정 > 보트랩에서 카메라 접근을 허용해 주세요." } }
+    "permission.notif.later": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "나중에"
+          }
+        }
       }
     },
-    "permission.notif.title" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "AS 만료 알림을 받으시겠어요?" } }
+    "permission.notif.message": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "무상 AS 만료가 다가오면 미리 알려드릴게요."
+          }
+        }
       }
     },
-    "permission.notif.message" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "무상 AS 만료가 다가오면 미리 알려드릴게요." } }
+    "permission.notif.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AS 만료 알림을 받으시겠어요?"
+          }
+        }
       }
     },
-    "permission.notif.confirm" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "알림 받기" } }
+    "permission.open_settings": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설정 열기"
+          }
+        }
       }
     },
-    "permission.notif.later" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "나중에" } }
+    "receipt.add": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 등록"
+          }
+        }
       }
     },
-    "permission.notif.denied_title" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "알림이 꺼져 있어요" } }
+    "receipt.add.camera": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사진으로 찍기"
+          }
+        }
       }
     },
-    "permission.notif.denied_message" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "설정 > 알림에서 보트랩 알림을 켜주세요." } }
+    "receipt.add.gallery": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "갤러리에서 불러오기"
+          }
+        }
       }
     },
-    "permission.notif.gate_message" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "무상 AS 만료 알림 등 중요한 소식을 받으려면 알림을 켜 주세요." } }
+    "receipt.analyze.loading": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증을 분석하고 있어요."
+          }
+        }
       }
     },
-    "permission.notif.gate_confirm" : {
-      "localizations" : {
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "알림 켜기" } }
+    "receipt.delete.fail": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 삭제에 실패했어요. 잠시 후 다시 시도해 주세요."
+          }
+        }
       }
     },
-    "receipt.empty" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "등록된 영수증이 없습니다."
+    "receipt.empty": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "등록된 영수증이 없습니다."
           }
         }
       }
     },
-    "receipt.fail.manual" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 직접 입력하기"
+    "receipt.fail.manual": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 직접 입력하기"
           }
         }
       }
     },
-    "receipt.fail.retry" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 다시 업로드"
+    "receipt.fail.retry": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 다시 업로드"
           }
         }
       }
     },
-    "receipt.fail.subtitle" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사진이 흐릿하거나 인식되지 않았어요.\n다시 시도해 주세요."
+    "receipt.fail.subtitle": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사진이 흐릿하거나 인식되지 않았어요.\n다시 시도해 주세요."
           }
         }
       }
     },
-    "receipt.fail.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 분석에 실패했어요"
+    "receipt.fail.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 분석에 실패했어요"
           }
         }
       }
     },
-    "receipt.filter.all" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "전체"
+    "receipt.filter.all": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전체"
           }
         }
       }
     },
-    "receipt.filter.it" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영상/IT 제품"
+    "receipt.filter.it": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영상/IT 제품"
           }
         }
       }
     },
-    "receipt.filter.kitchen" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "주방가전"
+    "receipt.filter.kitchen": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "주방가전"
           }
         }
       }
     },
-    "receipt.filter.laundry" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "세탁/청소"
+    "receipt.filter.laundry": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세탁/청소"
           }
         }
       }
     },
-    "receipt.filter.living" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "리빙/냉난방"
+    "receipt.filter.living": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "리빙/냉난방"
           }
         }
       }
     },
-    "receipt.filter.other" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기타"
+    "receipt.filter.other": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기타"
           }
         }
       }
     },
-    "receipt.list.dday %lld" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "D-%lld"
+    "receipt.list.dday %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "D-%lld"
           }
         }
       }
     },
-    "receipt.list.expired" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "만료"
+    "receipt.list.expired": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "만료"
           }
         }
       }
     },
-    "receipt.list.expiry_label" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AS 만료일"
+    "receipt.list.expiry_label": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AS 만료일"
           }
         }
       }
     },
-    "receipt.menu.delete" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "삭제하기"
+    "receipt.menu.delete": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "삭제하기"
           }
         }
       }
     },
-    "receipt.register.analyze" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 분석 시작하기"
+    "receipt.register.analyze": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 분석 시작하기"
           }
         }
       }
     },
-    "receipt.register.camera" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "카메라로 촬영하기"
+    "receipt.register.camera": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "카메라로 촬영하기"
           }
         }
       }
     },
-    "receipt.register.fail" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 등록에 실패했어요. 잠시 후 다시 시도해 주세요."
+    "receipt.register.fail": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 등록에 실패했어요. 잠시 후 다시 시도해 주세요."
           }
         }
       }
     },
-    "receipt.register.gallery" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "갤러리에서 불러오기"
+    "receipt.register.gallery": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "갤러리에서 불러오기"
           }
         }
       }
     },
-    "receipt.register.loading" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증을 등록하고 있어요."
+    "receipt.register.loading": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증을 등록하고 있어요."
           }
         }
       }
     },
-    "receipt.register.max" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증은 최대 5장까지 등록할 수 있어요"
+    "receipt.register.max": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증은 최대 5장까지 등록할 수 있어요"
           }
         }
       }
     },
-    "receipt.register.network_error" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "네트워크 연결상태를 확인해주세요"
+    "receipt.register.network_error": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "네트워크 연결상태를 확인해주세요"
           }
         }
       }
     },
-    "receipt.register.uploaded" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "업로드된 영수증"
+    "receipt.register.uploaded": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "업로드된 영수증"
           }
         }
       }
     },
-    "receipt.sort.default" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기본 순"
+    "receipt.sort.default": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기본 순"
           }
         }
       }
     },
-    "receipt.sort.expiring" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "만료 임박 순"
+    "receipt.sort.expiring": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "만료 임박 순"
           }
         }
       }
     },
-    "receipt.sort.purchase" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "구매일 순"
+    "receipt.sort.purchase": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구매일 순"
           }
         }
       }
     },
-    "receipt.sort.recent" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "최근 등록 순"
+    "receipt.sort.recent": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최근 등록 순"
           }
         }
       }
     },
-    "receipt.tab.all" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "전체"
+    "receipt.tab.all": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전체"
           }
         }
       }
     },
-    "receipt.tab.expired" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "만료"
+    "receipt.tab.expired": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "만료"
           }
         }
       }
     },
-    "receipt.tab.expiring" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "만료예정"
+    "receipt.tab.expiring": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "만료예정"
           }
         }
       }
     },
-    "receipt.token.later" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "다음에 할게요"
+    "receipt.token.later": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다음에 할게요"
           }
         }
       }
     },
-    "receipt.token.manual" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 직접 입력하기"
+    "receipt.token.manual": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 직접 입력하기"
           }
         }
       }
     },
-    "receipt.token.recharge" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5회 무료로 충전하기"
+    "receipt.token.recharge": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5회 무료로 충전하기"
           }
         }
       }
     },
-    "receipt.token.subtitle" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오픈 기념으로 무료 연장을 드려요."
+    "receipt.token.subtitle": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오픈 기념으로 무료 연장을 드려요."
           }
         }
       }
     },
-    "receipt.token.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영수증 무료 분석\n횟수를 다 쓰셨네요!"
+    "receipt.token.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 무료 분석\n횟수를 다 쓰셨네요!"
           }
         }
       }
     },
-    "search.empty.register" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "지금 영수증 등록하기"
+    "search.empty.register": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지금 영수증 등록하기"
           }
         }
       }
     },
-    "search.empty.subtitle" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "등록하지 않은 제품이라면\n지금 등록해 볼까요?"
+    "search.empty.subtitle": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "등록하지 않은 제품이라면\n지금 등록해 볼까요?"
           }
         }
       }
     },
-    "search.empty.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "검색 결과가 없습니다."
+    "search.empty.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "검색 결과가 없습니다."
           }
         }
       }
     },
-    "search.placeholder" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "제품명 또는 메모를 검색해 보세요."
+    "search.placeholder": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제품명 또는 메모를 검색해 보세요."
           }
         }
       }
     },
-    "tab.home" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "홈"
+    "tab.home": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "홈"
           }
         }
       }
     },
-    "tab.list" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "목록"
+    "tab.list": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "목록"
           }
         }
       }
     },
-    "tab.my" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "마이"
+    "tab.my": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "마이"
           }
         }
       }
     },
-    "terms.age" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "(필수) 만 14세 이상입니다."
+    "terms.age": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(필수) 만 14세 이상입니다."
           }
         }
       }
     },
-    "terms.agree_all" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "전체 동의 (선택 포함)"
+    "terms.agree_all": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전체 동의 (선택 포함)"
           }
         }
       }
     },
-    "terms.complete" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "선택 완료"
+    "terms.complete": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "선택 완료"
           }
         }
       }
     },
-    "terms.headline" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "더 나은 서비스 사용을 위해\n이용약관에 동의 해주세요."
+    "terms.headline": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "더 나은 서비스 사용을 위해\n이용약관에 동의 해주세요."
           }
         }
       }
     },
-    "terms.login_failed" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "로그인에 실패했습니다. 잠시 후 다시 시도해 주세요."
+    "terms.login_failed": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "로그인에 실패했습니다. 잠시 후 다시 시도해 주세요."
           }
         }
       }
     },
-    "terms.marketing" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "(선택) 홍보 및 마케팅 이용에 동의"
+    "terms.marketing": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(선택) 홍보 및 마케팅 이용에 동의"
           }
         }
       }
     },
-    "terms.privacy" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "(필수) 개인정보 수집 이용에 동의"
+    "terms.privacy": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(필수) 개인정보 수집 이용에 동의"
           }
         }
       }
     },
-    "terms.service" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "(필수) 서비스 이용약관에 동의"
+    "terms.service": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(필수) 서비스 이용약관에 동의"
           }
         }
       }
     },
-    "terms.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "회원가입"
+    "terms.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "회원가입"
           }
         }
       }
     },
-    "terms.view" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "보기"
+    "terms.view": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보기"
           }
         }
       }
-    },
-    "경고" : {
-
-    },
-    "다시 업로드해 주세요" : {
-
-    },
-    "되고 있습니다." : {
-
-    },
-    "등록된 영수증이 " : {
-
     },
-    "로컬 서버" : {
-
-    },
-    "무상 AS 만료일 %@" : {
-
-    },
-    "분석 결과" : {
-
-    },
-    "서버 에러 테스트" : {
-
+    "경고": {},
+    "내용": {},
+    "다시 업로드해 주세요": {},
+    "되고 있습니다.": {},
+    "등록된 모든 디바이스로 즉시 발송됩니다.": {},
+    "등록된 영수증이 ": {},
+    "로컬 서버": {},
+    "무상 AS 만료일 %@": {},
+    "발송": {},
+    "분석 결과": {},
+    "서버 에러 테스트": {},
+    "안전하게\n관리": {},
+    "일반": {},
+    "제목": {},
+    "초기": {},
+    "카메라를 사용할 수 없습니다.": {},
+    "테스트 푸시 발송": {},
+    "manual.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 직접 입력"
+          }
+        }
+      }
     },
-    "수신된 알림 내역이 없습니다." : {
-
+    "manual.add_image": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "추가하기"
+          }
+        }
+      }
     },
-    "안전하게\n관리" : {
-
+    "manual.category": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "카테고리"
+          }
+        }
+      }
     },
-    "알림" : {
-
+    "manual.product_section": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제품 정보"
+          }
+        }
+      }
     },
-    "일반" : {
-
+    "manual.physical_section": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "실물 영수증 보관 여부"
+          }
+        }
+      }
     },
-    "초기" : {
-
+    "manual.physical_yes": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "필요함"
+          }
+        }
+      }
     },
-    "카메라를 사용할 수 없습니다." : {
-
+    "manual.physical_no": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "필요하지 않음"
+          }
+        }
+      }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }
