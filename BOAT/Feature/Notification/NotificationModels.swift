@@ -33,7 +33,7 @@ struct AppNotification: Identifiable, Hashable {
     let id: String
     let productName: String
     let message: String
-    let date: String            // "yyyy.MM.dd"
+    let createdAt: Date?
     let subCategory: String?
     let resourceType: String?
     let resourceId: String?
@@ -42,6 +42,34 @@ struct AppNotification: Identifiable, Hashable {
     /// 목록 썸네일용 에셋 — subCategory 기반 기기 이미지. Android DeviceImage.resolve(null, subCategory) 대응(category 미사용).
     var imageName: String {
         DeviceImage.assetName(category: nil, subCategory: subCategory)
+    }
+
+    /// 알림 시간 표시 정책(UX 확정본):
+    /// 1분 미만="방금 전" / 1시간 미만="N분 전" / 24시간 미만="N시간 전" /
+    /// 7일 미만="N일 전" / 7일 이상="yyyy.MM.dd"
+    var displayTime: String {
+        guard let createdAt else { return "" }
+        let seconds = Date().timeIntervalSince(createdAt)
+        switch seconds {
+        case ..<0:
+            return Self.absoluteDate(createdAt) // 서버-클라 시각차로 미래 시각인 경우 폴백
+        case ..<60:
+            return String(localized: "notif.time.just_now")
+        case ..<3600:
+            return String(localized: "notif.time.minutes_ago \(Int(seconds / 60))")
+        case ..<86400:
+            return String(localized: "notif.time.hours_ago \(Int(seconds / 3600))")
+        case ..<(86400 * 7):
+            return String(localized: "notif.time.days_ago \(Int(seconds / 86400))")
+        default:
+            return Self.absoluteDate(createdAt)
+        }
+    }
+
+    private static func absoluteDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy.MM.dd"
+        return formatter.string(from: date)
     }
 }
 
@@ -53,7 +81,7 @@ extension NotificationDto {
                 ?? title?.nonBlank
                 ?? String(localized: "notif.fallback_title"),
             message: message ?? "",
-            date: Self.displayDate(createdAt),
+            createdAt: Self.parseDate(createdAt),
             subCategory: metadata?["subCategory"],
             resourceType: resourceType,
             resourceId: resourceId,
@@ -61,11 +89,13 @@ extension NotificationDto {
         )
     }
 
-    /// "2026-06-15T12:00:00" → "2026.06.15"
-    private static func displayDate(_ iso: String?) -> String {
-        guard let iso, !iso.isEmpty else { return "" }
-        let datePart = iso.split(separator: "T").first.map(String.init) ?? iso
-        return datePart.replacingOccurrences(of: "-", with: ".")
+    /// "2026-06-15T12:00:00" (또는 타임존 포함 ISO8601) → Date
+    private static func parseDate(_ iso: String?) -> Date? {
+        guard let iso, !iso.isEmpty else { return nil }
+        if let date = ISO8601DateFormatter().date(from: iso) { return date }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return formatter.date(from: iso)
     }
 }
 

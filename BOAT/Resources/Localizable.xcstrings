@@ -2308,6 +2308,46 @@
           }
         }
       }
+    },
+    "notif.time.just_now": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "방금 전"
+          }
+        }
+      }
+    },
+    "notif.time.minutes_ago %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld분 전"
+          }
+        }
+      }
+    },
+    "notif.time.hours_ago %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld시간 전"
+          }
+        }
+      }
+    },
+    "notif.time.days_ago %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld일 전"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -127,7 +127,7 @@ private struct NotificationCard: View {
                         .foregroundStyle(Color.gray900)
                         .lineLimit(1)
                     Spacer(minLength: .spacing8)
-                    Text(item.date)
+                    Text(item.displayTime)
                         .font(.pretendard(.regular, size: 14))
                         .foregroundStyle(Color.gray500)
                 }
