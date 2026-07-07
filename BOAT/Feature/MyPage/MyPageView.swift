@@ -20,6 +20,8 @@ struct MyPageView: View {
     @State private var showLogoutDialog = false
     @State private var showDeleteDialog = false
     @State private var showNotificationSettings = false
+    @State private var showReceiptRegister = false
+    @State private var hasUnreadNotification = false
     @State private var toast = BoatToastState()
 
     private let inquiryEmail = "team.swyp8.app@gmail.com"
@@ -37,15 +39,21 @@ struct MyPageView: View {
         VStack(spacing: 0) {
             BoatHeader(
                 title: "mypage.title",
+                showUnreadBadge: hasUnreadNotification,
                 onSearch: onSearch,
                 onNotification: onNotification
             )
 
             profile
 
-            // 섹션 구분 밴드
-            Color.gray50
-                .frame(height: 8)
+            analysisBanner
+                .padding(.horizontal, .spacing20)
+                .padding(.bottom, .spacing20)
+
+            // 섹션 구분선
+            Rectangle()
+                .fill(Color.gray200)
+                .frame(height: 1)
 
             sectionLabel("mypage.section.notification")
             settingRow("mypage.section.notification") { showNotificationSettings = true }
@@ -66,8 +74,15 @@ struct MyPageView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.colorWhite)
+        .task { await refreshUnreadState() }
         .fullScreenCover(isPresented: $showNotificationSettings) {
             NotificationSettingsView(onBack: { showNotificationSettings = false })
+        }
+        .fullScreenCover(isPresented: $showReceiptRegister) {
+            ReceiptRegisterView(
+                onBack: { showReceiptRegister = false },
+                onComplete: { showReceiptRegister = false }
+            )
         }
         .boatToastHost(toast)
         .boatDialog(
@@ -123,6 +138,42 @@ struct MyPageView: View {
         .padding(.vertical, .spacing20)
     }
 
+    // MARK: - 영수증 분석 잔여 횟수 배너
+
+    private var analysisBanner: some View {
+        HStack(spacing: .spacing8) {
+            Image("icSparkle")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 18, height: 18)
+
+            Text("mypage.analysis_remaining \(CreditStore.shared.current?.remainingCount ?? 3)")
+                .font(.pretendard(.semibold, size: 15))
+                .foregroundStyle(Color.gray900)
+
+            Spacer(minLength: .spacing8)
+
+            Button {
+                showReceiptRegister = true
+            } label: {
+                Text("mypage.analysis_view")
+                    .font(.pretendard(.semibold, size: 14))
+                    .foregroundStyle(Color.colorWhite)
+                    .padding(.horizontal, .spacing20)
+                    .padding(.vertical, .spacing8)
+                    .background(Color.brandPrimary, in: Capsule())
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, .spacing16)
+        .frame(height: 52)
+        .background(Color.brandSenary, in: RoundedRectangle(cornerRadius: .roundedXl))
+        .overlay(
+            RoundedRectangle(cornerRadius: .roundedXl)
+                .stroke(Color.brandTertiary, lineWidth: 1)
+        )
+    }
+
     // MARK: - 섹션
 
     private func sectionLabel(_ key: LocalizedStringKey) -> some View {
@@ -151,6 +202,14 @@ struct MyPageView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - 알림 미읽음 배지
+
+    /// 종 아이콘 우상단 빨간 점 — 미읽음 알림 존재 여부만 확인(개수 표시 없음).
+    private func refreshUnreadState() async {
+        let unread = (try? await NotificationRepository.shared.fetchUnread()) ?? []
+        hasUnreadNotification = !unread.isEmpty
     }
 
     // MARK: - 1:1 문의 메일

@@ -12,6 +12,8 @@ struct BoatHeader: View {
 
     var title: LocalizedStringKey = "header.logo"
     var showLogo: Bool = false
+    /// 알림 아이콘 우상단에 미읽음 표시(빨간 점) 노출 여부
+    var showUnreadBadge: Bool = false
     var onSearch: () -> Void = {}
     var onNotification: () -> Void = {}
 
@@ -32,7 +34,7 @@ struct BoatHeader: View {
 
             actionIcon("icSearch", label: "header.search", action: onSearch)
             Spacer().frame(width: .spacing16)
-            actionIcon("icBell", label: "header.notification", action: onNotification)
+            actionIcon("icBell", label: "header.notification", showBadge: showUnreadBadge, action: onNotification)
         }
         .frame(height: 56)
         .padding(.horizontal, .spacing20)
@@ -41,6 +43,7 @@ struct BoatHeader: View {
     private func actionIcon(
         _ name: String,
         label: LocalizedStringKey,
+        showBadge: Bool = false,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
@@ -51,6 +54,13 @@ struct BoatHeader: View {
                 .frame(width: 24, height: 24)
                 .foregroundStyle(Color.gray900)
                 .contentShape(Rectangle())
+                .overlay(alignment: .topTrailing) {
+                    if showBadge {
+                        Circle()
+                            .fill(Color.systemError)
+                            .frame(width: 8, height: 8)
+                    }
+                }
         }
         .buttonStyle(.plain)
         .accessibilityLabel(Text(label))

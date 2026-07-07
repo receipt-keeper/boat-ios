@@ -2348,6 +2348,26 @@
           }
         }
       }
+    },
+    "mypage.analysis_remaining %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 분석 %lld회 남음"
+          }
+        }
+      }
+    },
+    "mypage.analysis_view": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보기"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -27,11 +27,6 @@ struct MainTabView: View {
     @State private var listTab: ReceiptTab = .all
     @State private var listSort: ReceiptSort = .default
 
-    // FAB는 홈/목록 탭에서만 노출 (마이 탭 제외)
-    private var showFab: Bool {
-        selection == .home || selection == .list
-    }
-
     var body: some View {
         content
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -52,9 +47,7 @@ struct MainTabView: View {
                         dimmed: showAddMenu,
                         onDimTap: { showAddMenu = false }
                     )
-                    if showFab {
-                        fabButton
-                    }
+                    fabButton
                 }
                 .padding(.horizontal, .spacing20)
                 .padding(.bottom, .spacing8)
