@@ -155,8 +155,12 @@ private struct HomeView: View {
     var onNotification: () -> Void
 
     @State private var showReceiptRegister = false
-    @State private var showGeneral = false // 임시: 초기(false) ↔ 일반(true) 전환
     @State private var isInitializing = true
+    // 홈 콘텐츠 — 등록된 영수증이 있으면 일반(요약 대시보드), 없으면 초기(온보딩) 화면
+    @State private var hasAnyReceipts = false
+    @State private var expiringWarranties: [ExpiringWarranty] = []
+    @State private var expiringTotalCount = 0
+    @State private var recentReceipts: [RecentReceipt] = []
     // [TEST] 푸시 발송 다이얼로그 (DEBUG/TestFlight 전용, App Store 정식 배포본에서는 숨김)
     @State private var showTestPushAlert = false
     @State private var testPushTitle = "테스트 알림"
@@ -189,19 +193,11 @@ private struct HomeView: View {
                         .padding(.bottom, 2)
                     }
 
-                    // 임시(개발용) 상태 전환 토글 — 백엔드 데이터 유무 분기 대용
-                    Picker("", selection: $showGeneral) {
-                        Text("초기").tag(false)
-                        Text("일반").tag(true)
-                    }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal, .spacing20)
-                    .padding(.bottom, .spacing8)
-
-                    if showGeneral {
+                    if hasAnyReceipts {
                         HomeGeneralView(
-                            expiring: HomeMock.expiringWarranties,
-                            recent: HomeMock.recentReceipts,
+                            expiring: expiringWarranties,
+                            expiringTotalCount: expiringTotalCount,
+                            recent: recentReceipts,
                             // 만료예정 > → 목록 만료예정 탭 + 만료 임박순 정렬 자동 선택
                             onExpiringMore: { onOpenList(.expiring, .expiring) },
                             // 더보기 → 목록 전체 탭 + 최근 등록 순
@@ -221,12 +217,20 @@ private struct HomeView: View {
         }
         .background(Color.gray50)
         .task {
-            // 첫 홈 진입 시 초기 API 병렬 호출 — 모두 완료되면 로딩 해제
-            await withTaskGroup(of: Void.self) { group in
-                group.addTask { try? await CreditRepository.shared.fetchCredits() }
-                group.addTask { try? await UserRepository.shared.refreshUser() }
-                for await _ in group {}
-            }
+            // 첫 홈 진입/재방문 시마다 초기 API 병렬 호출 — 모두 완료되면 로딩 해제
+            async let credits: Void = { try? await CreditRepository.shared.fetchCredits() }()
+            async let user: Void = { try? await UserRepository.shared.refreshUser() }()
+            // AS 만료 예정: 만료 임박순(가까운 순서) / 최근 등록: 등록일 내림차순
+            async let expiring = try? await ReceiptRepository.shared.fetchReceipts(tab: .expiring, sort: .expiring, filter: .all)
+            async let recent = try? await ReceiptRepository.shared.fetchReceipts(tab: .all, sort: .recent, filter: .all)
+
+            let (_, _, expiringData, recentData) = await (credits, user, expiring, recent)
+
+            expiringWarranties = expiringData?.receipts.prefix(5).map { $0.toExpiringWarranty() } ?? []
+            expiringTotalCount = expiringData?.pagination.totalCount ?? expiringWarranties.count
+            recentReceipts = recentData?.receipts.prefix(5).map { $0.toRecentReceipt() } ?? []
+            hasAnyReceipts = (recentData?.pagination.totalCount ?? 0) > 0
+
             withAnimation(.easeOut(duration: 0.3)) {
                 isInitializing = false
             }

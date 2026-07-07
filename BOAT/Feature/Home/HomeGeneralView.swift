@@ -7,13 +7,18 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct HomeGeneralView: View {
 
     let expiring: [ExpiringWarranty]
+    /// 헤더의 "N건" — 실제 만료 예정 전체 건수(표시되는 카드 수와 다를 수 있음)
+    var expiringTotalCount: Int? = nil
     let recent: [RecentReceipt]
     var onExpiringMore: () -> Void = {}
     var onRecentMore: () -> Void = {}
+
+    private var displayedExpiringCount: Int { expiringTotalCount ?? expiring.count }
 
     var body: some View {
         ScrollView {
@@ -110,7 +115,7 @@ struct HomeGeneralView: View {
                     Text("home.expiring_title")
                         .font(.pretendard(.bold, size: 20))
                         .foregroundStyle(Color.gray900)
-                    Text("home.expiring_count \(expiring.count)")
+                    Text("home.expiring_count \(displayedExpiringCount)")
                         .font(.pretendard(.bold, size: 20))
                         .foregroundStyle(Color.brandPrimary)
                 }
@@ -179,17 +184,30 @@ private struct ExpiringWarrantyCard: View {
             .fill(Color.colorWhite)
             .frame(width: 88, height: 88)
             .overlay {
-                if let name = item.localImageName {
-                    Image(name)
+                if let urlString = item.thumbnailUrl, let url = URL(string: urlString) {
+                    KFImage(url)
+                        .placeholder { fallbackImage }
                         .resizable()
-                        .scaledToFit()
-                        .padding(8)
+                        .scaledToFill()
+                        .clipShape(RoundedRectangle(cornerRadius: .rounded2xl))
                 } else {
-                    Image(systemName: "photo")
-                        .font(.system(size: 26))
-                        .foregroundStyle(Color.gray400)
+                    fallbackImage
                 }
             }
+    }
+
+    @ViewBuilder
+    private var fallbackImage: some View {
+        if let name = item.localImageName {
+            Image(name)
+                .resizable()
+                .scaledToFit()
+                .padding(8)
+        } else {
+            Image(systemName: "photo")
+                .font(.system(size: 26))
+                .foregroundStyle(Color.gray400)
+        }
     }
 
     private var infoColumn: some View {
@@ -248,9 +266,15 @@ private struct RecentReceiptItem: View {
                 .fill(Color.brandSenary)
                 .frame(width: 48, height: 48)
                 .overlay {
-                    Image(systemName: "photo")
-                        .font(.system(size: 16))
-                        .foregroundStyle(Color.brandPrimary.opacity(0.4))
+                    if let urlString = item.thumbnailUrl, let url = URL(string: urlString) {
+                        KFImage(url)
+                            .placeholder { fallbackIcon }
+                            .resizable()
+                            .scaledToFill()
+                            .clipShape(RoundedRectangle(cornerRadius: .roundedXl))
+                    } else {
+                        fallbackIcon
+                    }
                 }
 
             VStack(alignment: .leading, spacing: 4) {
@@ -280,6 +304,20 @@ private struct RecentReceiptItem: View {
         .padding(14)
         .frame(maxWidth: .infinity)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+    }
+
+    @ViewBuilder
+    private var fallbackIcon: some View {
+        if let name = item.localImageName {
+            Image(name)
+                .resizable()
+                .scaledToFit()
+                .padding(10)
+        } else {
+            Image(systemName: "photo")
+                .font(.system(size: 16))
+                .foregroundStyle(Color.brandPrimary.opacity(0.4))
+        }
     }
 }
 
