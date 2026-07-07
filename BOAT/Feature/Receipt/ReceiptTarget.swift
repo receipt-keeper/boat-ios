@@ -24,6 +24,8 @@ enum ReceiptTarget {
     case delete(receiptId: String)
     /// GET /api/v1/receipts/{receipt_id} — 영수증 상세 조회
     case detail(receiptId: String)
+    /// PATCH /api/v1/receipts/{receipt_id} — 영수증 수정
+    case update(receiptId: String, body: [String: Any])
 }
 
 extension ReceiptTarget: TargetType {
@@ -36,6 +38,8 @@ extension ReceiptTarget: TargetType {
             return "/api/v1/receipts/\(receiptId)"
         case let .detail(receiptId):
             return "/api/v1/receipts/\(receiptId)"
+        case let .update(receiptId, _):
+            return "/api/v1/receipts/\(receiptId)"
         }
     }
 
@@ -44,6 +48,7 @@ extension ReceiptTarget: TargetType {
         case .list, .detail: return .get
         case .create:        return .post
         case .delete:        return .delete
+        case .update:        return .patch
         }
     }
 
@@ -61,6 +66,9 @@ extension ReceiptTarget: TargetType {
             return .query(params)
 
         case let .create(body):
+            return .body(body)
+
+        case let .update(_, body):
             return .body(body)
 
         case .delete, .detail:

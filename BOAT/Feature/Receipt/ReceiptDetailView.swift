@@ -67,7 +67,15 @@ struct ReceiptDetailView: View {
         // 케밥 → 수정하기
         .fullScreenCover(isPresented: $showEditView) {
             if let receipt {
-                ReceiptEditView(receipt: receipt, onBack: { showEditView = false })
+                ReceiptEditView(
+                    receipt: receipt,
+                    onBack: { showEditView = false },
+                    onUpdated: {
+                        showEditView = false
+                        Task { await load() }
+                        toast.show(String(localized: "detail.updated_toast"), type: .info)
+                    }
+                )
             }
         }
     }

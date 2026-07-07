@@ -108,6 +108,31 @@ final class ReceiptRepository {
             throw error
         }
     }
+
+    /// 영수증 수정: 새로 추가한 이미지만 업로드 → fileId 수집 → 유지할 기존 fileId와 합쳐
+    /// 최종 receipt_file_ids 전체 목록을 PATCH 바디로 전송 → 로컬 캐시 갱신.
+    /// - Parameters:
+    ///   - newImages: 이번 수정에서 새로 추가한 이미지 (카메라/갤러리)
+    ///   - remainingFileIds: 삭제하지 않고 그대로 유지할 기존 첨부의 fileId 목록
+    ///   - fields: 수정된 필드값
+    func updateReceipt(
+        id: String,
+        newImages: [UIImage],
+        remainingFileIds: [String],
+        fields: ReceiptUpdateFields
+    ) async throws -> Receipt {
+        var fileIds = remainingFileIds
+        if !newImages.isEmpty {
+            let uploaded = try await FileRepository.shared.uploadImages(newImages).map(\.fileId)
+            fileIds.append(contentsOf: uploaded)
+        }
+
+        let body = fields.requestBody(fileIds: fileIds)
+        let receipt: Receipt = try await APIClient.shared.request(ReceiptTarget.update(receiptId: id, body: body))
+
+        local.upsert(receipt)
+        return receipt
+    }
 }
 
 // MARK: - 등록 요청 필드
@@ -140,6 +165,39 @@ struct ReceiptCreateFields {
         if let category, !category.isEmpty               { body["category"] = category }
         if let subCategory, !subCategory.isEmpty         { body["sub_category"] = subCategory }
         if let memo, !memo.isEmpty                       { body["memo"] = memo }
+        return body
+    }
+}
+
+// MARK: - 수정 요청 필드
+
+/// 영수증 수정 시 사용자가 확정한 값. PATCH /api/v1/receipts/{id}.
+/// 서버 스펙상 total_amount/payment_location은 수정 대상이 아니다(생성 시 확정값 유지).
+struct ReceiptUpdateFields {
+    var itemName: String
+    var brandName: String?
+    var serialNumber: String?
+    var paymentDate: String?          // "yyyy-MM-dd"
+    var periodMonths: Int?
+    var category: String?
+    var subCategory: String?
+    var memo: String?
+    var requiresPhysicalReceipt: Bool
+
+    /// 서버 스펙(snake_case) 바디로 직렬화. nil/빈 값은 전송하지 않는다.
+    func requestBody(fileIds: [String]) -> [String: Any] {
+        var body: [String: Any] = [
+            "item_name": itemName,
+            "requires_physical_receipt": requiresPhysicalReceipt,
+            "receipt_file_ids": fileIds
+        ]
+        if let brandName, !brandName.isEmpty         { body["brand_name"] = brandName }
+        if let serialNumber, !serialNumber.isEmpty   { body["serial_number"] = serialNumber }
+        if let paymentDate, !paymentDate.isEmpty     { body["payment_date"] = paymentDate }
+        if let periodMonths                          { body["period_months"] = periodMonths }
+        if let category, !category.isEmpty           { body["category"] = category }
+        if let subCategory, !subCategory.isEmpty     { body["sub_category"] = subCategory }
+        if let memo, !memo.isEmpty                   { body["memo"] = memo }
         return body
     }
 }

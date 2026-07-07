@@ -7,9 +7,8 @@
 //  - 제품명/구매일/무상 AS 만료기간/메모: 글자 수 제한 초과 시 에러 테두리+안내문 (자르지 않음)
 //  - 실물 영수증 보관 여부: 라디오 / 보증 정보: 브랜드·가격·시리얼(도움말 아이콘)
 //  - 원본 영수증: 추가하기 탭 시 네이티브 액션시트(카메라로 촬영하기/갤러리에서 불러오기/닫기)
-//
-//  ※ 영수증 수정(PATCH/PUT) API가 아직 없어 "수정 완료"는 준비 중 안내만 표시한다.
-//    TODO: 수정 API 확정되면 submit()에 실제 호출 연동.
+//  - 수정 완료: 신규 이미지만 업로드 → 유지할 기존 fileId와 합쳐 PATCH /api/v1/receipts/{id}
+//    (첨부 이미지는 1장 이상 5장 이하 유지)
 //
 
 import SwiftUI
@@ -18,11 +17,14 @@ import PhotosUI
 struct ReceiptEditView: View {
 
     let onBack: () -> Void
+    /// 수정 완료 콜백 — 상위(상세)에서 재조회 + 수정 완료 토스트 처리
+    var onUpdated: () -> Void = {}
 
     @Environment(PermissionManager.self) private var permissions
 
     private let receiptId: String
     private static let maxPhotos = 5
+    private static let minPhotos = 1
     private static let warrantyOptions: [LocalizedStringKey] = [
         "manual.warranty_6m", "manual.warranty_1y", "manual.warranty_2y", "manual.warranty_3y", "manual.warranty_custom",
     ]
@@ -55,7 +57,7 @@ struct ReceiptEditView: View {
     @State private var serial: String
 
     // 원본 영수증 — 기존 첨부(플레이스홀더, 파일 서빙 URL 미확정) + 신규 추가(UIImage)
-    @State private var existingFileCount: Int
+    @State private var existingFileIds: [String]
     @State private var newImages: [UIImage] = []
     @State private var galleryItems: [PhotosPickerItem] = []
     @State private var showAddMenu = false
@@ -64,11 +66,13 @@ struct ReceiptEditView: View {
     @State private var cameraUnavailable = false
     @State private var showCameraDenied = false
 
+    @State private var isSubmitting = false
     @State private var toast = BoatToastState()
 
-    init(receipt: Receipt, onBack: @escaping () -> Void) {
+    init(receipt: Receipt, onBack: @escaping () -> Void, onUpdated: @escaping () -> Void = {}) {
         self.receiptId = receipt.receiptId
         self.onBack = onBack
+        self.onUpdated = onUpdated
 
         let category = DeviceCategory.from(serverValue: receipt.category) ?? .kitchen
         _selectedCategory = State(initialValue: category)
@@ -80,7 +84,7 @@ struct ReceiptEditView: View {
         _price = State(initialValue: receipt.totalAmount.map { "\($0)" } ?? "")
         _memo = State(initialValue: receipt.memo ?? "")
         _physicalReceipt = State(initialValue: receipt.requiresPhysicalReceipt)
-        _existingFileCount = State(initialValue: receipt.receiptFileIds?.count ?? 0)
+        _existingFileIds = State(initialValue: receipt.receiptFileIds ?? [])
 
         if let dateStr = receipt.paymentDate {
             let parts = dateStr.split(separator: "-").map(String.init)
@@ -111,9 +115,11 @@ struct ReceiptEditView: View {
 
     // MARK: - Computed
 
-    private var totalFileCount: Int { existingFileCount + newImages.count }
+    private var totalFileCount: Int { existingFileIds.count + newImages.count }
     private var canAddMore: Bool { totalFileCount < Self.maxPhotos }
     private var remainingSlots: Int { max(0, Self.maxPhotos - totalFileCount) }
+    /// 첨부 이미지는 수정 후에도 최소 1장 이상 유지해야 한다 (서버 스펙).
+    private var canRemoveImages: Bool { totalFileCount > Self.minPhotos }
 
     private var totalWarrantyMonths: Int? {
         switch selectedWarranty {
@@ -167,6 +173,8 @@ struct ReceiptEditView: View {
             && !purchaseDate.isEmpty
             && totalWarrantyMonths != nil
             && !memoTooLong && !brandTooLong && !serialTooLong
+            && totalFileCount >= Self.minPhotos
+            && !isSubmitting
     }
 
     private var priceDisplayBinding: Binding<String> {
@@ -176,28 +184,43 @@ struct ReceiptEditView: View {
         )
     }
 
+    /// "yyyy.MM.dd" → "yyyy-MM-dd" (서버 전송 포맷)
+    private var apiPaymentDate: String? {
+        guard !purchaseDate.isEmpty else { return nil }
+        return purchaseDate.replacingOccurrences(of: ".", with: "-")
+    }
+
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: 0) {
-            topBar
+        ZStack {
+            VStack(spacing: 0) {
+                topBar
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: .spacing20) {
-                    categoryCard
-                    productCard
-                    physicalCard
-                    warrantyInfoCard
-                    imageSection
-                    submitButton
-                    Spacer().frame(height: .spacing8)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: .spacing20) {
+                        categoryCard
+                        productCard
+                        physicalCard
+                        warrantyInfoCard
+                        imageSection
+                        submitButton
+                        Spacer().frame(height: .spacing8)
+                    }
+                    .padding(.horizontal, .spacing20)
+                    .padding(.top, .spacing8)
                 }
-                .padding(.horizontal, .spacing20)
-                .padding(.top, .spacing8)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.gray50)
+
+            if isSubmitting {
+                HomeLoadingView(message: "receipt.edit.loading")
+                    .transition(.opacity)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.gray50)
+        .animation(.easeOut(duration: 0.2), value: isSubmitting)
         // 원본 영수증 추가하기 → 네이티브 액션시트 (카메라로 촬영하기 / 갤러리에서 불러오기 / 닫기)
         .confirmationDialog("", isPresented: $showAddMenu, titleVisibility: .hidden) {
             Button("receipt.register.camera") { openCamera() }
@@ -602,13 +625,19 @@ struct ReceiptEditView: View {
                     if canAddMore {
                         addTile
                     }
-                    ForEach(0..<existingFileCount, id: \.self) { index in
+                    ForEach(Array(existingFileIds.enumerated()), id: \.offset) { index, _ in
                         existingFilePlaceholder(index: index)
                     }
                     ForEach(Array(newImages.enumerated()), id: \.offset) { index, image in
                         imageThumbnail(image, index: index)
                     }
                 }
+            }
+
+            if totalFileCount < Self.minPhotos {
+                Text("manual.min_image_hint")
+                    .font(.pretendard(.medium, size: 13))
+                    .foregroundStyle(Color.systemError)
             }
         }
         .padding(.spacing16)
@@ -650,7 +679,7 @@ struct ReceiptEditView: View {
             }
             .overlay(alignment: .topTrailing) {
                 Button {
-                    existingFileCount -= 1
+                    removeExistingFile(at: index)
                 } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 11, weight: .bold))
@@ -671,6 +700,7 @@ struct ReceiptEditView: View {
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
             .overlay(alignment: .topTrailing) {
                 Button {
+                    guard canRemoveImages else { return }
                     newImages.remove(at: index)
                 } label: {
                     Image(systemName: "xmark")
@@ -823,10 +853,45 @@ struct ReceiptEditView: View {
         }
     }
 
-    /// TODO: 영수증 수정(PATCH/PUT) API 연동 전까지는 저장 없이 준비 중 안내만 표시.
+    private func removeExistingFile(at index: Int) {
+        guard canRemoveImages else { return }
+        existingFileIds.remove(at: index)
+    }
+
+    /// 영수증 수정: 신규 이미지 업로드 → 유지할 기존 fileId와 합쳐 PATCH → 상세로 복귀.
     private func submit() {
-        guard canSubmit else { return }
-        toast.show(String(localized: "manual.edit_pending"), type: .info)
+        guard canSubmit, !isSubmitting else { return }
+
+        let sub = (selectedSubcategory == "기타" ? nil : selectedSubcategory)
+        let fields = ReceiptUpdateFields(
+            itemName: productName.trimmingCharacters(in: .whitespaces),
+            brandName: brand.trimmingCharacters(in: .whitespaces),
+            serialNumber: serial.trimmingCharacters(in: .whitespaces),
+            paymentDate: apiPaymentDate,
+            periodMonths: totalWarrantyMonths,
+            category: selectedCategory.rawValue,
+            subCategory: sub,
+            memo: memo.trimmingCharacters(in: .whitespaces),
+            requiresPhysicalReceipt: physicalReceipt ?? false
+        )
+        let imagesToUpload = newImages
+        let remaining = existingFileIds
+
+        Task {
+            isSubmitting = true
+            defer { isSubmitting = false }
+            do {
+                _ = try await ReceiptRepository.shared.updateReceipt(
+                    id: receiptId,
+                    newImages: imagesToUpload,
+                    remainingFileIds: remaining,
+                    fields: fields
+                )
+                onUpdated()
+            } catch {
+                toast.showError(String(localized: "receipt.edit.fail"))
+            }
+        }
     }
 }
 

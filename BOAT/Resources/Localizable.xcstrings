@@ -2198,6 +2198,46 @@
           }
         }
       }
+    },
+    "receipt.edit.loading": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증을 수정하고 있어요."
+          }
+        }
+      }
+    },
+    "receipt.edit.fail": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 수정에 실패했어요. 잠시 후 다시 시도해 주세요."
+          }
+        }
+      }
+    },
+    "detail.updated_toast": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 정보가 수정되었습니다."
+          }
+        }
+      }
+    },
+    "manual.min_image_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최소 1장의 이미지가 필요합니다."
+          }
+        }
+      }
     }
   },
   "version": "1.0"
