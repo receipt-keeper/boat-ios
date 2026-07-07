@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct HomeGeneralView: View {
 
@@ -183,17 +182,7 @@ private struct ExpiringWarrantyCard: View {
         RoundedRectangle(cornerRadius: .rounded2xl)
             .fill(Color.colorWhite)
             .frame(width: 88, height: 88)
-            .overlay {
-                if let urlString = item.thumbnailUrl, let url = URL(string: urlString) {
-                    KFImage(url)
-                        .placeholder { fallbackImage }
-                        .resizable()
-                        .scaledToFill()
-                        .clipShape(RoundedRectangle(cornerRadius: .rounded2xl))
-                } else {
-                    fallbackImage
-                }
-            }
+            .overlay { fallbackImage }
     }
 
     @ViewBuilder
@@ -265,17 +254,7 @@ private struct RecentReceiptItem: View {
             RoundedRectangle(cornerRadius: .roundedXl)
                 .fill(Color.brandSenary)
                 .frame(width: 48, height: 48)
-                .overlay {
-                    if let urlString = item.thumbnailUrl, let url = URL(string: urlString) {
-                        KFImage(url)
-                            .placeholder { fallbackIcon }
-                            .resizable()
-                            .scaledToFill()
-                            .clipShape(RoundedRectangle(cornerRadius: .roundedXl))
-                    } else {
-                        fallbackIcon
-                    }
-                }
+                .overlay { fallbackIcon }
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 8) {

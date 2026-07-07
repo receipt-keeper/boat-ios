@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 // 보증 상태 inner tab
 enum ReceiptTab: CaseIterable {
@@ -401,26 +400,16 @@ struct ReceiptCard: View {
         .onTapGesture { onTap() }
     }
 
-    // 썸네일 — imageUrl 있으면 원격 이미지, 없으면 카테고리/소분류 기본 이미지
+    // 썸네일 — 카테고리/소분류 기본 이미지 (실제 첨부 이미지는 상세 화면에서만 노출)
     private var thumbnail: some View {
         RoundedRectangle(cornerRadius: .roundedLg)
             .fill(Color.gray100)
             .frame(width: 64, height: 64)
-            .overlay {
-                if let urlString = receipt.imageUrl,
-                   let url = URL(string: urlString) {
-                    KFImage(url)
-                        .placeholder { placeholderIcon }
-                        .resizable()
-                        .scaledToFill()
-                } else {
-                    placeholderIcon
-                }
-            }
+            .overlay { placeholderIcon }
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
     }
 
-    /// imageUrl 부재/로딩 실패 시 category+subCategory 기반 로컬 이미지로 폴백
+    /// category+subCategory 기반 로컬 이미지
     private var placeholderIcon: some View {
         Image(receipt.deviceImageName)
             .resizable()

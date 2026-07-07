@@ -15,7 +15,6 @@ struct ExpiringWarranty: Identifiable {
     let purchaseDate: String
     let warrantyUntil: String
     let dDay: Int
-    var thumbnailUrl: String? = nil
     var localImageName: String? = nil
 }
 
@@ -25,7 +24,6 @@ struct RecentReceipt: Identifiable {
     let productName: String
     let purchaseDate: String
     let daysAgo: Int
-    var thumbnailUrl: String? = nil
     var localImageName: String? = nil
 }
 
@@ -41,7 +39,6 @@ extension Receipt {
             purchaseDate: Self.dotDate(paymentDate),
             warrantyUntil: "~" + Self.dotDate(expiresOn),
             dDay: warrantyDDay ?? 0,
-            thumbnailUrl: imageUrl,
             localImageName: deviceImageName
         )
     }
@@ -53,7 +50,6 @@ extension Receipt {
             productName: itemName,
             purchaseDate: Self.dotDate(paymentDate),
             daysAgo: Self.daysAgo(registeredAt),
-            thumbnailUrl: imageUrl,
             localImageName: deviceImageName
         )
     }
