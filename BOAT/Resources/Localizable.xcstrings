@@ -2238,6 +2238,36 @@
           }
         }
       }
+    },
+    "manual.title_ocr": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 입력"
+          }
+        }
+      }
+    },
+    "manual.physical_help": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제조사 정책에 따라 수리 시 실물 영수증이 필요할 수 있으니, 확인 후 보관 여부를 선택해 주세요."
+          }
+        }
+      }
+    },
+    "manual.serial_help": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제품에 따라 일련번호는 '시리얼 번호', '제조번호' 등 다양한 이름으로 표기될 수 있습니다."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

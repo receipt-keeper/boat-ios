@@ -49,7 +49,6 @@ struct ReceiptEditView: View {
 
     // 실물 영수증 보관 여부
     @State private var physicalReceipt: Bool?
-    @State private var showPhysicalHelp = false
 
     // 보증 정보
     @State private var brand: String
@@ -253,11 +252,6 @@ struct ReceiptEditView: View {
             Button("common.cancel", role: .cancel) {}
         } message: {
             Text("permission.camera.denied_message")
-        }
-        .alert("manual.physical_section", isPresented: $showPhysicalHelp) {
-            Button("common.confirm", role: .cancel) {}
-        } message: {
-            Text("manual.as_guide")
         }
         .boatToastHost(toast)
     }
@@ -517,14 +511,7 @@ struct ReceiptEditView: View {
                 Text("manual.physical_section")
                     .font(.pretendard(.bold, size: 18))
                     .foregroundStyle(Color.gray900)
-                Button {
-                    showPhysicalHelp = true
-                } label: {
-                    Image(systemName: "questionmark.circle")
-                        .font(.system(size: 16))
-                        .foregroundStyle(Color.gray400)
-                }
-                .buttonStyle(.plain)
+                InfoTooltip(message: "manual.physical_help")
             }
             radioRow("manual.physical_yes", selected: physicalReceipt == true) { physicalReceipt = true }
             radioRow("detail.physical_no", selected: physicalReceipt == false) { physicalReceipt = false }
@@ -588,9 +575,7 @@ struct ReceiptEditView: View {
                 Text("manual.serial")
                     .font(.pretendard(.medium, size: 14))
                     .foregroundStyle(Color.gray600)
-                Image(systemName: "questionmark.circle")
-                    .font(.system(size: 12))
-                    .foregroundStyle(Color.gray400)
+                InfoTooltip(message: "manual.serial_help")
             }
             Spacer().frame(height: .spacing8)
             TextField("", text: $serial, prompt: Text("manual.serial_hint").foregroundStyle(Color.gray400))

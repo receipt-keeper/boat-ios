@@ -22,6 +22,10 @@ struct ReceiptManualInputView: View {
 
     @Environment(PermissionManager.self) private var permissions
 
+    /// OCR 분석 성공 후 진입(true) — 타이틀 "영수증 입력" + 추가하기 타일이 맨 뒤로 이동.
+    /// 직접 입력 진입(false) — 타이틀 "영수증 직접 입력" + 추가하기 타일이 맨 앞.
+    private let isFromOCR: Bool
+
     private static let maxPhotos = 5
     private static let warrantyOptions: [LocalizedStringKey] = [
         "manual.warranty_6m", "manual.warranty_1y", "manual.warranty_2y", "manual.warranty_3y", "manual.warranty_custom",
@@ -54,7 +58,6 @@ struct ReceiptManualInputView: View {
 
     // 실물 영수증 보관 여부 (nil = 미선택)
     @State private var physicalReceipt: Bool?
-    @State private var showPhysicalHelp = false
 
     // 보증 정보
     @State private var brand = ""
@@ -69,6 +72,7 @@ struct ReceiptManualInputView: View {
         _images = State(initialValue: images)
         self.onBack = onBack
         self.onComplete = onComplete
+        self.isFromOCR = ocrResult != nil
 
         // 기본 대분류는 주방가전 (디자인 기본값). OCR 카테고리가 있으면 그걸로.
         _selectedCategory = State(initialValue: .kitchen)
@@ -117,6 +121,20 @@ struct ReceiptManualInputView: View {
         case 4:
             guard let n = Int(customMonthsText), n > 0 else { return nil }
             return customIsYears ? n * 12 : n
+        default: return nil
+        }
+    }
+
+    /// 선택된 보증기간을 읽기전용 박스로 보여줄 텍스트 ("6개월" 등). 직접입력 모드에서는 숨김.
+    private var warrantySummaryText: String? {
+        switch selectedWarranty {
+        case 0: return String(localized: "manual.warranty_6m")
+        case 1: return String(localized: "manual.warranty_1y")
+        case 2: return String(localized: "manual.warranty_2y")
+        case 3: return String(localized: "manual.warranty_3y")
+        case 4:
+            guard let n = Int(customMonthsText), n > 0 else { return nil }
+            return customIsYears ? "\(n)년" : "\(n)개월"
         default: return nil
         }
     }
@@ -222,11 +240,6 @@ struct ReceiptManualInputView: View {
         } message: {
             Text("permission.camera.denied_message")
         }
-        .alert("manual.physical_section", isPresented: $showPhysicalHelp) {
-            Button("common.confirm", role: .cancel) {}
-        } message: {
-            Text("manual.as_guide")
-        }
         .boatToastHost(toast)
     }
 
@@ -234,7 +247,7 @@ struct ReceiptManualInputView: View {
 
     private var topBar: some View {
         ZStack {
-            Text("manual.title")
+            Text(isFromOCR ? "manual.title_ocr" : "manual.title")
                 .font(.pretendard(.bold, size: 18))
                 .foregroundStyle(Color.gray900)
             HStack {
@@ -261,10 +274,11 @@ struct ReceiptManualInputView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: .spacing12) {
-                    addTile
+                    if !isFromOCR { addTile }
                     ForEach(Array(images.enumerated()), id: \.offset) { index, image in
                         imageThumbnail(image, index: index)
                     }
+                    if isFromOCR { addTile }
                 }
             }
         }
@@ -481,6 +495,19 @@ struct ReceiptManualInputView: View {
                         customUnitChip("개월", selected: !customIsYears) { customIsYears = false }
                         customUnitChip("년", selected: customIsYears)    { customIsYears = true  }
                     }
+                } else if let warrantySummaryText {
+                    Spacer().frame(height: .spacing8)
+                    Text(warrantySummaryText)
+                        .font(.pretendard(.regular, size: 15))
+                        .foregroundStyle(Color.gray900)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, .spacing16)
+                        .frame(height: 52)
+                        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: .roundedLg)
+                                .stroke(Color.gray300, lineWidth: 1)
+                        )
                 }
 
                 if let expiresOn = expiresOnDisplay {
@@ -545,14 +572,7 @@ struct ReceiptManualInputView: View {
                 Text("manual.physical_section")
                     .font(.pretendard(.bold, size: 18))
                     .foregroundStyle(Color.gray900)
-                Button {
-                    showPhysicalHelp = true
-                } label: {
-                    Image(systemName: "questionmark.circle")
-                        .font(.system(size: 16))
-                        .foregroundStyle(Color.gray400)
-                }
-                .buttonStyle(.plain)
+                InfoTooltip(message: "manual.physical_help")
             }
 
             radioRow("manual.physical_yes", selected: physicalReceipt == true) { physicalReceipt = true }
@@ -600,12 +620,34 @@ struct ReceiptManualInputView: View {
                         placeholder: "manual.price_hint",
                         keyboard: .numberPad
                     )
-                    BoatInputField(text: $serial, label: "manual.serial", placeholder: "manual.serial_hint")
+                    serialField
                 }
             }
         }
         .padding(.spacing16)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+    }
+
+    private var serialField: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 4) {
+                Text("manual.serial")
+                    .font(.pretendard(.medium, size: 14))
+                    .foregroundStyle(Color.gray600)
+                InfoTooltip(message: "manual.serial_help")
+            }
+            Spacer().frame(height: .spacing8)
+            TextField("", text: $serial, prompt: Text("manual.serial_hint").foregroundStyle(Color.gray400))
+                .font(.pretendard(.regular, size: 15))
+                .foregroundStyle(Color.gray900)
+                .padding(.horizontal, .spacing16)
+                .frame(height: 52)
+                .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
+                .overlay(
+                    RoundedRectangle(cornerRadius: .roundedLg)
+                        .stroke(Color.gray300, lineWidth: 1)
+                )
+        }
     }
 
     // MARK: - 등록 버튼

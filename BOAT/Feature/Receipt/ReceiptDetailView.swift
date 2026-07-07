@@ -265,9 +265,7 @@ struct ReceiptDetailView: View {
                 Text("detail.serial")
                     .font(.pretendard(.regular, size: 13))
                     .foregroundStyle(Color.gray500)
-                Image(systemName: "questionmark.circle")
-                    .font(.system(size: 13))
-                    .foregroundStyle(Color.gray400)
+                InfoTooltip(message: "manual.serial_help")
             }
             Text(r.serialNumber ?? "-")
                 .font(.pretendard(.medium, size: 17))
