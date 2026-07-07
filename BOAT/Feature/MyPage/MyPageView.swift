@@ -21,6 +21,7 @@ struct MyPageView: View {
     @State private var showDeleteDialog = false
     @State private var showNotificationSettings = false
     @State private var showReceiptRegister = false
+    @State private var showPromoSheet = false
     @State private var hasUnreadNotification = false
     @State private var toast = BoatToastState()
 
@@ -83,6 +84,20 @@ struct MyPageView: View {
                 onBack: { showReceiptRegister = false },
                 onComplete: { showReceiptRegister = false }
             )
+        }
+        .sheet(isPresented: $showPromoSheet) {
+            ReceiptPromoSheet(
+                onClose: { showPromoSheet = false },
+                onRegister: {
+                    showPromoSheet = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        showReceiptRegister = true
+                    }
+                }
+            )
+            .presentationDetents([.height(600)])
+            .presentationDragIndicator(.hidden)
+            .presentationBackground(Color.colorWhite)
         }
         .boatToastHost(toast)
         .boatDialog(
@@ -154,7 +169,7 @@ struct MyPageView: View {
             Spacer(minLength: .spacing8)
 
             Button {
-                showReceiptRegister = true
+                showPromoSheet = true
             } label: {
                 Text("mypage.analysis_view")
                     .font(.pretendard(.semibold, size: 14))

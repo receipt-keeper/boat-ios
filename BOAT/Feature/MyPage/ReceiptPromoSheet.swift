@@ -1,0 +1,101 @@
+//
+//  ReceiptPromoSheet.swift
+//  BOAT
+//
+//  마이페이지 "영수증 분석 N회 남음" 배너의 [보기] 탭 시 뜨는 바텀시트.
+//  오픈 이벤트(무료 분석 지급) 안내 + 영수증 등록 유도.
+//
+
+import SwiftUI
+
+struct ReceiptPromoSheet: View {
+    let onClose: () -> Void
+    let onRegister: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Spacer()
+                Button(action: onClose) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundStyle(Color.gray900)
+                        .frame(width: 24, height: 24)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+
+            Spacer().frame(height: .spacing8)
+
+            Image("icSparkle")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 36, height: 36)
+
+            Spacer().frame(height: .spacing16)
+
+            Text("mypage.promo.title")
+                .font(.pretendard(.bold, size: 24))
+                .foregroundStyle(Color.gray900)
+                .lineSpacing(6)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Spacer().frame(height: .spacing20)
+
+            eventInfoBox
+
+            Spacer().frame(height: .spacing24)
+
+            Button(action: onRegister) {
+                Text("mypage.promo.register")
+                    .font(.pretendard(.semibold, size: 16))
+                    .foregroundStyle(Color.colorWhite)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+                    .background(Color.brandPrimary, in: RoundedRectangle(cornerRadius: .roundedXl))
+            }
+            .buttonStyle(.plain)
+
+            Spacer().frame(height: .spacing16)
+        }
+        .padding(.horizontal, .spacing20)
+        .padding(.top, .spacing16)
+        .frame(maxWidth: .infinity)
+    }
+
+    private var eventInfoBox: some View {
+        VStack(alignment: .leading, spacing: .spacing12) {
+            Text("mypage.promo.event_title")
+                .font(.pretendard(.semibold, size: 15))
+                .foregroundStyle(Color.brandPrimary)
+
+            VStack(alignment: .leading, spacing: .spacing8) {
+                bullet("mypage.promo.event_bullet1")
+                bullet("mypage.promo.event_bullet2")
+            }
+        }
+        .padding(.spacing16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.gray50, in: RoundedRectangle(cornerRadius: .roundedLg))
+    }
+
+    private func bullet(_ key: LocalizedStringKey) -> some View {
+        HStack(alignment: .top, spacing: .spacing8) {
+            Circle()
+                .fill(Color.gray600)
+                .frame(width: 4, height: 4)
+                .padding(.top, 8)
+            Text(key)
+                .font(.pretendard(.regular, size: 14))
+                .foregroundStyle(Color.gray700)
+                .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+}
+
+#Preview {
+    ReceiptPromoSheet(onClose: {}, onRegister: {})
+        .background(Color.colorWhite)
+}

@@ -2368,6 +2368,56 @@
           }
         }
       }
+    },
+    "mypage.promo.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지금 바로 영수증을 쉽고\n빠르게 등록해 보세요!"
+          }
+        }
+      }
+    },
+    "mypage.promo.event_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오픈 이벤트 안내"
+          }
+        }
+      }
+    },
+    "mypage.promo.event_bullet1": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "무료 분석 5회를 제공해 드리고 있습니다. 지급일 기준 30일 이내에 사용해야 하며, 기간이 지나면 자동으로 소멸됩니다."
+          }
+        }
+      }
+    },
+    "mypage.promo.event_bullet2": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이미 지급받은 경우에는 추가 지급되지 않으며, 별도 공지가 없는 경우 매월 1일 무료 분석 5회가 지급될 예정입니다."
+          }
+        }
+      }
+    },
+    "mypage.promo.register": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지금 영수증 등록하기"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
