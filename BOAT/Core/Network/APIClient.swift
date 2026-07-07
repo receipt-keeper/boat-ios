@@ -78,6 +78,34 @@ final class APIClient {
         _ = try await request(target, as: EmptyData.self)
     }
 
+    /// 공통 Envelope(JSON)이 아닌 원본 바이너리 응답용. (첨부 파일 원본 조회 등)
+    /// Bearer 토큰 자동 주입 + 401 자동 갱신은 authSession 재사용으로 동일하게 적용된다.
+    func requestData(_ target: TargetType) async throws -> Data {
+        let session = target.requiresAuth ? authSession : publicSession
+        let response = await session
+            .request(target)
+            .validate(statusCode: 200..<300)
+            .serializingData()
+            .response
+
+        #if DEBUG
+        NetworkLogger.log(response)
+        #endif
+
+        switch response.result {
+        case .success(let data):
+            return data
+        case .failure:
+            guard let statusCode = response.response?.statusCode else {
+                throw APIError.network
+            }
+            if statusCode >= 500 {
+                throw APIError.network
+            }
+            throw APIError.server(statusCode: statusCode, message: String(localized: "error.api.unknown"))
+        }
+    }
+
     /// multipart/form-data 업로드 + 공통 Envelope 디코딩.
     @discardableResult
     func uploadMultipart<T: Decodable>(

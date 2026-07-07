@@ -24,6 +24,8 @@ struct Receipt: Decodable, Identifiable, Hashable {
     let memo: String?
     let requiresPhysicalReceipt: Bool?
     let receiptFileIds: [String]?
+    // 상세 조회 응답에만 포함 — 로컬 캐시(ReceiptEntity)는 왕복시키지 않으므로 기본값 필요.
+    let receiptFiles: [ReceiptFile]? = nil
     let imageUrl: String?
     let warrantyDDay: Int?         // 만료까지 남은 일수 (음수면 만료)
     let serialNumber: String?
@@ -31,6 +33,13 @@ struct Receipt: Decodable, Identifiable, Hashable {
     let registeredAt: String?      // ISO8601
 
     var id: String { receiptId }
+}
+
+/// 첨부된 영수증 원본 파일. contentPath는 Authorization 토큰을 붙여 조회해야 하는
+/// 인증 필요 엔드포인트다 — AuthenticatedImage에서 FileRepository.fetchContent(path:)로 로드.
+struct ReceiptFile: Decodable, Hashable {
+    let fileId: String
+    let contentPath: String
 }
 
 // MARK: - 목록 응답 + 페이지네이션

@@ -47,4 +47,9 @@ final class FileRepository {
         )
         return result.files
     }
+
+    /// GET {contentPath} — 첨부 파일(이미지) 원본 바이너리 조회. Authorization 자동 주입.
+    func fetchContent(path: String) async throws -> Data {
+        try await APIClient.shared.requestData(FileTarget.content(path: path))
+    }
 }

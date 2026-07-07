@@ -348,21 +348,31 @@ struct ReceiptDetailView: View {
                 .font(.pretendard(.bold, size: 18))
                 .foregroundStyle(Color.gray900)
 
-            // TODO: 파일 서빙 URL 계약 확정 시 receiptFileId → 실제 이미지 로드로 교체.
-            //       현재는 첨부 수만큼 플레이스홀더 박스 노출.
-            let ids = r.receiptFileIds ?? []
-            if ids.isEmpty {
+            let files = r.receiptFiles ?? []
+            if files.isEmpty {
                 receiptPlaceholderBox
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: .spacing12) {
-                        ForEach(Array(ids.enumerated()), id: \.offset) { _, _ in
-                            receiptPlaceholderBox
+                        ForEach(files, id: \.fileId) { file in
+                            receiptFileBox(file)
                         }
                     }
                 }
             }
         }
+    }
+
+    private func receiptFileBox(_ file: ReceiptFile) -> some View {
+        RoundedRectangle(cornerRadius: .roundedLg)
+            .fill(Color.gray50)
+            .frame(width: 104, height: 104)
+            .overlay { AuthenticatedImage(contentPath: file.contentPath) }
+            .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
+            .overlay(
+                RoundedRectangle(cornerRadius: .roundedLg)
+                    .stroke(Color.gray200, lineWidth: 1)
+            )
     }
 
     private var receiptPlaceholderBox: some View {
