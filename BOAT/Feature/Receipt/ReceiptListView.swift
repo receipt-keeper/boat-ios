@@ -57,7 +57,11 @@ struct ReceiptListView: View {
     var onNotification: () -> Void = {}
     @State private var selectedFilter: ReceiptFilter = .all
     @State private var sortExpanded = false
-    @State private var menuReceiptId: String?
+    // 케밥 메뉴(수정/삭제) + 삭제 확인 다이얼로그
+    @State private var menuReceipt: Receipt?
+    @State private var pendingDeleteId: String?
+    @State private var showDeleteConfirm = false
+    @State private var editReceipt: Receipt?
     @State private var detailReceipt: Receipt?
     @State private var viewModel = ReceiptListViewModel()
     @State private var toast = BoatToastState()
@@ -119,31 +123,27 @@ struct ReceiptListView: View {
                 }
             }
         }
-        // 케밥 → 삭제 메뉴 (선택 카드만 떠오르고 나머지는 딤)
-        .overlayPreferenceValue(CardAnchorKey.self) { anchors in
-            if let id = menuReceiptId,
-               let receipt = viewModel.receipts.first(where: { $0.receiptId == id }),
-               let anchor = anchors[id] {
-                GeometryReader { proxy in
-                    let rect = proxy[anchor]
-                    ZStack(alignment: .topLeading) {
-                        Color.systemDim
-                            .ignoresSafeArea()
-                            .onTapGesture { menuReceiptId = nil }
-
-                        // 선택된 카드 복제본 — 딤 위로 떠오름
-                        ReceiptCard(receipt: receipt) { menuReceiptId = nil }
-                            .frame(width: rect.width, height: rect.height)
-                            .offset(x: rect.minX, y: rect.minY)
-
-                        // 삭제 메뉴 — 카드 우상단 위로
-                        deleteMenu(id: id)
-                            .frame(width: 240)
-                            .offset(x: rect.maxX - 240, y: max(0, rect.minY - 64))
-                    }
-                }
+        // 케밥 → 수정/삭제 액션시트 (상세 화면과 동일한 패턴)
+        .overlay {
+            if let receipt = menuReceipt {
+                actionSheetOverlay(for: receipt)
             }
         }
+        .animation(.easeInOut(duration: 0.2), value: menuReceipt)
+        // 삭제 확인 다이얼로그
+        .boatDialog(
+            isPresented: $showDeleteConfirm,
+            title: "detail.delete_confirm_title",
+            message: "detail.delete_confirm_message",
+            confirmText: "detail.menu_delete",
+            confirmColor: .brandPrimary,
+            cancelText: "common.cancel",
+            onConfirm: {
+                if let id = pendingDeleteId {
+                    Task { await deleteReceipt(id: id) }
+                }
+            }
+        )
         .boatToastHost(toast)
         // 카드 탭 → 영수증 상세
         .fullScreenCover(item: $detailReceipt) { receipt in
@@ -157,25 +157,66 @@ struct ReceiptListView: View {
                 }
             )
         }
+        // 케밥 → 수정하기
+        .fullScreenCover(item: $editReceipt) { receipt in
+            ReceiptEditView(
+                receipt: receipt,
+                onBack: { editReceipt = nil },
+                onUpdated: {
+                    editReceipt = nil
+                    reload()
+                    toast.show(String(localized: "detail.updated_toast"), type: .info)
+                }
+            )
+        }
     }
 
-    // MARK: - 삭제 메뉴
+    // MARK: - 케밥 액션시트 (수정하기 / 삭제하기 / 닫기)
 
-    private func deleteMenu(id: String) -> some View {
-        Button {
-            menuReceiptId = nil
-            Task { await deleteReceipt(id: id) }
-        } label: {
-            Text("receipt.menu.delete")
+    private func actionSheetOverlay(for receipt: Receipt) -> some View {
+        ZStack(alignment: .bottom) {
+            Color.black.opacity(0.35)
+                .ignoresSafeArea()
+                .onTapGesture { menuReceipt = nil }
+
+            VStack(spacing: .spacing8) {
+                VStack(spacing: 0) {
+                    actionRow("detail.menu_edit", color: .gray900) {
+                        menuReceipt = nil
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                            editReceipt = receipt
+                        }
+                    }
+                    Rectangle().fill(Color.gray200).frame(height: 1)
+                    actionRow("detail.menu_delete", color: .systemError) {
+                        menuReceipt = nil
+                        pendingDeleteId = receipt.receiptId
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                            showDeleteConfirm = true
+                        }
+                    }
+                }
+                .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+
+                actionRow("detail.menu_close", color: .gray900) { menuReceipt = nil }
+                    .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+            }
+            .padding(.horizontal, .spacing16)
+            .padding(.bottom, .spacing16)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
+    }
+
+    private func actionRow(_ key: LocalizedStringKey, color: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(key)
                 .font(.pretendard(.medium, size: 16))
-                .foregroundStyle(Color.systemError)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.vertical, .spacing24)
+                .foregroundStyle(color)
+                .frame(maxWidth: .infinity)
+                .frame(height: 56)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
-        .shadow(color: .black.opacity(0.12), radius: 16, y: 4)
     }
 
     // MARK: - 정렬 드롭다운 (커스텀)
@@ -271,10 +312,12 @@ struct ReceiptListView: View {
         Task { await viewModel.reload(tab: selectedTab, sort: selectedSort, filter: selectedFilter) }
     }
 
-    /// 삭제 API 호출 → 성공 시 로컬 DB/목록 갱신은 ViewModel에서 처리, 실패 시 에러 토스트만 노출.
+    /// 삭제 API 호출 → 성공 시 로컬 DB/목록 갱신은 ViewModel에서 처리 + 삭제 토스트, 실패 시 에러 토스트.
     private func deleteReceipt(id: String) async {
         let success = await viewModel.deleteReceipt(id: id)
-        if !success {
+        if success {
+            toast.show(String(localized: "detail.deleted_toast"), type: .info)
+        } else {
             toast.showError(String(localized: "receipt.delete.fail"))
         }
     }
@@ -298,12 +341,9 @@ struct ReceiptListView: View {
                     ForEach(viewModel.receipts) { receipt in
                         ReceiptCard(
                             receipt: receipt,
-                            onKebab: { menuReceiptId = receipt.receiptId },
+                            onKebab: { menuReceipt = receipt },
                             onTap: { detailReceipt = receipt }
                         )
-                        .anchorPreference(key: CardAnchorKey.self, value: .bounds) {
-                            [receipt.receiptId: $0]
-                        }
                         .task { await viewModel.loadMoreIfNeeded(currentItem: receipt) }
                     }
 
@@ -458,14 +498,6 @@ private struct SortAnchorKey: PreferenceKey {
     static let defaultValue: Anchor<CGRect>? = nil
     static func reduce(value: inout Anchor<CGRect>?, nextValue: () -> Anchor<CGRect>?) {
         value = value ?? nextValue()
-    }
-}
-
-// 영수증 카드별 위치 앵커 (receiptId → bounds)
-private struct CardAnchorKey: PreferenceKey {
-    static let defaultValue: [String: Anchor<CGRect>] = [:]
-    static func reduce(value: inout [String: Anchor<CGRect>], nextValue: () -> [String: Anchor<CGRect>]) {
-        value.merge(nextValue()) { _, new in new }
     }
 }
 
