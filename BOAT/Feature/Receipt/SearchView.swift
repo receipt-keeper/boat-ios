@@ -3,6 +3,8 @@
 //  BOAT
 //
 //  영수증 검색 화면 — 제품명/메모 검색. Android SearchScreen 대응.
+//  입력 디바운스 후 GET /api/v1/receipts?q= 조회. 결과 있으면 카운트+목록(무한 스크롤),
+//  없으면 등록 유도 화면.
 //
 
 import SwiftUI
@@ -14,6 +16,13 @@ struct SearchView: View {
     @State private var query = ""
     @FocusState private var focused: Bool
     @State private var showRegister = false
+    @State private var detailReceipt: Receipt?
+
+    @State private var viewModel = ReceiptListViewModel()
+    @State private var isDebouncing = false
+    @State private var searchTask: Task<Void, Never>?
+
+    private static let debounce: Duration = .milliseconds(350)
 
     var body: some View {
         VStack(spacing: 0) {
@@ -21,12 +30,7 @@ struct SearchView: View {
                 // 상태바 영역까지 흰 배경으로 덮음
                 .background(Color.colorWhite.ignoresSafeArea(edges: .top))
 
-            if query.isEmpty {
-                Color.gray50
-                    .ignoresSafeArea(edges: .bottom)
-            } else {
-                emptyResultView
-            }
+            content
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.gray50)
@@ -34,8 +38,43 @@ struct SearchView: View {
             try? await Task.sleep(for: .milliseconds(300))
             focused = true
         }
+        .onChange(of: query) { _, newValue in
+            searchTask?.cancel()
+            let trimmed = newValue.trimmingCharacters(in: .whitespaces)
+            guard !trimmed.isEmpty else {
+                isDebouncing = false
+                return
+            }
+            isDebouncing = true
+            searchTask = Task {
+                try? await Task.sleep(for: Self.debounce)
+                guard !Task.isCancelled else { return }
+                await viewModel.reload(tab: .all, sort: .default, filter: .all, q: trimmed)
+                guard !Task.isCancelled else { return }
+                isDebouncing = false
+            }
+        }
         .fullScreenCover(isPresented: $showRegister) {
             ReceiptRegisterView(onBack: { showRegister = false })
+        }
+        .fullScreenCover(item: $detailReceipt) { receipt in
+            ReceiptDetailView(receiptId: receipt.receiptId, onBack: { detailReceipt = nil })
+        }
+    }
+
+    // MARK: - 콘텐츠 분기
+
+    @ViewBuilder
+    private var content: some View {
+        if query.trimmingCharacters(in: .whitespaces).isEmpty {
+            Color.gray50.ignoresSafeArea(edges: .bottom)
+        } else if isDebouncing || viewModel.isLoading {
+            // 입력 중(디바운스 대기) / 조회 중 — 이전 결과를 보여주지 않고 빈 화면 유지
+            Color.gray50.ignoresSafeArea(edges: .bottom)
+        } else if viewModel.receipts.isEmpty {
+            emptyResultView
+        } else {
+            resultListView
         }
     }
 
@@ -75,9 +114,9 @@ struct SearchView: View {
 
             if !query.isEmpty {
                 Button { query = "" } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 16))
-                        .foregroundStyle(Color.gray400)
+                    Image("icon_close_search")
+                        .resizable()
+                        .frame(width: 20, height: 20)
                 }
                 .buttonStyle(.plain)
                 .transition(.scale(scale: 0.7).combined(with: .opacity))
@@ -87,6 +126,52 @@ struct SearchView: View {
         .padding(.horizontal, .spacing12)
         .frame(height: 40)
         .background(Color.gray100, in: RoundedRectangle(cornerRadius: .roundedFull))
+    }
+
+    // MARK: - 검색 결과 (카운트 + 목록)
+
+    private var resultListView: some View {
+        VStack(spacing: 0) {
+            countRow
+
+            ScrollView {
+                LazyVStack(spacing: .spacing12) {
+                    ForEach(viewModel.receipts) { receipt in
+                        ReceiptCard(receipt: receipt, showKebab: false) {
+                            detailReceipt = receipt
+                        }
+                        .task { await viewModel.loadMoreIfNeeded(currentItem: receipt) }
+                    }
+
+                    if viewModel.isLoadingMore {
+                        ProgressView()
+                            .tint(Color.brandPrimary)
+                            .padding(.vertical, .spacing16)
+                    }
+                }
+                .padding(.horizontal, .spacing20)
+                .padding(.top, .spacing4)
+                .padding(.bottom, .spacing24)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var countRow: some View {
+        HStack(spacing: .spacing8) {
+            Text("receipt.filter.all")
+                .font(.pretendard(.regular, size: 14))
+                .foregroundStyle(Color.gray600)
+            Text("|")
+                .font(.pretendard(.regular, size: 14))
+                .foregroundStyle(Color.gray300)
+            Text("\(viewModel.totalCount)")
+                .font(.pretendard(.bold, size: 14))
+                .foregroundStyle(Color.brandPrimary)
+            Spacer()
+        }
+        .padding(.horizontal, .spacing20)
+        .padding(.vertical, .spacing12)
     }
 
     // MARK: - 검색 결과 없음

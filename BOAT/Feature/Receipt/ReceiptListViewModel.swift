@@ -30,17 +30,20 @@ final class ReceiptListViewModel {
     private var tab: ReceiptTab = .all
     private var sort: ReceiptSort = .default
     private var filter: ReceiptFilter = .all
+    private var q: String?
 
     /// reload 세대 토큰 — 필터 변경 시 이전 요청 결과를 무시하기 위함
     private var generation = 0
 
     private let repository = ReceiptRepository.shared
 
-    /// 탭/정렬/카테고리 변경 또는 첫 진입 시 호출 — 첫 페이지부터 다시 조회
-    func reload(tab: ReceiptTab, sort: ReceiptSort, filter: ReceiptFilter) async {
+    /// 탭/정렬/카테고리 변경 또는 첫 진입 시 호출 — 첫 페이지부터 다시 조회.
+    /// q: 검색어(제품명/메모) — 검색 화면에서만 사용, 목록 탭에서는 nil.
+    func reload(tab: ReceiptTab, sort: ReceiptSort, filter: ReceiptFilter, q: String? = nil) async {
         self.tab = tab
         self.sort = sort
         self.filter = filter
+        self.q = q
 
         generation += 1
         let token = generation
@@ -51,7 +54,7 @@ final class ReceiptListViewModel {
 
         do {
             let data = try await repository.fetchReceipts(
-                tab: tab, sort: sort, filter: filter, cursor: nil
+                tab: tab, sort: sort, filter: filter, q: q, cursor: nil
             )
             guard token == generation else { return } // 더 최신 요청이 들어왔으면 폐기
             receipts = data.receipts
@@ -113,7 +116,7 @@ final class ReceiptListViewModel {
 
         do {
             let data = try await repository.fetchReceipts(
-                tab: tab, sort: sort, filter: filter, cursor: cursor
+                tab: tab, sort: sort, filter: filter, q: q, cursor: cursor
             )
             guard token == generation else { return }
             receipts.append(contentsOf: data.receipts)

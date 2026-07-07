@@ -363,8 +363,10 @@ struct ReceiptListView: View {
 
 // MARK: - 영수증 카드
 
-private struct ReceiptCard: View {
+/// 목록/검색 결과 공용 영수증 카드. 검색 결과에서는 케밥을 숨긴다(showKebab: false).
+struct ReceiptCard: View {
     let receipt: Receipt
+    var showKebab: Bool = true
     var onKebab: () -> Void = {}
     var onTap: () -> Void = {}
 
@@ -381,7 +383,7 @@ private struct ReceiptCard: View {
                             .lineLimit(1)
                         Spacer(minLength: .spacing8)
                         dayBadge
-                        kebab
+                        if showKebab { kebab }
                     }
 
                     expiryRow
