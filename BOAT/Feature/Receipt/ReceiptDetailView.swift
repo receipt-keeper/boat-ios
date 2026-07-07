@@ -26,6 +26,7 @@ struct ReceiptDetailView: View {
     @State private var showActionSheet = false
     @State private var showDeleteConfirm = false
     @State private var isDeleting = false
+    @State private var showEditView = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -63,6 +64,12 @@ struct ReceiptDetailView: View {
         )
         .task { await load() }
         .boatToastHost(toast)
+        // 케밥 → 수정하기
+        .fullScreenCover(isPresented: $showEditView) {
+            if let receipt {
+                ReceiptEditView(receipt: receipt, onBack: { showEditView = false })
+            }
+        }
     }
 
     // MARK: - 케밥 액션 시트 (수정하기 / 삭제하기 / 닫기)
@@ -77,7 +84,9 @@ struct ReceiptDetailView: View {
                 VStack(spacing: 0) {
                     actionRow("detail.menu_edit", color: .gray900) {
                         showActionSheet = false
-                        // TODO: 영수증 수정 화면 연결 (편집 API/화면 준비되면)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                            showEditView = true
+                        }
                     }
                     Rectangle().fill(Color.gray200).frame(height: 1)
                     actionRow("detail.menu_delete", color: .systemError) {
