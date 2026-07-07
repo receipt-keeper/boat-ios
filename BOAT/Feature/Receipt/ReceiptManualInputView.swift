@@ -66,6 +66,7 @@ struct ReceiptManualInputView: View {
     @State private var warrantyExpanded = true
 
     @State private var isSubmitting = false
+    @State private var completedReceipt: Receipt?
     @State private var toast = BoatToastState()
 
     init(images: [UIImage], ocrResult: OcrAnalysis? = nil, onBack: @escaping () -> Void, onComplete: @escaping () -> Void = {}) {
@@ -241,6 +242,10 @@ struct ReceiptManualInputView: View {
             Text("permission.camera.denied_message")
         }
         .boatToastHost(toast)
+        // 등록 성공 → 완료 화면 ("홈으로 가기" 탭 시 onComplete로 등록 플로우 전체 닫힘)
+        .fullScreenCover(item: $completedReceipt) { receipt in
+            ReceiptRegisterCompleteView(receiptId: receipt.receiptId, onGoHome: onComplete)
+        }
     }
 
     // MARK: - Top Bar
@@ -833,8 +838,8 @@ struct ReceiptManualInputView: View {
             isSubmitting = true
             defer { isSubmitting = false }
             do {
-                _ = try await ReceiptRepository.shared.createReceipt(images: imagesToUpload, fields: fields)
-                onComplete()
+                let receipt = try await ReceiptRepository.shared.createReceipt(images: imagesToUpload, fields: fields)
+                completedReceipt = receipt
             } catch {
                 toast.showError(String(localized: "receipt.register.fail"))
             }

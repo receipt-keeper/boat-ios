@@ -2268,6 +2268,46 @@
           }
         }
       }
+    },
+    "receipt.complete.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 등록을 완료했어요!"
+          }
+        }
+      }
+    },
+    "receipt.complete.subtitle": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지금 등록한 영수증을 바로 확인해 볼까요?"
+          }
+        }
+      }
+    },
+    "receipt.complete.go_home": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "홈으로 가기"
+          }
+        }
+      }
+    },
+    "receipt.complete.view": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보러가기"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
