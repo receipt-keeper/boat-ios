@@ -172,12 +172,12 @@ struct ReceiptCreateFields {
 // MARK: - 수정 요청 필드
 
 /// 영수증 수정 시 사용자가 확정한 값. PATCH /api/v1/receipts/{id}.
-/// 서버 스펙상 total_amount/payment_location은 수정 대상이 아니다(생성 시 확정값 유지).
 struct ReceiptUpdateFields {
     var itemName: String
     var brandName: String?
     var serialNumber: String?
     var paymentDate: String?          // "yyyy-MM-dd"
+    var totalAmount: Int?
     var periodMonths: Int?
     var category: String?
     var subCategory: String?
@@ -194,6 +194,7 @@ struct ReceiptUpdateFields {
         if let brandName, !brandName.isEmpty         { body["brand_name"] = brandName }
         if let serialNumber, !serialNumber.isEmpty   { body["serial_number"] = serialNumber }
         if let paymentDate, !paymentDate.isEmpty     { body["payment_date"] = paymentDate }
+        if let totalAmount                           { body["total_amount"] = totalAmount }
         if let periodMonths                          { body["period_months"] = periodMonths }
         if let category, !category.isEmpty           { body["category"] = category }
         if let subCategory, !subCategory.isEmpty     { body["sub_category"] = subCategory }

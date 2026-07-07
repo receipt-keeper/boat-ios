@@ -868,6 +868,7 @@ struct ReceiptEditView: View {
             brandName: brand.trimmingCharacters(in: .whitespaces),
             serialNumber: serial.trimmingCharacters(in: .whitespaces),
             paymentDate: apiPaymentDate,
+            totalAmount: Int(price),
             periodMonths: totalWarrantyMonths,
             category: selectedCategory.rawValue,
             subCategory: sub,
