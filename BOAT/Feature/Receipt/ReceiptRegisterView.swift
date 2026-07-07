@@ -2,7 +2,8 @@
 //  ReceiptRegisterView.swift
 //  BOAT
 //
-//  영수증 등록 화면 — 무료 분석 배너 + 업로드 그리드(최대 5장) + 카메라/갤러리 + 분석 시작.
+//  영수증 등록 화면 — 분석횟수 pill + 카메라/갤러리 카드 + 유의사항(접이식) +
+//  첨부내역(가로 스크롤, 최대 5장) + 분석 시작. 디자인 확정본 반영.
 //
 
 import SwiftUI
@@ -24,7 +25,6 @@ struct ReceiptRegisterView: View {
     private static let maxPhotos = 5
 
     private let creditStore = CreditStore.shared
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: .spacing8), count: 3)
 
     @State private var images: [UIImage] = []
     @State private var galleryItems: [PhotosPickerItem] = []
@@ -46,6 +46,11 @@ struct ReceiptRegisterView: View {
     @State private var isRecharging = false
     // OCR 실패 시 썸네일 실패 오버레이 표시
     @State private var analyzeFailed = false
+    // 유의사항 접이식 섹션
+    @State private var noticeExpanded = false
+    // 상단 검색/알림 아이콘
+    @State private var showSearch = false
+    @State private var showNotifications = false
 
     private var canAddMore: Bool { images.count < Self.maxPhotos }
     private var remainingSlots: Int { max(0, Self.maxPhotos - images.count) }
@@ -57,22 +62,33 @@ struct ReceiptRegisterView: View {
             VStack(spacing: 0) {
                 topBar
 
-                VStack(alignment: .leading, spacing: .spacing20) {
-                    FreeAnalysisBanner(remaining: remainingTokens)
-                    uploadedSection
-                }
-                .padding(.horizontal, .spacing20)
-                .padding(.top, .spacing8)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        headerRow
 
-                Spacer(minLength: .spacing20)
+                        Spacer().frame(height: .spacing20)
+                        HStack(spacing: .spacing12) {
+                            cameraCard
+                            galleryCard
+                        }
 
-                VStack(spacing: .spacing12) {
-                    cameraButton
-                    galleryButton
-                    analyzeButton
+                        Spacer().frame(height: .spacing12)
+                        noticeSection
+
+                        Spacer().frame(height: .spacing24)
+                        attachmentsHeader
+
+                        Spacer().frame(height: .spacing12)
+                        thumbnailRow
+                    }
+                    .padding(.horizontal, .spacing20)
+                    .padding(.top, .spacing8)
+                    .padding(.bottom, .spacing16)
                 }
-                .padding(.horizontal, .spacing20)
-                .padding(.bottom, .spacing12)
+
+                analyzeButton
+                    .padding(.horizontal, .spacing20)
+                    .padding(.bottom, .spacing12)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.colorWhite)
@@ -160,6 +176,13 @@ struct ReceiptRegisterView: View {
                 }
             )
         }
+        // 상단 돋보기/종 아이콘
+        .fullScreenCover(isPresented: $showSearch) {
+            SearchView(onBack: { showSearch = false })
+        }
+        .fullScreenCover(isPresented: $showNotifications) {
+            NotificationListView(onBack: { showNotifications = false })
+        }
         .boatToastHost(toast)
     }
 
@@ -174,7 +197,7 @@ struct ReceiptRegisterView: View {
     // MARK: - Top Bar
 
     private var topBar: some View {
-        HStack {
+        HStack(spacing: .spacing16) {
             Button(action: onBack) {
                 Image("icChevronLeft")
                     .renderingMode(.template)
@@ -183,37 +206,243 @@ struct ReceiptRegisterView: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+
             Spacer()
+
+            headerIcon("icSearch", label: "header.search") { showSearch = true }
+            headerIcon("icBell", label: "header.notification") { showNotifications = true }
         }
         .frame(height: 56)
         .padding(.horizontal, .spacing20)
     }
 
-    // MARK: - 업로드된 영수증
-
-    private var uploadedSection: some View {
-        VStack(alignment: .leading, spacing: .spacing12) {
-            Text("receipt.register.uploaded")
-                .font(.pretendard(.semibold, size: 16))
+    private func headerIcon(_ name: String, label: LocalizedStringKey, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(name)
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 24, height: 24)
                 .foregroundStyle(Color.gray900)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text(label))
+    }
 
+    // MARK: - 타이틀 + 분석횟수 pill
+
+    private var headerRow: some View {
+        HStack(alignment: .center) {
+            Text("receipt.add")
+                .font(.pretendard(.bold, size: 22))
+                .foregroundStyle(Color.gray900)
+            Spacer()
+            analysisCountPill
+        }
+    }
+
+    private var analysisCountPill: some View {
+        HStack(spacing: .spacing4) {
+            Image("icSparkle")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
+            Text("receipt.register.analysis_count \(remainingTokens)")
+                .font(.pretendard(.semibold, size: 14))
+                .foregroundStyle(Color.brandPrimary)
+        }
+        .padding(.horizontal, .spacing12)
+        .padding(.vertical, .spacing8)
+        .background(Color.brandSenary, in: Capsule())
+    }
+
+    // MARK: - 카메라/갤러리 카드
+
+    private var cameraCard: some View {
+        Button {
+            openCamera()
+        } label: {
+            outlinedCard(icon: "icCamera", label: "receipt.register.camera")
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var galleryCard: some View {
+        Button {
+            if canAddMore { showGalleryPicker = true } else { showMaxAlert = true }
+        } label: {
+            outlinedCard(icon: "icImage", label: "receipt.register.gallery")
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func outlinedCard(icon: String, label: LocalizedStringKey) -> some View {
+        VStack(spacing: .spacing12) {
+            Image(icon)
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
+                .foregroundStyle(Color.brandPrimary)
+                .frame(width: 32, height: 32)
+            Text(label)
+                .font(.pretendard(.medium, size: 15))
+                .foregroundStyle(Color.brandPrimary)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 140)
+        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedXl))
+        .overlay(
+            RoundedRectangle(cornerRadius: .roundedXl)
+                .stroke(Color.brandTertiary, lineWidth: 1)
+        )
+    }
+
+    // MARK: - 유의사항 (접이식)
+
+    private var noticeSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) { noticeExpanded.toggle() }
+            } label: {
+                HStack(spacing: .spacing8) {
+                    noticeIcon
+                    Text("receipt.notice.title")
+                        .font(.pretendard(.medium, size: 15))
+                        .foregroundStyle(Color.gray900)
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color.gray500)
+                        .rotationEffect(.degrees(noticeExpanded ? 180 : 0))
+                }
+                .padding(.horizontal, .spacing16)
+                .frame(height: 52)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            if noticeExpanded {
+                Rectangle().fill(Color.gray200).frame(height: 1)
+                    .padding(.horizontal, .spacing16)
+
+                VStack(alignment: .leading, spacing: .spacing20) {
+                    noticeBullet(
+                        iconAsset: "icon_images_upload",
+                        pre: "receipt.notice.bullet1_pre",
+                        highlight: "receipt.notice.bullet1_highlight",
+                        post: "receipt.notice.bullet1_post"
+                    )
+                    noticeBullet(
+                        systemIcon: "square.and.arrow.up",
+                        pre: "receipt.notice.bullet2_pre",
+                        highlight: "receipt.notice.bullet2_highlight",
+                        post: "receipt.notice.bullet2_post"
+                    )
+                    noticeBullet(
+                        systemIcon: "folder",
+                        pre: nil,
+                        highlight: "receipt.notice.bullet3_highlight",
+                        post: "receipt.notice.bullet3_post"
+                    )
+                }
+                .padding(.spacing16)
+            }
+        }
+        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
+        .overlay(
+            RoundedRectangle(cornerRadius: .roundedLg)
+                .stroke(Color.gray300, lineWidth: 1)
+        )
+    }
+
+    private var noticeIcon: some View {
+        Circle()
+            .fill(Color.brandPrimary)
+            .frame(width: 20, height: 20)
+            .overlay {
+                Image(systemName: "info")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(Color.colorWhite)
+            }
+    }
+
+    private func noticeBullet(
+        iconAsset: String? = nil,
+        systemIcon: String? = nil,
+        pre: LocalizedStringKey?,
+        highlight: LocalizedStringKey,
+        post: LocalizedStringKey
+    ) -> some View {
+        HStack(alignment: .top, spacing: .spacing12) {
+            bulletIcon(iconAsset: iconAsset, systemIcon: systemIcon)
+                .frame(width: 22, height: 22)
+
+            (
+                (pre.map { Text($0) } ?? Text(""))
+                    .foregroundStyle(Color.gray700)
+                + Text(highlight)
+                    .foregroundStyle(Color.brandPrimary)
+                    .fontWeight(.semibold)
+                + Text(post)
+                    .foregroundStyle(Color.gray700)
+            )
+            .font(.pretendard(.regular, size: 14))
+            .lineSpacing(3)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    @ViewBuilder
+    private func bulletIcon(iconAsset: String?, systemIcon: String?) -> some View {
+        if let iconAsset {
+            Image(iconAsset)
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
+                .foregroundStyle(Color.brandSecondary)
+        } else if let systemIcon {
+            Image(systemName: systemIcon)
+                .resizable()
+                .scaledToFit()
+                .foregroundStyle(Color.brandSecondary)
+        }
+    }
+
+    // MARK: - 영수증 첨부내역
+
+    private var attachmentsHeader: some View {
+        HStack {
+            Text("receipt.register.attachments")
+                .font(.pretendard(.bold, size: 18))
+                .foregroundStyle(Color.gray900)
+            Spacer()
+            Text("\(images.count)/\(Self.maxPhotos)")
+                .font(.pretendard(.bold, size: 15))
+                .foregroundStyle(Color.brandPrimary)
+        }
+    }
+
+    private var thumbnailRow: some View {
+        Group {
             if images.isEmpty {
                 emptySlot
             } else {
-                LazyVGrid(columns: columns, spacing: .spacing8) {
-                    ForEach(Array(images.enumerated()), id: \.offset) { index, image in
-                        thumbnail(image, index: index)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: .spacing12) {
+                        ForEach(Array(images.enumerated()), id: \.offset) { index, image in
+                            thumbnail(image, index: index)
+                        }
                     }
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var emptySlot: some View {
         RoundedRectangle(cornerRadius: .roundedLg)
             .strokeBorder(Color.gray300, style: StrokeStyle(lineWidth: 1, dash: [4]))
-            .frame(width: 96, height: 96)
+            .frame(width: 100, height: 100)
             .overlay {
                 Image(systemName: "photo")
                     .font(.system(size: 28))
@@ -222,14 +451,10 @@ struct ReceiptRegisterView: View {
     }
 
     private func thumbnail(_ image: UIImage, index: Int) -> some View {
-        Rectangle()
-            .fill(Color.gray100)
-            .aspectRatio(1, contentMode: .fit)
-            .overlay {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-            }
+        Image(uiImage: image)
+            .resizable()
+            .scaledToFill()
+            .frame(width: 100, height: 100)
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
             .overlay {
                 if analyzeFailed {
@@ -245,7 +470,7 @@ struct ReceiptRegisterView: View {
                         .font(.system(size: 11, weight: .bold))
                         .foregroundStyle(Color.colorWhite)
                         .frame(width: 22, height: 22)
-                        .background(analyzeFailed ? Color.systemError : Color.gray500, in: Circle())
+                        .background(analyzeFailed ? Color.systemError : Color.gray500.opacity(0.8), in: Circle())
                 }
                 .buttonStyle(.plain)
                 .padding(6)
@@ -275,44 +500,7 @@ struct ReceiptRegisterView: View {
         }
     }
 
-    // MARK: - 버튼
-
-    private var cameraButton: some View {
-        Button {
-            openCamera()
-        } label: {
-            outlinedLabel(icon: "icCamera", label: "receipt.register.camera")
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var galleryButton: some View {
-        Button {
-            if canAddMore { showGalleryPicker = true } else { showMaxAlert = true }
-        } label: {
-            outlinedLabel(icon: "icImage", label: "receipt.register.gallery")
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func outlinedLabel(icon: String, label: LocalizedStringKey) -> some View {
-        HStack(spacing: .spacing8) {
-            Image(icon)
-                .renderingMode(.template)
-                .foregroundStyle(Color.brandPrimary)
-                .frame(width: 20, height: 20)
-            Text(label)
-                .font(.pretendard(.medium, size: 16))
-                .foregroundStyle(Color.brandPrimary)
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: 56)
-        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedXl))
-        .overlay(
-            RoundedRectangle(cornerRadius: .roundedXl)
-                .stroke(Color.brandTertiary, lineWidth: 1)
-        )
-    }
+    // MARK: - 분석 시작 버튼
 
     private var analyzeButton: some View {
         let enabled = !images.isEmpty && !isAnalyzing

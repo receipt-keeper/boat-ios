@@ -2418,6 +2418,116 @@
           }
         }
       }
+    },
+    "receipt.register.analysis_count %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "분석횟수 %lld회"
+          }
+        }
+      }
+    },
+    "receipt.register.attachments": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 첨부내역"
+          }
+        }
+      }
+    },
+    "receipt.notice.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "유의사항"
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet1_pre": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증은 "
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet1_highlight": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제품 1개당 최대 5장까지"
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet1_post": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " 업로드할 수 있습니다."
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet2_pre": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증은 "
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet2_highlight": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1장씩 개별 촬영하여"
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet2_post": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " 업로드해 주세요."
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet3_highlight": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "JPG, PNG, HEIC"
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet3_post": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "만 등록해 주세요."
+          }
+        }
+      }
     }
   },
   "version": "1.0"
