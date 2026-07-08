@@ -18,12 +18,12 @@ final class OcrRepository {
         try await APIClient.shared.uploadMultipart(
             path: "/api/v1/ocr",
             builder: { form in
-                for (index, image) in images.enumerated() {
+                for image in images {
                     guard let data = image.jpegData(compressionQuality: 0.9) else { continue }
                     form.append(
                         data,
                         withName: "file",
-                        fileName: "receipt-\(index + 1).jpg",
+                        fileName: "\(UUID().uuidString).jpg",
                         mimeType: "image/jpeg"
                     )
                 }

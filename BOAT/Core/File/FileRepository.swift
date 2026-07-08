@@ -34,12 +34,12 @@ final class FileRepository {
         let result: UploadedFileList = try await APIClient.shared.uploadMultipart(
             path: "/api/v1/files",
             builder: { form in
-                for (index, image) in images.enumerated() {
+                for image in images {
                     guard let data = image.jpegData(compressionQuality: 0.9) else { continue }
                     form.append(
                         data,
                         withName: "files",
-                        fileName: "receipt-\(index + 1).jpg",
+                        fileName: "\(UUID().uuidString).jpg",
                         mimeType: "image/jpeg"
                     )
                 }
