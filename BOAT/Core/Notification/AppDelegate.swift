@@ -73,6 +73,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     ) async {
         let userInfo = response.notification.request.content.userInfo
         await NotificationRouter.shared.handle(
+            notificationId: userInfo["notificationId"] as? String,
             resourceType: userInfo["resourceType"] as? String,
             resourceId: userInfo["resourceId"] as? String
         )
