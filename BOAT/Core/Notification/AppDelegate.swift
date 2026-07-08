@@ -65,9 +65,16 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         [.banner, .list, .sound, .badge]
     }
 
-    /// 푸시 탭 → 앱 열기(기본 동작). 리소스 라우팅은 인앱 알림 목록 화면에서 처리한다. (Android 정책 동일)
+    /// 푸시 탭 → 페이로드의 resourceType/resourceId로 라우팅(현재는 receipt만).
+    /// NotificationRouter가 값을 들고 있으면 MainTabView가 관찰해 상세 화면을 띄운다.
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse
-    ) async {}
+    ) async {
+        let userInfo = response.notification.request.content.userInfo
+        await NotificationRouter.shared.handle(
+            resourceType: userInfo["resourceType"] as? String,
+            resourceId: userInfo["resourceId"] as? String
+        )
+    }
 }

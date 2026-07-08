@@ -108,7 +108,8 @@ struct NotificationListView: View {
 
 // MARK: - fullScreenCover(item:)용 식별 래퍼
 
-private struct IdentifiedID: Identifiable {
+/// String을 Identifiable로 감싸는 공용 래퍼. NotificationRouter의 푸시 탭 라우팅에서도 재사용.
+struct IdentifiedID: Identifiable {
     let id: String
 }
 

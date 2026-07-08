@@ -84,6 +84,19 @@ struct MainTabView: View {
             .fullScreenCover(isPresented: $showSearch) {
                 SearchView(onBack: { showSearch = false })
             }
+            // 푸시 알림 탭 → 영수증 상세 (NotificationRouter가 payload의 resourceId를 세팅)
+            .fullScreenCover(item: pushReceiptBinding) { rid in
+                ReceiptDetailView(receiptId: rid.id, onBack: { NotificationRouter.shared.pendingReceiptId = nil })
+            }
+    }
+
+    private var pushReceiptBinding: Binding<IdentifiedID?> {
+        Binding(
+            get: { NotificationRouter.shared.pendingReceiptId.map(IdentifiedID.init) },
+            set: { newValue in
+                if newValue == nil { NotificationRouter.shared.pendingReceiptId = nil }
+            }
+        )
     }
 
     private func openRegisterFromFab(_ action: ReceiptRegisterView.AutoOpen) {
