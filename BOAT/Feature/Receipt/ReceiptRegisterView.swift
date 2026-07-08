@@ -144,7 +144,7 @@ struct ReceiptRegisterView: View {
                     NoTokenSheet(
                         onRecharge: {
                             activeSheet = nil
-                            Task { await rechargeTestCredits() }
+                            Task { await recharge() }
                         },
                         onManualInput: { openManualInput() },
                         onLater: { activeSheet = nil }
@@ -581,17 +581,38 @@ struct ReceiptRegisterView: View {
         isUsageLoading = false
     }
 
-    /// [TEST] 토큰 소진 시트 "N회 무료로 충전하기" — 크레딧 5회 임시 지급 후 이용 가능 여부/잔여 횟수 갱신.
-    /// TODO: 정식 충전/이벤트 지급 API가 나오면 ExampleTarget.ocrTestCredits 호출을 교체할 것.
-    private func rechargeTestCredits() async {
+    /// 토큰 소진 시트 "N회 무료로 충전하기" — 월간 충전 프로모션 조회 후 수령 가능하면 크레딧 수령.
+    /// 수령 성공 시 응답 balance로 잔여 크레딧을 즉시 반영하고, 이용 가능 여부(canAnalyze)를 재확인한다.
+    private func recharge() async {
         guard !isRecharging else { return }
         isRecharging = true
         defer { isRecharging = false }
         do {
-            try await APIClient.shared.requestVoid(ExampleTarget.ocrTestCredits)
-            // 분석 가능 여부는 usage API로, 배너/게이트에 쓰이는 잔여 횟수는 credits API로 갱신
+            let promo = try await PromotionRepository.shared.fetchOcrRecharge()
+            switch promo.state {
+            case .redeemable:
+                guard let promotionId = promo.promotionId else {
+                    toast.showError(String(localized: "receipt.register.network_error"))
+                    return
+                }
+                let result = try await PromotionRepository.shared.redeem(promotionId: promotionId)
+                // 수령 응답 balance.remainingCount를 최신 잔여 크레딧으로 반영
+                if let balance = result.balance {
+                    CreditStore.shared.apply(
+                        remainingCount: balance.remainingCount,
+                        totalGrantedCount: balance.totalGrantedCount
+                    )
+                }
+                await checkUsage() // canAnalyze 재확인
+            case .alreadyRedeemed:
+                toast.show(String(localized: "receipt.recharge.already"), type: .info)
+            case .unavailable, .expired, .exhausted, .unknown:
+                toast.show(String(localized: "receipt.recharge.unavailable"), type: .info)
+            }
+        } catch let APIError.server(statusCode, _) where statusCode == 409 {
+            // 이미 이번 달 수령함(경합/직접 호출) — 안내 후 상태만 재확인
+            toast.show(String(localized: "receipt.recharge.already"), type: .info)
             await checkUsage()
-            try? await CreditRepository.shared.fetchCredits()
         } catch {
             toast.showError(String(localized: "receipt.register.network_error"))
         }

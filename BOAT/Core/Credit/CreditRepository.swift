@@ -28,6 +28,15 @@ final class CreditStore {
     func save(_ credit: Credit) { current = credit }
     func clear() { current = nil }
 
+    /// 프로모션 수령 응답의 balance(잔여/총 지급 크레딧)를 즉시 반영. usedCount는 파생값으로 계산.
+    func apply(remainingCount: Int, totalGrantedCount: Int) {
+        current = Credit(
+            remainingCount:    remainingCount,
+            totalGrantedCount: totalGrantedCount,
+            usedCount:         max(0, totalGrantedCount - remainingCount)
+        )
+    }
+
     /// OCR 분석 성공 시 로컬 캐시에서 토큰 1개 차감 (서버 동기화 전 즉시 반영용)
     func deductOne() {
         guard let c = current, c.remainingCount > 0 else { return }
