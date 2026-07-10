@@ -52,14 +52,14 @@ struct MainTabView: View {
                 .padding(.horizontal, .spacing20)
                 .padding(.bottom, .spacing8)
             }
-            // 등록 메뉴 카드 — FAB 위쪽, 오른쪽 변을 FAB 중앙에 정렬
+            // 등록 메뉴 카드 — FAB 위쪽, 오른쪽 변을 FAB 우측 변에 정렬
             .overlay(alignment: .bottomTrailing) {
                 if showAddMenu {
                     ReceiptAddMenuCard(
                         onCamera: { openRegisterFromFab(.camera) },
                         onGallery: { openRegisterFromFab(.gallery) }
                     )
-                    .padding(.trailing, 51) // FAB 중앙 (외곽 20 + 반지름 31)
+                    .padding(.trailing, .spacing20) // FAB 우측 변과 동일(화면 외곽 20)
                     .padding(.bottom, 82)   // FAB(하단 8 + 62) + 간격 12 위로
                 }
             }
