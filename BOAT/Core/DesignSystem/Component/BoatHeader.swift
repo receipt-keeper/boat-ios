@@ -14,20 +14,21 @@ struct BoatHeader: View {
     var showLogo: Bool = false
     /// 알림 아이콘 우상단에 미읽음 표시(빨간 점) 노출 여부
     var showUnreadBadge: Bool = false
+    /// 타이틀/아이콘 색상 — 홈처럼 그라데이션 배경 위에서는 .colorWhite로 오버라이드.
+    var tint: Color = .gray900
     var onSearch: () -> Void = {}
     var onNotification: () -> Void = {}
 
     var body: some View {
         HStack(spacing: 0) {
             if showLogo {
-                Image("app_logo_text")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 24)
+                Text("header.home_title")
+                    .font(.pretendard(.bold, size: 22))
+                    .foregroundStyle(tint)
             } else {
                 Text(title)
                     .font(.pretendard(.bold, size: 20))
-                    .foregroundStyle(Color.gray900)
+                    .foregroundStyle(tint)
             }
 
             Spacer(minLength: 0)
@@ -52,7 +53,7 @@ struct BoatHeader: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 24, height: 24)
-                .foregroundStyle(Color.gray900)
+                .foregroundStyle(tint)
                 .contentShape(Rectangle())
                 .overlay(alignment: .topTrailing) {
                     if showBadge {

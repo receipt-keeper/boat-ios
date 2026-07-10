@@ -177,6 +177,7 @@ private struct HomeView: View {
         VStack(spacing: 0) {
             BoatHeader(
                 showLogo: true,
+                tint: .colorWhite,
                 onSearch: onSearch,
                 onNotification: onNotification
             )
@@ -191,7 +192,7 @@ private struct HomeView: View {
                         } label: {
                             Text("[TEST] 푸시")
                                 .font(.pretendard(.medium, size: 12))
-                                .foregroundStyle(Color.brandPrimary)
+                                .foregroundStyle(Color.colorWhite)
                         }
                         .buttonStyle(.plain)
                         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -220,6 +221,16 @@ private struct HomeView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        // 헤더 + 첫 카드 영역을 덮는 상단 그라데이션 히어로 배경. 홈 화면이면 상태(초기/일반) 무관하게 동일 적용.
+        .background(alignment: .top) {
+            LinearGradient(
+                colors: [Color.brandSecondary, Color.brandPrimary, Color.brandPrimary.opacity(0)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 560)
+            .ignoresSafeArea(edges: .top)
         }
         .background(Color.gray50)
         .task {
@@ -275,14 +286,10 @@ private struct HomeView: View {
         }
     }
 
-    // 초기 홈 (데이터 없을 때) — 무료 분석 배너 + 등록 카드 + 광고 배너
+    // 초기 홈 (데이터 없을 때) — 등록 유도 배너(그라데이션 히어로 위) + 광고 배너
     private var initialContent: some View {
         ScrollView {
             VStack(spacing: .spacing16) {
-                FreeAnalysisBanner(
-                    remaining: CreditStore.shared.current?.remainingCount ?? 3
-                )
-
                 Button {
                     showReceiptRegister = true
                 } label: {
@@ -293,40 +300,25 @@ private struct HomeView: View {
                 RepairServiceCard()
             }
             .padding(.horizontal, .spacing20)
-            .padding(.top, .spacing12)
+            .padding(.top, .spacing16)
             .padding(.bottom, 92) // 플로팅 하단 바 높이만큼 여백
         }
     }
 }
 
-// MARK: - 영수증 등록하기 배너 (파란 배경 + 이미지 하단 중앙)
+// MARK: - 영수증 등록하기 배너 (신규 img_cta_banner 에셋 그대로 사용)
 
 private struct ReceiptRegisterCard: View {
     var body: some View {
-        Color.brandPrimary
-            .frame(maxWidth: .infinity, minHeight: 360)
-            .overlay(alignment: .bottom) {
-                Image("img_receipt_upload")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: .infinity)
-            }
-            .overlay(alignment: .topLeading) {
-                VStack(alignment: .leading, spacing: .spacing8) {
-                    Text("home.card.register.title")
-                        .font(.pretendard(.bold, size: 28))
-                        .foregroundStyle(Color.colorWhite)
-                        .lineSpacing(4)
-                    Text("home.card.register.desc")
-                        .font(.pretendard(.regular, size: 14))
-                        .foregroundStyle(Color.colorWhite)
-                        .lineSpacing(3)
-                }
-                .padding(.leading, .spacing20)
-                .padding(.top, 24)
-                .padding(.trailing, .spacing20)
-            }
-            .clipShape(RoundedRectangle(cornerRadius: .roundedXl))
+        Image("img_cta_banner")
+            .resizable()
+            .scaledToFit()
+            .frame(maxWidth: .infinity)
+            .clipShape(RoundedRectangle(cornerRadius: .rounded3xl))
+            .overlay(
+                RoundedRectangle(cornerRadius: .rounded3xl)
+                    .stroke(Color.colorWhite.opacity(0.6), lineWidth: 1)
+            )
     }
 }
 

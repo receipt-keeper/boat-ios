@@ -2548,6 +2548,16 @@
           }
         }
       }
+    },
+    "header.home_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boat Lab"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
