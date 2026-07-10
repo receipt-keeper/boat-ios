@@ -87,25 +87,24 @@ private struct BoatDialogModifier: ViewModifier {
     let onConfirm: () -> Void
 
     func body(content: Content) -> some View {
-        content.overlay {
-            if isPresented {
-                BoatDialogCard(
-                    title: title,
-                    message: message,
-                    confirmText: confirmText,
-                    confirmColor: confirmColor,
-                    cancelText: cancelText,
-                    cancelColor: cancelColor,
-                    onConfirm: {
-                        isPresented = false
-                        onConfirm()
-                    },
-                    onCancel: { isPresented = false }
-                )
-                .transition(.opacity)
-            }
+        // fullScreenCover(투명 배경)로 띄워 항상 최상위에 표시한다. 단순 .overlay로 두면
+        // 탭 콘텐츠 안에서는 MainTabView의 플로팅 하단 바 오버레이보다 뒤에 깔린다.
+        content.fullScreenCover(isPresented: $isPresented) {
+            BoatDialogCard(
+                title: title,
+                message: message,
+                confirmText: confirmText,
+                confirmColor: confirmColor,
+                cancelText: cancelText,
+                cancelColor: cancelColor,
+                onConfirm: {
+                    isPresented = false
+                    onConfirm()
+                },
+                onCancel: { isPresented = false }
+            )
+            .presentationBackground(.clear)
         }
-        .animation(.easeInOut(duration: 0.2), value: isPresented)
     }
 }
 

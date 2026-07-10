@@ -124,13 +124,12 @@ struct ReceiptListView: View {
                 }
             }
         }
-        // 케밥 → 수정/삭제 액션시트 (상세 화면과 동일한 패턴)
-        .overlay {
-            if let receipt = menuReceipt {
-                actionSheetOverlay(for: receipt)
-            }
+        // 케밥 → 수정/삭제 액션시트. fullScreenCover(투명 배경)로 띄워 항상 최상위에 표시
+        // (플로팅 하단 탭바보다 뒤에 깔리지 않도록).
+        .fullScreenCover(item: $menuReceipt) { receipt in
+            actionSheetOverlay(for: receipt)
+                .presentationBackground(.clear)
         }
-        .animation(.easeInOut(duration: 0.2), value: menuReceipt)
         // 삭제 확인 다이얼로그
         .boatDialog(
             isPresented: $showDeleteConfirm,
@@ -204,7 +203,6 @@ struct ReceiptListView: View {
             }
             .padding(.horizontal, .spacing16)
             .padding(.bottom, .spacing16)
-            .transition(.move(edge: .bottom).combined(with: .opacity))
         }
     }
 
