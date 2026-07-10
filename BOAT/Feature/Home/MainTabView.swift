@@ -136,11 +136,13 @@ struct MainTabView: View {
 
     private var fabButton: some View {
         Button {
-            showAddMenu = true
+            showAddMenu.toggle()
         } label: {
             Image("icPlus")
                 .renderingMode(.template)
                 .foregroundStyle(Color.gray900)
+                // 메뉴가 열리면 +가 45도 회전해 X 모양이 되고, 탭하면 닫힘(toggle)
+                .rotationEffect(.degrees(showAddMenu ? 45 : 0))
                 .frame(width: 62, height: 62) // pill 높이와 동일
                 .background(.ultraThinMaterial, in: Circle())
                 .overlay(
@@ -148,7 +150,7 @@ struct MainTabView: View {
                 )
                 .shadow(color: .black.opacity(0.12), radius: 16, y: 6)
         }
-        .accessibilityLabel(Text("receipt.add"))
+        .accessibilityLabel(Text(showAddMenu ? "detail.menu_close" : "receipt.add"))
     }
 }
 
@@ -167,6 +169,8 @@ private struct HomeView: View {
     @State private var expiringWarranties: [ExpiringWarranty] = []
     @State private var expiringTotalCount = 0
     @State private var recentReceipts: [RecentReceipt] = []
+    // 카드(만료 예정/최근 등록) 탭 → 영수증 상세
+    @State private var detailReceiptId: IdentifiedID?
 
     var body: some View {
         ZStack {
@@ -188,7 +192,9 @@ private struct HomeView: View {
                             // 만료예정 > → 목록 만료예정 탭 + 만료 임박순 정렬 자동 선택
                             onExpiringMore: { onOpenList(.expiring, .expiring) },
                             // 더보기 → 목록 전체 탭 + 최근 등록 순
-                            onRecentMore: { onOpenList(.all, .recent) }
+                            onRecentMore: { onOpenList(.all, .recent) },
+                            onExpiringTap: { detailReceiptId = IdentifiedID(id: $0.id) },
+                            onRecentTap: { detailReceiptId = IdentifiedID(id: $0.id) }
                         )
                     } else {
                         initialContent
@@ -203,17 +209,19 @@ private struct HomeView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        // 상단 그라데이션 히어로 배경(고정). 홈 화면이면 상태(초기/일반) 무관하게 동일 적용.
+        // 상단 그라데이션 히어로 배경(고정, 화면 전체 배경). 홈 화면이면 상태(초기/일반) 무관하게 동일 적용.
+        // Android 기준: 블루(#3E82F7) → 흰색 2-stop 그라데이션. 아래쪽은 순수 흰 배경이라야
+        // 최근 등록 카드(#F2F6FC)의 옅은 쿨블루가 배경과 구분돼 보인다(gray50과는 거의 구분 안 됨).
         .background(alignment: .top) {
             LinearGradient(
-                colors: [Color.brandSecondary, Color.brandPrimary, Color.brandPrimary.opacity(0)],
+                colors: [Color(hex: "#3E82F7"), Color.colorWhite],
                 startPoint: .top,
                 endPoint: .bottom
             )
             .frame(height: 560)
             .ignoresSafeArea(edges: .top)
         }
-        .background(Color.gray50)
+        .background(Color.colorWhite)
         .task {
             // 첫 홈 진입/재방문 시마다 초기 API 병렬 호출 — 모두 완료되면 로딩 해제
             async let credits: Void = { try? await CreditRepository.shared.fetchCredits() }()
@@ -225,9 +233,10 @@ private struct HomeView: View {
             let (_, _, expiringData, recentData) = await (credits, user, expiring, recent)
 
             expiringWarranties = expiringData?.receipts.prefix(5).map { $0.toExpiringWarranty() } ?? []
-            expiringTotalCount = expiringData?.pagination.totalCount ?? expiringWarranties.count
+            // "N건"은 표시되는 카드 수가 아니라 만료 예정 목록 API의 전체 totalCount를 그대로 따른다.
+            expiringTotalCount = expiringData?.totalCount ?? expiringWarranties.count
             recentReceipts = recentData?.receipts.prefix(5).map { $0.toRecentReceipt() } ?? []
-            hasAnyReceipts = (recentData?.pagination.totalCount ?? 0) > 0
+            hasAnyReceipts = (recentData?.totalCount ?? 0) > 0
 
             withAnimation(.easeOut(duration: 0.3)) {
                 isInitializing = false
@@ -238,6 +247,10 @@ private struct HomeView: View {
                 onBack: { showReceiptRegister = false },
                 onComplete: { showReceiptRegister = false }
             )
+        }
+        // 만료 예정/최근 등록 카드 탭 → 영수증 상세
+        .fullScreenCover(item: $detailReceiptId) { rid in
+            ReceiptDetailView(receiptId: rid.id, onBack: { detailReceiptId = nil })
         }
     }
 

@@ -17,6 +17,9 @@ struct HomeGeneralView: View {
     let recent: [RecentReceipt]
     var onExpiringMore: () -> Void = {}
     var onRecentMore: () -> Void = {}
+    /// 카드 탭 → 영수증 상세로 이동
+    var onExpiringTap: (ExpiringWarranty) -> Void = { _ in }
+    var onRecentTap: (RecentReceipt) -> Void = { _ in }
 
     private var displayedExpiringCount: Int { expiringTotalCount ?? expiring.count }
 
@@ -32,7 +35,8 @@ struct HomeGeneralView: View {
                 ExpiringWarrantySection(
                     expiring: expiring,
                     totalCount: displayedExpiringCount,
-                    onMore: onExpiringMore
+                    onMore: onExpiringMore,
+                    onTap: onExpiringTap
                 )
                 .padding(.horizontal, .spacing20)
             }
@@ -53,6 +57,8 @@ struct HomeGeneralView: View {
             VStack(spacing: .spacing12) {
                 ForEach(recent) { item in
                     RecentReceiptItem(item: item)
+                        .contentShape(Rectangle())
+                        .onTapGesture { onRecentTap(item) }
                 }
                 Spacer().frame(height: .spacing4)
                 moreButton
@@ -96,6 +102,7 @@ private struct ExpiringWarrantySection: View {
     let expiring: [ExpiringWarranty]
     let totalCount: Int
     var onMore: () -> Void = {}
+    var onTap: (ExpiringWarranty) -> Void = { _ in }
 
     @State private var visibleID: String?
 
@@ -183,6 +190,8 @@ private struct ExpiringWarrantySection: View {
                 ForEach(expiring) { item in
                     ExpiringWarrantyCard(item: item)
                         .frame(width: cardWidth)
+                        .contentShape(Rectangle())
+                        .onTapGesture { onTap(item) }
                         .id(item.id)
                 }
             }
@@ -229,6 +238,7 @@ private struct ExpiringWarrantyCard: View {
             }
         }
         .padding(.spacing16)
+        .frame(minHeight: 197)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
     }
 
