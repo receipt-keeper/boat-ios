@@ -1201,12 +1201,32 @@
         }
       }
     },
-    "mypage.analysis_remaining %lld": {
+    "mypage.analysis_remaining_count %lld": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "영수증 분석 %lld회 남음"
+            "value": "%lld회"
+          }
+        }
+      }
+    },
+    "mypage.analysis_remaining_post": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " 남음"
+          }
+        }
+      }
+    },
+    "mypage.analysis_remaining_pre": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 분석 "
           }
         }
       }
@@ -1317,6 +1337,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "지금 바로 영수증을 쉽고\n빠르게 등록해 보세요!"
+          }
+        }
+      }
+    },
+    "mypage.section.settings": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설정"
           }
         }
       }
@@ -2333,22 +2363,32 @@
         }
       }
     },
-    "receipt.token.later": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "다음에 할게요"
-          }
-        }
-      }
-    },
     "receipt.token.manual": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
             "value": "영수증 직접 입력하기"
+          }
+        }
+      }
+    },
+    "receipt.token.notice.body": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이벤트로 제공되는 무료 분석 5회는 지급일 기준 30일 이내에 사용해야 하며 기간이 지나면 자동으로 소멸됩니다."
+          }
+        }
+      }
+    },
+    "receipt.token.notice.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "확인해 주세요"
           }
         }
       }
@@ -2368,7 +2408,17 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "오픈 기념으로 무료 연장을 드려요."
+            "value": "오픈 기념으로 무료 연장해 드려요."
+          }
+        }
+      }
+    },
+    "receipt.token.subtitle_none": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증을 직접 입력하면 계속\n보증 기간을 관리할 수 있어요."
           }
         }
       }
@@ -2378,7 +2428,7 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "영수증 무료 분석\n횟수를 다 쓰셨네요!"
+            "value": "영수증 분석 횟수를 다 쓰셨네요!"
           }
         }
       }

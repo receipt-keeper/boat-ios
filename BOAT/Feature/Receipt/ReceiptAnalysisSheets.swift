@@ -19,63 +19,98 @@ enum AnalysisSheet: Identifiable {
 // MARK: - 토큰 소진 시트
 
 struct NoTokenSheet: View {
+    /// 무료 충전 프로모션 수령 가능 여부 — false면 충전 버튼/안내 박스 없이 직접 입력만 노출.
+    let canRecharge: Bool
     let onRecharge: () -> Void
     let onManualInput: () -> Void
-    let onLater: () -> Void
+    let onClose: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
+            closeButton
+
+            Spacer().frame(height: .spacing4)
             noTokenIcon
+                .frame(maxWidth: .infinity, alignment: canRecharge ? .leading : .center)
 
-            Spacer().frame(height: .spacing20)
+            Spacer().frame(height: .spacing16)
             Text("receipt.token.title")
-                .font(.pretendard(.bold, size: 22))
+                .font(.pretendard(.bold, size: 20))
                 .foregroundStyle(Color.gray900)
-                .multilineTextAlignment(.center)
-                .lineSpacing(6)
+                .multilineTextAlignment(canRecharge ? .leading : .center)
+                .frame(maxWidth: .infinity, alignment: canRecharge ? .leading : .center)
 
             Spacer().frame(height: .spacing8)
-            Text("receipt.token.subtitle")
-                .font(.pretendard(.regular, size: 14))
-                .foregroundStyle(Color.gray500)
-                .multilineTextAlignment(.center)
+            if canRecharge {
+                Text("receipt.token.subtitle")
+                    .font(.pretendard(.semibold, size: 14))
+                    .foregroundStyle(Color.brandPrimary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-            Spacer().frame(height: .spacing24)
-            primaryButton("receipt.token.recharge", action: onRecharge)
-
-            Spacer().frame(height: .spacing8)
-            outlinedButton("receipt.token.manual", action: onManualInput)
-
-            Spacer().frame(height: .spacing8)
-            Button(action: onLater) {
-                Text("receipt.token.later")
+                Spacer().frame(height: .spacing16)
+                noticeBox
+            } else {
+                Text("receipt.token.subtitle_none")
                     .font(.pretendard(.regular, size: 14))
                     .foregroundStyle(Color.gray500)
-                    .padding(.vertical, .spacing8)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(4)
             }
-            .buttonStyle(.plain)
+
+            Spacer().frame(height: .spacing24)
+            if canRecharge {
+                primaryButton("receipt.token.recharge", action: onRecharge)
+                Spacer().frame(height: .spacing8)
+                outlinedButton("receipt.token.manual", action: onManualInput)
+            } else {
+                primaryButton("receipt.token.manual", action: onManualInput)
+            }
         }
         .padding(.horizontal, .spacing20)
-        .padding(.top, .spacing24)
+        .padding(.top, .spacing8)
         .padding(.bottom, .spacing16)
         .frame(maxWidth: .infinity)
     }
 
-    // 큰 스파클 + 작은 스파클 조합 아이콘
-    private var noTokenIcon: some View {
-        ZStack(alignment: .bottomTrailing) {
-            Image("icSparkle")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 60, height: 60)
-                .offset(x: -10, y: -10)
-
-            Image("icSparkle")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 30, height: 30)
+    private var closeButton: some View {
+        HStack {
+            Spacer()
+            Button(action: onClose) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Color.gray900)
+                    .frame(width: 32, height: 32)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
         }
-        .frame(width: 80, height: 80)
+    }
+
+    // 반짝이는 스파클 GIF
+    private var noTokenIcon: some View {
+        GifImageView(name: "shiny_white")
+            .frame(width: 56, height: 56)
+    }
+
+    // 무료 분석 유효기간 안내 박스 (충전 가능 시에만 노출)
+    private var noticeBox: some View {
+        VStack(alignment: .leading, spacing: .spacing8) {
+            Text("receipt.token.notice.title")
+                .font(.pretendard(.semibold, size: 14))
+                .foregroundStyle(Color.gray900)
+
+            HStack(alignment: .top, spacing: .spacing4) {
+                Text("•")
+                Text("receipt.token.notice.body")
+            }
+            .font(.pretendard(.regular, size: 13))
+            .foregroundStyle(Color.gray600)
+            .lineSpacing(3)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.spacing16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.gray50, in: RoundedRectangle(cornerRadius: .roundedLg))
     }
 }
 
@@ -178,8 +213,13 @@ private func outlinedButton(_ label: LocalizedStringKey, action: @escaping () ->
 
 // MARK: - Preview
 
-#Preview("토큰 소진") {
-    NoTokenSheet(onRecharge: {}, onManualInput: {}, onLater: {})
+#Preview("토큰 소진 - 충전 가능") {
+    NoTokenSheet(canRecharge: true, onRecharge: {}, onManualInput: {}, onClose: {})
+        .background(Color.colorWhite)
+}
+
+#Preview("토큰 소진 - 충전 불가") {
+    NoTokenSheet(canRecharge: false, onRecharge: {}, onManualInput: {}, onClose: {})
         .background(Color.colorWhite)
 }
 

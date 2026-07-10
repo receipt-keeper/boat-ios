@@ -51,12 +51,12 @@ struct MyPageView: View {
                 .padding(.horizontal, .spacing20)
                 .padding(.bottom, .spacing20)
 
-            // 섹션 구분선
+            // 섹션 구분 — 두꺼운 회색 배경 갭
             Rectangle()
-                .fill(Color.gray200)
-                .frame(height: 1)
+                .fill(Color.gray100)
+                .frame(height: .spacing8)
 
-            sectionLabel("mypage.section.notification")
+            sectionLabel("mypage.section.settings")
             settingRow("mypage.section.notification") { showNotificationSettings = true }
 
             Rectangle()
@@ -162,9 +162,15 @@ struct MyPageView: View {
                 .scaledToFit()
                 .frame(width: 18, height: 18)
 
-            Text("mypage.analysis_remaining \(CreditStore.shared.current?.remainingCount ?? 3)")
-                .font(.pretendard(.semibold, size: 15))
-                .foregroundStyle(Color.gray900)
+            (
+                Text("mypage.analysis_remaining_pre")
+                    .foregroundStyle(Color.gray900)
+                + Text("mypage.analysis_remaining_count \(CreditStore.shared.current?.remainingCount ?? 3)")
+                    .foregroundStyle(Color.brandPrimary)
+                + Text("mypage.analysis_remaining_post")
+                    .foregroundStyle(Color.gray900)
+            )
+            .font(.pretendard(.semibold, size: 15))
 
             Spacer(minLength: .spacing8)
 

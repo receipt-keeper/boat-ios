@@ -46,8 +46,10 @@ struct ReceiptRegisterView: View {
     @State private var isRecharging = false
     // OCR 실패 시 썸네일 실패 오버레이 표시
     @State private var analyzeFailed = false
-    // 유의사항 접이식 섹션
-    @State private var noticeExpanded = false
+    // 토큰 소진 시트 노출 직전 조회한 충전 프로모션 — redeemable이어야 충전 버튼 노출
+    @State private var pendingPromo: Promotion?
+    // 유의사항 접이식 섹션 — 진입 시 기본 펼침 상태
+    @State private var noticeExpanded = true
     // 상단 검색/알림 아이콘
     @State private var showSearch = false
     @State private var showNotifications = false
@@ -141,15 +143,17 @@ struct ReceiptRegisterView: View {
             Group {
                 switch sheet {
                 case .noToken:
+                    let canRecharge = pendingPromo?.state == .redeemable
                     NoTokenSheet(
+                        canRecharge: canRecharge,
                         onRecharge: {
                             activeSheet = nil
                             Task { await recharge() }
                         },
                         onManualInput: { openManualInput() },
-                        onLater: { activeSheet = nil }
+                        onClose: { activeSheet = nil }
                     )
-                    .presentationDetents([.height(440)])
+                    .presentationDetents([.height(canRecharge ? 480 : 340)])
                 case .failed:
                     AnalysisFailedSheet(
                         onManualInput: { openManualInput() },
@@ -581,6 +585,12 @@ struct ReceiptRegisterView: View {
         isUsageLoading = false
     }
 
+    /// 토큰 소진 시트 노출 전 프로모션 상태를 미리 조회 — redeemable일 때만 충전 버튼을 보여준다.
+    private func presentNoTokenSheet() async {
+        pendingPromo = try? await PromotionRepository.shared.fetchOcrRecharge()
+        activeSheet = .noToken
+    }
+
     /// 토큰 소진 시트 "N회 무료로 충전하기" — 월간 충전 프로모션 조회 후 수령 가능하면 크레딧 수령.
     /// 수령 성공 시 응답 balance로 잔여 크레딧을 즉시 반영하고, 이용 가능 여부(canAnalyze)를 재확인한다.
     private func recharge() async {
@@ -629,7 +639,7 @@ struct ReceiptRegisterView: View {
 
         // 2) 서버 canAnalyze + 로컬 토큰 AND 조건
         guard serverCanAnalyze && remainingTokens > 0 else {
-            activeSheet = .noToken
+            Task { await presentNoTokenSheet() }
             return
         }
 

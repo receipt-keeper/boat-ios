@@ -28,10 +28,8 @@ struct ReceiptPromoSheet: View {
 
             Spacer().frame(height: .spacing8)
 
-            Image("icSparkle")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 36, height: 36)
+            GifImageView(name: "shiny_white")
+                .frame(width: 44, height: 44)
 
             Spacer().frame(height: .spacing16)
 
