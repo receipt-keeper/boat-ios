@@ -10,6 +10,8 @@ import SwiftUI
 
 struct AuthenticatedImage: View {
     let contentPath: String
+    /// 썸네일(꽉 채우기)은 .fill, 이미지 뷰어(전체 보기)는 .fit.
+    var contentMode: ContentMode = .fill
 
     @State private var image: UIImage?
     @State private var failed = false
@@ -21,7 +23,7 @@ struct AuthenticatedImage: View {
             if let image {
                 Image(uiImage: image)
                     .resizable()
-                    .scaledToFill()
+                    .aspectRatio(contentMode: contentMode)
             } else if failed {
                 Image(systemName: "photo")
                     .font(.system(size: 22))

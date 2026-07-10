@@ -55,6 +55,9 @@ struct ReceiptRegisterView: View {
     // 상단 검색/알림 아이콘
     @State private var showSearch = false
     @State private var showNotifications = false
+    // 썸네일 탭 → 전체화면 이미지 뷰어
+    @State private var showViewer = false
+    @State private var viewerIndex = 0
 
     private var canAddMore: Bool { images.count < Self.maxPhotos }
     private var remainingSlots: Int { max(0, Self.maxPhotos - images.count) }
@@ -188,6 +191,14 @@ struct ReceiptRegisterView: View {
         }
         .fullScreenCover(isPresented: $showNotifications) {
             NotificationListView(onBack: { showNotifications = false })
+        }
+        // 썸네일 탭 → 전체화면 이미지 뷰어
+        .fullScreenCover(isPresented: $showViewer) {
+            ImageViewerScreen(
+                items: images.map { .local($0) },
+                initialIndex: viewerIndex,
+                onClose: { showViewer = false }
+            )
         }
         .boatToastHost(toast)
         .boatDialog(
@@ -472,6 +483,11 @@ struct ReceiptRegisterView: View {
             .scaledToFill()
             .frame(width: 100, height: 100)
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
+            .contentShape(RoundedRectangle(cornerRadius: .roundedLg))
+            .onTapGesture {
+                viewerIndex = index
+                showViewer = true
+            }
             .overlay {
                 if analyzeFailed {
                     failOverlay

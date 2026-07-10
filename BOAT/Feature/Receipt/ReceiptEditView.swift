@@ -6,7 +6,8 @@
 //  - 카테고리: 대분류 드롭다운 + 소분류 칩 (ReceiptManualInputView와 동일 패턴)
 //  - 제품명/구매일/무상 AS 만료기간/메모: 글자 수 제한 초과 시 에러 테두리+안내문 (자르지 않음)
 //  - 실물 영수증 보관 여부: 라디오 / 보증 정보: 브랜드·가격·시리얼(도움말 아이콘)
-//  - 원본 영수증: 추가하기 탭 시 네이티브 액션시트(카메라로 촬영하기/갤러리에서 불러오기/닫기)
+//  - 원본 영수증: 추가하기 탭 시 PhotoSourceSheet(카메라로 촬영하기/갤러리에서 불러오기/닫기),
+//    썸네일 탭 시 ImageViewerScreen(기존 첨부는 contentPath로 실제 이미지 로드)
 //  - 수정 완료: 신규 이미지만 업로드 → 유지할 기존 fileId와 합쳐 PATCH /api/v1/receipts/{id}
 //    (첨부 이미지는 1장 이상 5장 이하 유지)
 //
@@ -55,8 +56,8 @@ struct ReceiptEditView: View {
     @State private var price: String
     @State private var serial: String
 
-    // 원본 영수증 — 기존 첨부(플레이스홀더, 파일 서빙 URL 미확정) + 신규 추가(UIImage)
-    @State private var existingFileIds: [String]
+    // 원본 영수증 — 기존 첨부(contentPath로 실제 이미지 로드) + 신규 추가(UIImage)
+    @State private var existingFiles: [ReceiptFile]
     @State private var newImages: [UIImage] = []
     @State private var galleryItems: [PhotosPickerItem] = []
     @State private var showAddMenu = false
@@ -64,6 +65,9 @@ struct ReceiptEditView: View {
     @State private var showGalleryPicker = false
     @State private var cameraUnavailable = false
     @State private var showCameraDenied = false
+    // 썸네일 탭 → 전체화면 이미지 뷰어
+    @State private var showViewer = false
+    @State private var viewerIndex = 0
 
     @State private var isSubmitting = false
     @State private var toast = BoatToastState()
@@ -85,7 +89,7 @@ struct ReceiptEditView: View {
         _price = State(initialValue: receipt.totalAmount.map { "\($0)" } ?? "")
         _memo = State(initialValue: receipt.memo ?? "")
         _physicalReceipt = State(initialValue: receipt.requiresPhysicalReceipt)
-        _existingFileIds = State(initialValue: receipt.receiptFileIds ?? [])
+        _existingFiles = State(initialValue: receipt.receiptFiles ?? [])
 
         if let dateStr = receipt.paymentDate {
             let parts = dateStr.split(separator: "-").map(String.init)
@@ -116,11 +120,15 @@ struct ReceiptEditView: View {
 
     // MARK: - Computed
 
-    private var totalFileCount: Int { existingFileIds.count + newImages.count }
+    private var totalFileCount: Int { existingFiles.count + newImages.count }
     private var canAddMore: Bool { totalFileCount < Self.maxPhotos }
     private var remainingSlots: Int { max(0, Self.maxPhotos - totalFileCount) }
     /// 첨부 이미지는 수정 후에도 최소 1장 이상 유지해야 한다 (서버 스펙).
     private var canRemoveImages: Bool { totalFileCount > Self.minPhotos }
+    /// 이미지 뷰어용 전체 목록 — 화면에 보이는 순서(기존 첨부 → 신규 첨부)와 동일해야 인덱스가 맞는다.
+    private var viewerItems: [ImageViewerItem] {
+        existingFiles.map { .remote($0) } + newImages.map { .local($0) }
+    }
 
     private var totalWarrantyMonths: Int? {
         switch selectedWarranty {
@@ -222,11 +230,16 @@ struct ReceiptEditView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .animation(.easeOut(duration: 0.2), value: isSubmitting)
-        // 원본 영수증 추가하기 → 네이티브 액션시트 (카메라로 촬영하기 / 갤러리에서 불러오기 / 닫기)
-        .confirmationDialog("", isPresented: $showAddMenu, titleVisibility: .hidden) {
-            Button("receipt.register.camera") { openCamera() }
-            Button("receipt.register.gallery") { showGalleryPicker = true }
-            Button("detail.menu_close", role: .cancel) {}
+        .animation(.easeInOut(duration: 0.2), value: showAddMenu)
+        // 원본 영수증 추가하기 → 화면 하단 전체 폭 액션 시트 (카메라로 촬영하기 / 갤러리에서 불러오기 / 닫기)
+        .overlay {
+            if showAddMenu {
+                PhotoSourceSheet(
+                    onCamera: { showAddMenu = false; openCamera() },
+                    onGallery: { showAddMenu = false; showGalleryPicker = true },
+                    onDismiss: { showAddMenu = false }
+                )
+            }
         }
         .onChange(of: galleryItems) { _, items in loadGalleryImages(items) }
         .photosPicker(
@@ -238,6 +251,14 @@ struct ReceiptEditView: View {
         .fullScreenCover(isPresented: $showCamera) {
             CameraPicker { image in newImages.append(image) }
                 .ignoresSafeArea()
+        }
+        // 썸네일 탭 → 전체화면 이미지 뷰어 (기존 첨부 + 신규 첨부 순서 그대로)
+        .fullScreenCover(isPresented: $showViewer) {
+            ImageViewerScreen(
+                items: viewerItems,
+                initialIndex: viewerIndex,
+                onClose: { showViewer = false }
+            )
         }
         .sheet(isPresented: $showDatePicker) {
             PurchaseDatePickerSheet(
@@ -620,8 +641,8 @@ struct ReceiptEditView: View {
                     if canAddMore {
                         addTile
                     }
-                    ForEach(Array(existingFileIds.enumerated()), id: \.offset) { index, _ in
-                        existingFilePlaceholder(index: index)
+                    ForEach(Array(existingFiles.enumerated()), id: \.element.fileId) { index, file in
+                        existingFileThumbnail(file, index: index)
                     }
                     ForEach(Array(newImages.enumerated()), id: \.offset) { index, image in
                         imageThumbnail(image, index: index)
@@ -661,16 +682,18 @@ struct ReceiptEditView: View {
         .buttonStyle(.plain)
     }
 
-    // TODO: 파일 서빙 URL 계약 확정 시 실제 이미지 로드로 교체. 기존 첨부는 개별 삭제 API가 없어
-    // X는 로컬 편집 목록에서만 제거한다(수정 완료 API 연동 시 최종 반영 방식 결정 필요).
-    private func existingFilePlaceholder(index: Int) -> some View {
+    // 기존 첨부 — contentPath로 실제 이미지를 로드(AuthenticatedImage). X는 개별 삭제 API가 없어
+    // 로컬 편집 목록에서만 제거한다(수정 완료 시 최종 remainingFileIds에 반영).
+    private func existingFileThumbnail(_ file: ReceiptFile, index: Int) -> some View {
         RoundedRectangle(cornerRadius: .roundedLg)
             .fill(Color.gray100)
             .frame(width: 100, height: 100)
-            .overlay {
-                Image(systemName: "photo")
-                    .font(.system(size: 28))
-                    .foregroundStyle(Color.gray400)
+            .overlay { AuthenticatedImage(contentPath: file.contentPath) }
+            .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
+            .contentShape(RoundedRectangle(cornerRadius: .roundedLg))
+            .onTapGesture {
+                viewerIndex = index
+                showViewer = true
             }
             .overlay(alignment: .topTrailing) {
                 Button {
@@ -693,6 +716,11 @@ struct ReceiptEditView: View {
             .scaledToFill()
             .frame(width: 100, height: 100)
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
+            .contentShape(RoundedRectangle(cornerRadius: .roundedLg))
+            .onTapGesture {
+                viewerIndex = existingFiles.count + index
+                showViewer = true
+            }
             .overlay(alignment: .topTrailing) {
                 Button {
                     guard canRemoveImages else { return }
@@ -850,7 +878,7 @@ struct ReceiptEditView: View {
 
     private func removeExistingFile(at index: Int) {
         guard canRemoveImages else { return }
-        existingFileIds.remove(at: index)
+        existingFiles.remove(at: index)
     }
 
     /// 영수증 수정: 신규 이미지 업로드 → 유지할 기존 fileId와 합쳐 PATCH → 상세로 복귀.
@@ -871,7 +899,7 @@ struct ReceiptEditView: View {
             requiresPhysicalReceipt: physicalReceipt ?? false
         )
         let imagesToUpload = newImages
-        let remaining = existingFileIds
+        let remaining = existingFiles.map(\.fileId)
 
         Task {
             isSubmitting = true

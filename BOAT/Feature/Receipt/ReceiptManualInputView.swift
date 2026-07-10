@@ -4,7 +4,7 @@
 //
 //  영수증 직접 입력 화면. OCR 성공 시 분석 결과 프리필, 직접 입력 시 빈 폼으로 진입.
 //  Android ReceiptManualInputScreen 대응. 디자인 확정본 반영:
-//  - 등록된 이미지 확인: 추가하기 타일(+ 카메라/갤러리 메뉴 오버레이) + 썸네일(삭제)
+//  - 등록된 이미지 확인: 추가하기 타일(PhotoSourceSheet) + 썸네일(탭=뷰어, 삭제)
 //  - 카테고리: 대분류 드롭다운 + 소분류 칩(지정 순서)
 //  - 제품 정보 / 보증 정보: 접이식 섹션
 //  - 실물 영수증 보관 여부: 라디오(필요함 / 필요하지 않음)
@@ -70,6 +70,9 @@ struct ReceiptManualInputView: View {
     @State private var toast = BoatToastState()
     // 뒤로가기 시 작성 중인 내용 이탈 확인 (OCR 결과 기반 진입 시 문구 다름)
     @State private var showExitConfirm = false
+    // 썸네일 탭 → 전체화면 이미지 뷰어
+    @State private var showViewer = false
+    @State private var viewerIndex = 0
 
     init(images: [UIImage], ocrResult: OcrAnalysis? = nil, onBack: @escaping () -> Void, onComplete: @escaping () -> Void = {}) {
         _images = State(initialValue: images)
@@ -197,23 +200,14 @@ struct ReceiptManualInputView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .animation(.easeOut(duration: 0.2), value: isSubmitting)
         .animation(.easeInOut(duration: 0.2), value: showAddMenu)
-        // 추가하기 타일 아래로 카메라/갤러리 메뉴 오버레이 (메인 FAB 메뉴와 동일)
-        .overlayPreferenceValue(AddTileAnchorKey.self) { anchor in
-            if showAddMenu, let anchor {
-                GeometryReader { proxy in
-                    let rect = proxy[anchor]
-                    ZStack(alignment: .topLeading) {
-                        Color.black.opacity(0.35)
-                            .ignoresSafeArea()
-                            .onTapGesture { showAddMenu = false }
-                        ReceiptAddMenuCard(
-                            onCamera: { showAddMenu = false; openCamera() },
-                            onGallery: { showAddMenu = false; showGalleryPicker = true }
-                        )
-                        .fixedSize()
-                        .offset(x: rect.minX, y: rect.maxY + 8)
-                    }
-                }
+        // 추가하기 → 화면 하단 전체 폭 액션 시트 (카메라로 촬영하기 / 갤러리에서 불러오기 / 닫기)
+        .overlay {
+            if showAddMenu {
+                PhotoSourceSheet(
+                    onCamera: { showAddMenu = false; openCamera() },
+                    onGallery: { showAddMenu = false; showGalleryPicker = true },
+                    onDismiss: { showAddMenu = false }
+                )
             }
         }
         .onChange(of: galleryItems) { _, items in loadGalleryImages(items) }
@@ -226,6 +220,14 @@ struct ReceiptManualInputView: View {
         .fullScreenCover(isPresented: $showCamera) {
             CameraPicker { image in addImages([image]) }
                 .ignoresSafeArea()
+        }
+        // 썸네일 탭 → 전체화면 이미지 뷰어
+        .fullScreenCover(isPresented: $showViewer) {
+            ImageViewerScreen(
+                items: images.map { .local($0) },
+                initialIndex: viewerIndex,
+                onClose: { showViewer = false }
+            )
         }
         .sheet(isPresented: $showDatePicker) {
             PurchaseDatePickerSheet(
@@ -319,7 +321,6 @@ struct ReceiptManualInputView: View {
             )
         }
         .buttonStyle(.plain)
-        .anchorPreference(key: AddTileAnchorKey.self, value: .bounds) { $0 }
     }
 
     private func imageThumbnail(_ image: UIImage, index: Int) -> some View {
@@ -328,6 +329,11 @@ struct ReceiptManualInputView: View {
             .scaledToFill()
             .frame(width: 100, height: 100)
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
+            .contentShape(RoundedRectangle(cornerRadius: .roundedLg))
+            .onTapGesture {
+                viewerIndex = index
+                showViewer = true
+            }
             .overlay(alignment: .topTrailing) {
                 Button {
                     images.remove(at: index)
@@ -874,14 +880,6 @@ struct ReceiptManualInputView: View {
     }
 }
 
-// MARK: - 추가하기 타일 위치 앵커
-
-private struct AddTileAnchorKey: PreferenceKey {
-    static let defaultValue: Anchor<CGRect>? = nil
-    static func reduce(value: inout Anchor<CGRect>?, nextValue: () -> Anchor<CGRect>?) {
-        value = value ?? nextValue()
-    }
-}
 
 // MARK: - 구매일 DatePicker 시트
 

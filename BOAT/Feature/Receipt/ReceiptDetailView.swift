@@ -27,6 +27,9 @@ struct ReceiptDetailView: View {
     @State private var showDeleteConfirm = false
     @State private var isDeleting = false
     @State private var showEditView = false
+    // 원본 영수증 썸네일 탭 → 전체화면 이미지 뷰어
+    @State private var showViewer = false
+    @State private var viewerIndex = 0
 
     var body: some View {
         VStack(spacing: 0) {
@@ -349,10 +352,21 @@ struct ReceiptDetailView: View {
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: .spacing12) {
-                        ForEach(files, id: \.fileId) { file in
+                        ForEach(Array(files.enumerated()), id: \.element.fileId) { index, file in
                             receiptFileBox(file)
+                                .onTapGesture {
+                                    viewerIndex = index
+                                    showViewer = true
+                                }
                         }
                     }
+                }
+                .fullScreenCover(isPresented: $showViewer) {
+                    ImageViewerScreen(
+                        items: files.map { .remote($0) },
+                        initialIndex: viewerIndex,
+                        onClose: { showViewer = false }
+                    )
                 }
             }
         }
@@ -364,6 +378,7 @@ struct ReceiptDetailView: View {
             .frame(width: 104, height: 104)
             .overlay { AuthenticatedImage(contentPath: file.contentPath) }
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
+            .contentShape(RoundedRectangle(cornerRadius: .roundedLg))
             .overlay(
                 RoundedRectangle(cornerRadius: .roundedLg)
                     .stroke(Color.gray200, lineWidth: 1)
