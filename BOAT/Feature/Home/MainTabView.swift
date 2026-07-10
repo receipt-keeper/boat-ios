@@ -297,7 +297,7 @@ private struct HomeView: View {
                 }
                 .buttonStyle(.plain)
 
-                RepairServiceCard()
+                AccessoryBanner()
             }
             .padding(.horizontal, .spacing20)
             .padding(.top, .spacing16)
@@ -319,38 +319,6 @@ private struct ReceiptRegisterCard: View {
                 RoundedRectangle(cornerRadius: .rounded3xl)
                     .stroke(Color.colorWhite.opacity(0.6), lineWidth: 1)
             )
-    }
-}
-
-// MARK: - 가전제품 AS 광고 배너 (흰 배경 + 이미지)
-
-private struct RepairServiceCard: View {
-    var body: some View {
-        HStack(alignment: .center, spacing: 0) {
-            VStack(alignment: .leading, spacing: 6) {
-                Text("home.card.popular.title")
-                    .font(.pretendard(.bold, size: 16))
-                    .foregroundStyle(Color.brandPrimary)
-                    .lineLimit(1)
-                Text("home.card.popular.desc")
-                    .font(.pretendard(.regular, size: 13))
-                    .foregroundStyle(Color.gray500)
-                    .lineSpacing(2.5)
-            }
-            Spacer(minLength: .spacing16)
-            Image("img_banner_repair_service")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 88, height: 88)
-        }
-        .padding(.horizontal, .spacing20)
-        .padding(.vertical, .spacing20)
-        .frame(maxWidth: .infinity, minHeight: 120)
-        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedXl))
-        .overlay(
-            RoundedRectangle(cornerRadius: .roundedXl)
-                .strokeBorder(Color.brandTertiary, lineWidth: 1)
-        )
     }
 }
 

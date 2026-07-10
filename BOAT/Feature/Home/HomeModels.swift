@@ -11,9 +11,10 @@ import Foundation
 struct ExpiringWarranty: Identifiable {
     let id: String
     let productName: String
-    let vendor: String
+    let brand: String
     let purchaseDate: String
-    let warrantyUntil: String
+    /// "MM월 dd일(요일)" — "home.warranty_end"("%@ 보증종료")과 함께 쓴다.
+    let expiryLabel: String
     let dDay: Int
     var localImageName: String? = nil
 }
@@ -35,9 +36,9 @@ extension Receipt {
         ExpiringWarranty(
             id: receiptId,
             productName: itemName,
-            vendor: Self.nonBlank(brandName) ?? "-",
+            brand: Self.nonBlank(brandName) ?? "-",
             purchaseDate: Self.dotDate(paymentDate),
-            warrantyUntil: "~" + Self.dotDate(expiresOn),
+            expiryLabel: Self.expiryLabel(expiresOn),
             dDay: warrantyDDay ?? 0,
             localImageName: deviceImageName
         )
@@ -65,6 +66,19 @@ extension Receipt {
         return ymd.replacingOccurrences(of: "-", with: ".")
     }
 
+    /// "yyyy-MM-dd" → "MM월 dd일(요일)" (없거나 파싱 실패 시 "-")
+    private static func expiryLabel(_ ymd: String?) -> String {
+        guard let ymd, !ymd.isEmpty else { return "-" }
+        let parser = DateFormatter()
+        parser.locale = Locale(identifier: "ko_KR")
+        parser.dateFormat = "yyyy-MM-dd"
+        guard let date = parser.date(from: ymd) else { return "-" }
+        let out = DateFormatter()
+        out.locale = Locale(identifier: "ko_KR")
+        out.dateFormat = "MM월 dd일(E)"
+        return out.string(from: date)
+    }
+
     /// ISO8601 registeredAt → 오늘까지 경과일 (파싱 실패 시 0)
     private static func daysAgo(_ iso: String?) -> Int {
         guard let iso else { return 0 }
@@ -84,9 +98,9 @@ extension Receipt {
 
 enum HomeMock {
     static let expiringWarranties: [ExpiringWarranty] = [
-        ExpiringWarranty(id: "1", productName: "MacBook Pro 16", vendor: "Apple", purchaseDate: "2025.03.13", warrantyUntil: "~2033.04.40", dDay: 20, localImageName: "img_laptop"),
-        ExpiringWarranty(id: "2", productName: "LG 그램 17", vendor: "LG전자", purchaseDate: "2024.11.02", warrantyUntil: "~2026.11.01", dDay: 25, localImageName: "img_laptop"),
-        ExpiringWarranty(id: "3", productName: "삼성 비스포크 냉장고", vendor: "삼성전자", purchaseDate: "2023.07.21", warrantyUntil: "~2025.07.20", dDay: 28, localImageName: "img_refridgerator"),
+        ExpiringWarranty(id: "1", productName: "MacBook Pro 16", brand: "Apple", purchaseDate: "2025.03.13", expiryLabel: "03월 23일(월)", dDay: 19, localImageName: "img_laptop"),
+        ExpiringWarranty(id: "2", productName: "LG 그램 17", brand: "LG전자", purchaseDate: "2024.11.02", expiryLabel: "11월 01일(토)", dDay: 25, localImageName: "img_laptop"),
+        ExpiringWarranty(id: "3", productName: "삼성 비스포크 냉장고", brand: "삼성전자", purchaseDate: "2023.07.21", expiryLabel: "07월 20일(일)", dDay: 28, localImageName: "img_refridgerator"),
     ]
 
     static let recentReceipts: [RecentReceipt] = [

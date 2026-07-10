@@ -7,12 +7,12 @@
     "!": {},
     "[TEST] 푸시": {},
     "%lld": {},
-    "%lld / %lld": {
+    "%lld/%lld": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "new",
-            "value": "%1$lld / %2$lld"
+            "value": "%1$lld/%2$lld"
           }
         }
       }
@@ -62,7 +62,38 @@
         }
       }
     },
+    "detail.delete_confirm_message": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "관련 정보도 함께 사라지며\n삭제된 데이터는 복구되지 않아요"
+          }
+        }
+      }
+    },
+    "detail.delete_confirm_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 영수증을 삭제할까요?"
+          }
+        }
+      }
+    },
+    "detail.deleted_toast": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증이 삭제되었습니다."
+          }
+        }
+      }
+    },
     "detail.edit": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -102,6 +133,36 @@
         }
       }
     },
+    "detail.menu_close": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "닫기"
+          }
+        }
+      }
+    },
+    "detail.menu_delete": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "삭제하기"
+          }
+        }
+      }
+    },
+    "detail.menu_edit": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "수정하기"
+          }
+        }
+      }
+    },
     "detail.original_receipt": {
       "localizations": {
         "ko": {
@@ -112,7 +173,18 @@
         }
       }
     },
+    "detail.physical_no": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "필요없음"
+          }
+        }
+      }
+    },
     "detail.physical_receipt_desc": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -123,6 +195,7 @@
       }
     },
     "detail.physical_receipt_title": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -178,6 +251,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "공식 AS 센터에서 접수하기"
+          }
+        }
+      }
+    },
+    "detail.updated_toast": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 정보가 수정되었습니다."
           }
         }
       }
@@ -365,6 +448,16 @@
         }
       }
     },
+    "header.home_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boat Lab"
+          }
+        }
+      }
+    },
     "header.logo": {
       "localizations": {
         "ko": {
@@ -401,7 +494,7 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "전국 출장 수리와\n보증 혜택을 한눈에 확인하세요."
+            "value": "교체가 필요한 소모품과\n액세서리를 특가로 만나보세요."
           }
         }
       }
@@ -411,12 +504,13 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "가전제품 AS가 필요할 때!"
+            "value": "가전제품 필수 아이템!"
           }
         }
       }
     },
     "home.card.register.desc": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -427,6 +521,7 @@
       }
     },
     "home.card.register.title": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -681,7 +776,18 @@
         }
       }
     },
+    "manual.add_image": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "추가하기"
+          }
+        }
+      }
+    },
     "manual.as_guide": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -692,6 +798,7 @@
       }
     },
     "manual.as_keep_receipt": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -702,6 +809,7 @@
       }
     },
     "manual.as_section": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -731,6 +839,47 @@
         }
       }
     },
+    "manual.category": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "카테고리"
+          }
+        }
+      }
+    },
+    "manual.edit_pending": {
+      "extractionState": "stale",
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "수정 기능은 아직 연동 준비 중입니다."
+          }
+        }
+      }
+    },
+    "manual.edit_submit": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "수정 완료"
+          }
+        }
+      }
+    },
+    "manual.edit_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 수정"
+          }
+        }
+      }
+    },
     "manual.image_add": {
       "extractionState": "stale",
       "localizations": {
@@ -748,6 +897,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "등록된 이미지 확인"
+          }
+        }
+      }
+    },
+    "manual.max_length_error %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최대 %lld자까지 입력할 수 있습니다."
           }
         }
       }
@@ -778,6 +937,56 @@
           "stringUnit": {
             "state": "translated",
             "value": "기기 관련 특이사항을 입력하세요."
+          }
+        }
+      }
+    },
+    "manual.min_image_hint": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최소 1장의 이미지가 필요합니다."
+          }
+        }
+      }
+    },
+    "manual.physical_help": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제조사 정책에 따라 수리 시 실물 영수증이 필요할 수 있으니, 확인 후 보관 여부를 선택해 주세요."
+          }
+        }
+      }
+    },
+    "manual.physical_no": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "필요하지 않음"
+          }
+        }
+      }
+    },
+    "manual.physical_section": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "실물 영수증 보관 여부"
+          }
+        }
+      }
+    },
+    "manual.physical_yes": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "필요함"
           }
         }
       }
@@ -822,6 +1031,16 @@
         }
       }
     },
+    "manual.product_section": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제품 정보"
+          }
+        }
+      }
+    },
     "manual.purchase_date": {
       "localizations": {
         "ko": {
@@ -852,6 +1071,16 @@
         }
       }
     },
+    "manual.serial_help": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제품에 따라 일련번호는 '시리얼 번호', '제조번호' 등 다양한 이름으로 표기될 수 있습니다."
+          }
+        }
+      }
+    },
     "manual.serial_hint": {
       "localizations": {
         "ko": {
@@ -868,6 +1097,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "영수증 정보 등록하기"
+          }
+        }
+      }
+    },
+    "manual.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 직접 입력"
+          }
+        }
+      }
+    },
+    "manual.title_ocr": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 입력"
           }
         }
       }
@@ -952,6 +1201,26 @@
         }
       }
     },
+    "mypage.analysis_remaining %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 분석 %lld회 남음"
+          }
+        }
+      }
+    },
+    "mypage.analysis_view": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보기"
+          }
+        }
+      }
+    },
     "mypage.email_placeholder": {
       "localizations": {
         "ko": {
@@ -998,6 +1267,56 @@
           "stringUnit": {
             "state": "translated",
             "value": "이름"
+          }
+        }
+      }
+    },
+    "mypage.promo.event_bullet1": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "무료 분석 5회를 제공해 드리고 있습니다. 지급일 기준 30일 이내에 사용해야 하며, 기간이 지나면 자동으로 소멸됩니다."
+          }
+        }
+      }
+    },
+    "mypage.promo.event_bullet2": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이미 지급받은 경우에는 추가 지급되지 않으며, 별도 공지가 없는 경우 매월 1일 무료 분석 5회가 지급될 예정입니다."
+          }
+        }
+      }
+    },
+    "mypage.promo.event_title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오픈 이벤트 안내"
+          }
+        }
+      }
+    },
+    "mypage.promo.register": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지금 영수증 등록하기"
+          }
+        }
+      }
+    },
+    "mypage.promo.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지금 바로 영수증을 쉽고\n빠르게 등록해 보세요!"
           }
         }
       }
@@ -1108,6 +1427,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "알림"
+          }
+        }
+      }
+    },
+    "notif.time.days_ago %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld일 전"
+          }
+        }
+      }
+    },
+    "notif.time.hours_ago %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld시간 전"
+          }
+        }
+      }
+    },
+    "notif.time.just_now": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "방금 전"
+          }
+        }
+      }
+    },
+    "notif.time.minutes_ago %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld분 전"
           }
         }
       }
@@ -1472,12 +1831,72 @@
         }
       }
     },
+    "receipt.complete.go_home": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "홈으로 가기"
+          }
+        }
+      }
+    },
+    "receipt.complete.subtitle": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지금 등록한 영수증을 바로 확인해 볼까요?"
+          }
+        }
+      }
+    },
+    "receipt.complete.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 등록을 완료했어요!"
+          }
+        }
+      }
+    },
+    "receipt.complete.view": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보러가기"
+          }
+        }
+      }
+    },
     "receipt.delete.fail": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
             "value": "영수증 삭제에 실패했어요. 잠시 후 다시 시도해 주세요."
+          }
+        }
+      }
+    },
+    "receipt.edit.fail": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 수정에 실패했어요. 잠시 후 다시 시도해 주세요."
+          }
+        }
+      }
+    },
+    "receipt.edit.loading": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증을 수정하고 있어요."
           }
         }
       }
@@ -1623,11 +2042,132 @@
       }
     },
     "receipt.menu.delete": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
             "value": "삭제하기"
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet1_highlight": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제품 1개당 최대 5장까지"
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet1_post": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " 업로드할 수 있습니다."
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet1_pre": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증은 "
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet2_highlight": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1장씩 개별 촬영하여"
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet2_post": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " 업로드해 주세요."
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet2_pre": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증은 "
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet3_highlight": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "JPG, PNG, HEIC"
+          }
+        }
+      }
+    },
+    "receipt.notice.bullet3_post": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "만 등록해 주세요."
+          }
+        }
+      }
+    },
+    "receipt.notice.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "유의사항"
+          }
+        }
+      }
+    },
+    "receipt.recharge.already": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이번 달 무료 충전은 이미 받으셨어요."
+          }
+        }
+      }
+    },
+    "receipt.recharge.unavailable": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지금은 충전할 수 있는 혜택이 없어요."
+          }
+        }
+      }
+    },
+    "receipt.register.analysis_count %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "분석횟수 %lld회"
           }
         }
       }
@@ -1638,6 +2178,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "영수증 분석 시작하기"
+          }
+        }
+      }
+    },
+    "receipt.register.attachments": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 첨부내역"
           }
         }
       }
@@ -1703,6 +2253,7 @@
       }
     },
     "receipt.register.uploaded": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -2009,552 +2560,39 @@
     "등록된 모든 디바이스로 즉시 발송됩니다.": {},
     "등록된 영수증이 ": {},
     "로컬 서버": {},
-    "무상 AS 만료일 %@": {},
     "발송": {},
     "분석 결과": {},
     "서버 에러 테스트": {},
     "안전하게\n관리": {},
-    "일반": {},
     "제목": {},
-    "초기": {},
     "카메라를 사용할 수 없습니다.": {},
     "테스트 푸시 발송": {},
-    "manual.title": {
+    "home.warranty_end %@": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "영수증 직접 입력"
+            "value": "%@ 보증종료"
           }
         }
       }
     },
-    "manual.add_image": {
+    "home.label.brand": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "추가하기"
+            "value": "브랜드"
           }
         }
       }
     },
-    "manual.category": {
+    "home.days_ago_today": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "카테고리"
-          }
-        }
-      }
-    },
-    "manual.product_section": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "제품 정보"
-          }
-        }
-      }
-    },
-    "manual.physical_section": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "실물 영수증 보관 여부"
-          }
-        }
-      }
-    },
-    "manual.physical_yes": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "필요함"
-          }
-        }
-      }
-    },
-    "manual.physical_no": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "필요하지 않음"
-          }
-        }
-      }
-    },
-    "detail.menu_edit": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "수정하기"
-          }
-        }
-      }
-    },
-    "detail.menu_delete": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "삭제하기"
-          }
-        }
-      }
-    },
-    "detail.menu_close": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "닫기"
-          }
-        }
-      }
-    },
-    "detail.delete_confirm_title": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "이 영수증을 삭제할까요?"
-          }
-        }
-      }
-    },
-    "detail.delete_confirm_message": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "관련 정보도 함께 사라지며\n삭제된 데이터는 복구되지 않아요"
-          }
-        }
-      }
-    },
-    "detail.deleted_toast": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "영수증이 삭제되었습니다."
-          }
-        }
-      }
-    },
-    "detail.physical_no": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "필요없음"
-          }
-        }
-      }
-    },
-    "manual.edit_title": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "영수증 수정"
-          }
-        }
-      }
-    },
-    "manual.edit_submit": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "수정 완료"
-          }
-        }
-      }
-    },
-    "manual.edit_pending": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "수정 기능은 아직 연동 준비 중입니다."
-          }
-        }
-      }
-    },
-    "manual.max_length_error %lld": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "최대 %lld자까지 입력할 수 있습니다."
-          }
-        }
-      }
-    },
-    "receipt.edit.loading": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "영수증을 수정하고 있어요."
-          }
-        }
-      }
-    },
-    "receipt.edit.fail": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "영수증 수정에 실패했어요. 잠시 후 다시 시도해 주세요."
-          }
-        }
-      }
-    },
-    "detail.updated_toast": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "영수증 정보가 수정되었습니다."
-          }
-        }
-      }
-    },
-    "manual.min_image_hint": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "최소 1장의 이미지가 필요합니다."
-          }
-        }
-      }
-    },
-    "manual.title_ocr": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "영수증 입력"
-          }
-        }
-      }
-    },
-    "manual.physical_help": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "제조사 정책에 따라 수리 시 실물 영수증이 필요할 수 있으니, 확인 후 보관 여부를 선택해 주세요."
-          }
-        }
-      }
-    },
-    "manual.serial_help": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "제품에 따라 일련번호는 '시리얼 번호', '제조번호' 등 다양한 이름으로 표기될 수 있습니다."
-          }
-        }
-      }
-    },
-    "receipt.complete.title": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "영수증 등록을 완료했어요!"
-          }
-        }
-      }
-    },
-    "receipt.complete.subtitle": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "지금 등록한 영수증을 바로 확인해 볼까요?"
-          }
-        }
-      }
-    },
-    "receipt.complete.go_home": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "홈으로 가기"
-          }
-        }
-      }
-    },
-    "receipt.complete.view": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "보러가기"
-          }
-        }
-      }
-    },
-    "notif.time.just_now": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "방금 전"
-          }
-        }
-      }
-    },
-    "notif.time.minutes_ago %lld": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld분 전"
-          }
-        }
-      }
-    },
-    "notif.time.hours_ago %lld": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld시간 전"
-          }
-        }
-      }
-    },
-    "notif.time.days_ago %lld": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld일 전"
-          }
-        }
-      }
-    },
-    "mypage.analysis_remaining %lld": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "영수증 분석 %lld회 남음"
-          }
-        }
-      }
-    },
-    "mypage.analysis_view": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "보기"
-          }
-        }
-      }
-    },
-    "mypage.promo.title": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "지금 바로 영수증을 쉽고\n빠르게 등록해 보세요!"
-          }
-        }
-      }
-    },
-    "mypage.promo.event_title": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "오픈 이벤트 안내"
-          }
-        }
-      }
-    },
-    "mypage.promo.event_bullet1": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "무료 분석 5회를 제공해 드리고 있습니다. 지급일 기준 30일 이내에 사용해야 하며, 기간이 지나면 자동으로 소멸됩니다."
-          }
-        }
-      }
-    },
-    "mypage.promo.event_bullet2": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "이미 지급받은 경우에는 추가 지급되지 않으며, 별도 공지가 없는 경우 매월 1일 무료 분석 5회가 지급될 예정입니다."
-          }
-        }
-      }
-    },
-    "mypage.promo.register": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "지금 영수증 등록하기"
-          }
-        }
-      }
-    },
-    "receipt.register.analysis_count %lld": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "분석횟수 %lld회"
-          }
-        }
-      }
-    },
-    "receipt.register.attachments": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "영수증 첨부내역"
-          }
-        }
-      }
-    },
-    "receipt.notice.title": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "유의사항"
-          }
-        }
-      }
-    },
-    "receipt.notice.bullet1_pre": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "영수증은 "
-          }
-        }
-      }
-    },
-    "receipt.notice.bullet1_highlight": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "제품 1개당 최대 5장까지"
-          }
-        }
-      }
-    },
-    "receipt.notice.bullet1_post": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": " 업로드할 수 있습니다."
-          }
-        }
-      }
-    },
-    "receipt.notice.bullet2_pre": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "영수증은 "
-          }
-        }
-      }
-    },
-    "receipt.notice.bullet2_highlight": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1장씩 개별 촬영하여"
-          }
-        }
-      }
-    },
-    "receipt.notice.bullet2_post": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": " 업로드해 주세요."
-          }
-        }
-      }
-    },
-    "receipt.notice.bullet3_highlight": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "JPG, PNG, HEIC"
-          }
-        }
-      }
-    },
-    "receipt.notice.bullet3_post": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "만 등록해 주세요."
-          }
-        }
-      }
-    },
-    "receipt.recharge.already": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "이번 달 무료 충전은 이미 받으셨어요."
-          }
-        }
-      }
-    },
-    "receipt.recharge.unavailable": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "지금은 충전할 수 있는 혜택이 없어요."
-          }
-        }
-      }
-    },
-    "header.home_title": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Boat Lab"
+            "value": "오늘"
           }
         }
       }
