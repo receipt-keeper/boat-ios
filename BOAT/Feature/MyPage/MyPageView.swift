@@ -22,7 +22,6 @@ struct MyPageView: View {
     @State private var showNotificationSettings = false
     @State private var showReceiptRegister = false
     @State private var showPromoSheet = false
-    @State private var hasUnreadNotification = false
     @State private var toast = BoatToastState()
 
     private let inquiryEmail = "team.swyp8.app@gmail.com"
@@ -40,7 +39,7 @@ struct MyPageView: View {
         VStack(spacing: 0) {
             BoatHeader(
                 title: "mypage.title",
-                showUnreadBadge: hasUnreadNotification,
+                showUnreadBadge: NotificationBadgeStore.shared.hasUnread,
                 onSearch: onSearch,
                 onNotification: onNotification
             )
@@ -75,7 +74,7 @@ struct MyPageView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.colorWhite)
-        .task { await refreshUnreadState() }
+        .task { await NotificationBadgeStore.shared.refresh() }
         .fullScreenCover(isPresented: $showNotificationSettings) {
             NotificationSettingsView(onBack: { showNotificationSettings = false })
         }
@@ -223,14 +222,6 @@ struct MyPageView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-    }
-
-    // MARK: - 알림 미읽음 배지
-
-    /// 종 아이콘 우상단 빨간 점 — 미읽음 알림 존재 여부만 확인(개수 표시 없음).
-    private func refreshUnreadState() async {
-        let unread = (try? await NotificationRepository.shared.fetchUnread()) ?? []
-        hasUnreadNotification = !unread.isEmpty
     }
 
     // MARK: - 1:1 문의 메일

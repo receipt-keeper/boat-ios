@@ -16,6 +16,7 @@ enum MainTab: Hashable {
 struct MainTabView: View {
 
     let viewModel: AuthViewModel
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selection: MainTab = .home
     @State private var showAddMenu = false
     @State private var showNotifications = false
@@ -66,6 +67,13 @@ struct MainTabView: View {
             .animation(.easeInOut(duration: 0.2), value: showAddMenu)
             // 로그인 상태로 메인 진입 시 FCM 디바이스 등록 (멱등 — 신규 로그인/앱 재실행 공통 커버)
             .task { await FCMDeviceManager.shared.register() }
+            // 헤더 종 아이콘 Red Dot 상태 — 진입 시 + 포그라운드 복귀(백그라운드 중 푸시 수신) 시 갱신
+            .task { await NotificationBadgeStore.shared.refresh() }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active {
+                    Task { await NotificationBadgeStore.shared.refresh() }
+                }
+            }
             // 알림 차단 상태면 앱 진입/복귀마다 권한 요청 또는 설정 유도
             .background(NotificationPermissionGate())
             // FAB 카메라/갤러리 → 영수증 등록 화면(진입 즉시 해당 소스 열림)
@@ -185,6 +193,7 @@ private struct HomeView: View {
                 VStack(spacing: 0) {
                     BoatHeader(
                         showLogo: true,
+                        showUnreadBadge: NotificationBadgeStore.shared.hasUnread,
                         tint: .colorWhite,
                         onSearch: onSearch,
                         onNotification: onNotification

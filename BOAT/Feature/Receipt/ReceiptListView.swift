@@ -71,6 +71,7 @@ struct ReceiptListView: View {
             VStack(spacing: 0) {
                 BoatHeader(
                     title: "tab.list",
+                    showUnreadBadge: NotificationBadgeStore.shared.hasUnread,
                     onSearch: onSearch,
                     onNotification: onNotification
                 )

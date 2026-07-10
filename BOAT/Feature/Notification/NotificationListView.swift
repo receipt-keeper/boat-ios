@@ -46,6 +46,8 @@ struct NotificationListView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.gray50)
         .task { await viewModel.load() }
+        // 목록 진입 시점에 Red Dot 해제 — 개별 알림을 탭하지 않아도 "봤음" 처리.
+        .task { NotificationBadgeStore.shared.markSeen() }
         // 알림 → 영수증 상세
         .fullScreenCover(item: $detailReceipt) { rid in
             ReceiptDetailView(receiptId: rid.id, onBack: { detailReceipt = nil })
