@@ -167,38 +167,18 @@ private struct HomeView: View {
     @State private var expiringWarranties: [ExpiringWarranty] = []
     @State private var expiringTotalCount = 0
     @State private var recentReceipts: [RecentReceipt] = []
-    // [TEST] 푸시 발송 다이얼로그 (DEBUG/TestFlight 전용, App Store 정식 배포본에서는 숨김)
-    @State private var showTestPushAlert = false
-    @State private var testPushTitle = "테스트 알림"
-    @State private var testPushBody = "푸시 연결 확인용 테스트 메시지입니다."
-    @State private var toast = BoatToastState()
 
     var body: some View {
-        VStack(spacing: 0) {
-            BoatHeader(
-                showLogo: true,
-                tint: .colorWhite,
-                onSearch: onSearch,
-                onNotification: onNotification
-            )
-
-            // 헤더 아래 컨텐츠 영역 — 초기 로딩 중에는 HomeLoadingView가 덮음
-            ZStack {
+        ZStack {
+            // 헤더까지 포함해 전체 화면이 하나로 스크롤된다 (Top Bar는 고정되지 않음).
+            ScrollView {
                 VStack(spacing: 0) {
-                    if AppEnvironment.isDebugOrTestFlight {
-                        // [TEST] FCM 연동 확인용 — 등록된 모든 디바이스로 테스트 푸시 즉시 발송
-                        Button {
-                            showTestPushAlert = true
-                        } label: {
-                            Text("[TEST] 푸시")
-                                .font(.pretendard(.medium, size: 12))
-                                .foregroundStyle(Color.colorWhite)
-                        }
-                        .buttonStyle(.plain)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.horizontal, .spacing20)
-                        .padding(.bottom, 2)
-                    }
+                    BoatHeader(
+                        showLogo: true,
+                        tint: .colorWhite,
+                        onSearch: onSearch,
+                        onNotification: onNotification
+                    )
 
                     if hasAnyReceipts {
                         HomeGeneralView(
@@ -214,15 +194,16 @@ private struct HomeView: View {
                         initialContent
                     }
                 }
-
-                if isInitializing {
-                    HomeLoadingView()
-                        .transition(.opacity)
-                }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            // 초기 로딩 중에는 HomeLoadingView가 전체를 덮음
+            if isInitializing {
+                HomeLoadingView()
+                    .transition(.opacity)
+            }
         }
-        // 헤더 + 첫 카드 영역을 덮는 상단 그라데이션 히어로 배경. 홈 화면이면 상태(초기/일반) 무관하게 동일 적용.
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        // 상단 그라데이션 히어로 배경(고정). 홈 화면이면 상태(초기/일반) 무관하게 동일 적용.
         .background(alignment: .top) {
             LinearGradient(
                 colors: [Color.brandSecondary, Color.brandPrimary, Color.brandPrimary.opacity(0)],
@@ -258,51 +239,23 @@ private struct HomeView: View {
                 onComplete: { showReceiptRegister = false }
             )
         }
-        .alert("테스트 푸시 발송", isPresented: $showTestPushAlert) {
-            TextField("제목", text: $testPushTitle)
-            TextField("내용", text: $testPushBody)
-            Button("common.cancel", role: .cancel) {}
-            Button("발송") { sendTestPush() }
-        } message: {
-            Text("등록된 모든 디바이스로 즉시 발송됩니다.")
-        }
-        .boatToastHost(toast)
-    }
-
-    /// [TEST] POST /api/v1/example/push — 로그인 사용자의 등록된 모든 디바이스로 테스트 푸시 발송.
-    private func sendTestPush() {
-        let title = testPushTitle.trimmingCharacters(in: .whitespaces)
-        let body = testPushBody.trimmingCharacters(in: .whitespaces)
-        guard !title.isEmpty, !body.isEmpty else { return }
-        Task {
-            do {
-                let result: TestPushData = try await APIClient.shared.request(
-                    ExampleTarget.testPush(title: title, body: body)
-                )
-                toast.showSuccess("발송 완료 (대상 \(result.targetedDeviceCount)대, 무효 \(result.invalidDeviceCount)대)")
-            } catch {
-                toast.showError((error as? LocalizedError)?.errorDescription ?? String(localized: "error.api.unknown"))
-            }
-        }
     }
 
     // 초기 홈 (데이터 없을 때) — 등록 유도 배너(그라데이션 히어로 위) + 광고 배너
     private var initialContent: some View {
-        ScrollView {
-            VStack(spacing: .spacing16) {
-                Button {
-                    showReceiptRegister = true
-                } label: {
-                    ReceiptRegisterCard()
-                }
-                .buttonStyle(.plain)
-
-                AccessoryBanner()
+        VStack(spacing: .spacing16) {
+            Button {
+                showReceiptRegister = true
+            } label: {
+                ReceiptRegisterCard()
             }
-            .padding(.horizontal, .spacing20)
-            .padding(.top, .spacing16)
-            .padding(.bottom, 92) // 플로팅 하단 바 높이만큼 여백
+            .buttonStyle(.plain)
+
+            AccessoryBanner()
         }
+        .padding(.horizontal, .spacing20)
+        .padding(.top, .spacing16)
+        .padding(.bottom, 92) // 플로팅 하단 바 높이만큼 여백
     }
 }
 

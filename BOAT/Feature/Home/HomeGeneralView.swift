@@ -21,46 +21,45 @@ struct HomeGeneralView: View {
     private var displayedExpiringCount: Int { expiringTotalCount ?? expiring.count }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                // ── AS 만료 예정 ──
-                Spacer().frame(height: .spacing8)
-                if expiring.isEmpty {
-                    ExpiringEmptyBanner(onMore: onExpiringMore)
-                        .padding(.horizontal, .spacing20)
-                } else {
-                    ExpiringWarrantySection(
-                        expiring: expiring,
-                        totalCount: displayedExpiringCount,
-                        onMore: onExpiringMore
-                    )
+        // 스크롤은 상위(HomeView)에서 전체 화면을 대상으로 처리하므로 여기선 일반 VStack.
+        VStack(alignment: .leading, spacing: 0) {
+            // ── AS 만료 예정 ──
+            Spacer().frame(height: .spacing8)
+            if expiring.isEmpty {
+                ExpiringEmptyBanner(onMore: onExpiringMore)
                     .padding(.horizontal, .spacing20)
-                }
+            } else {
+                ExpiringWarrantySection(
+                    expiring: expiring,
+                    totalCount: displayedExpiringCount,
+                    onMore: onExpiringMore
+                )
+                .padding(.horizontal, .spacing20)
+            }
 
-                // ── 가전제품 필수 아이템 배너 ──
-                Spacer().frame(height: .spacing20)
-                AccessoryBanner()
-                    .padding(.horizontal, .spacing20)
-
-                // ── 최근 등록된 영수증 ──
-                Spacer().frame(height: .spacing24)
-                Text("home.recent_title")
-                    .font(.pretendard(.bold, size: 18))
-                    .foregroundStyle(Color.gray900)
-                    .padding(.horizontal, .spacing20)
-
-                Spacer().frame(height: .spacing12)
-                VStack(spacing: .spacing12) {
-                    ForEach(recent) { item in
-                        RecentReceiptItem(item: item)
-                    }
-                    Spacer().frame(height: .spacing4)
-                    moreButton
-                }
+            // ── 가전제품 필수 아이템 배너 ──
+            Spacer().frame(height: .spacing20)
+            AccessoryBanner()
                 .padding(.horizontal, .spacing20)
 
-                Spacer().frame(height: 92) // 플로팅 하단 바 높이만큼 여백
+            // ── 최근 등록된 영수증 ──
+            Spacer().frame(height: .spacing24)
+            Text("home.recent_title")
+                .font(.pretendard(.bold, size: 18))
+                .foregroundStyle(Color.gray900)
+                .padding(.horizontal, .spacing20)
+
+            Spacer().frame(height: .spacing12)
+            VStack(spacing: .spacing12) {
+                ForEach(recent) { item in
+                    RecentReceiptItem(item: item)
+                }
+                Spacer().frame(height: .spacing4)
+                moreButton
             }
+            .padding(.horizontal, .spacing20)
+
+            Spacer().frame(height: 92) // 플로팅 하단 바 높이만큼 여백
         }
     }
 
