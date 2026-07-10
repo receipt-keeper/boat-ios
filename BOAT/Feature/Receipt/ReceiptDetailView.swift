@@ -40,7 +40,9 @@ struct ReceiptDetailView: View {
                     content(receipt)
                 }
             } else if isLoading {
-                loadingView
+                ScrollView {
+                    skeletonContent
+                }
             } else {
                 errorView
             }
@@ -424,12 +426,90 @@ struct ReceiptDetailView: View {
         .disabled(url == nil)
     }
 
-    // MARK: - 상태 뷰
+    // MARK: - 로딩 스켈레톤 (API 응답 전까지 실제 콘텐츠 레이아웃을 셔머로 흉내)
 
-    private var loadingView: some View {
-        ProgressView()
-            .tint(Color.brandPrimary)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    /// 라벨 폭(96)/값 폭 비율(0.62)은 Android ReceiptDetailSkeleton과 동일.
+    private var contentWidth: CGFloat { UIScreen.main.bounds.width - .spacing20 * 2 }
+
+    private var skeletonContent: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // 대표 이미지 히어로 카드
+            ShimmerBox(cornerRadius: .rounded2xl)
+                .aspectRatio(16.0 / 9.0, contentMode: .fit)
+                .padding(.horizontal, .spacing20)
+                .padding(.top, .spacing8)
+
+            Spacer().frame(height: .spacing24)
+            VStack(alignment: .leading, spacing: 0) {
+                // 필드 3개 (라벨 바 + 값 바)
+                ForEach(0..<3, id: \.self) { _ in
+                    ShimmerBox().frame(width: 96, height: 13)
+                    Spacer().frame(height: 10)
+                    ShimmerBox().frame(width: contentWidth * 0.62, height: 18)
+                    Spacer().frame(height: .spacing20)
+                }
+                // 메모 라벨 + 박스
+                ShimmerBox().frame(width: 60, height: 13)
+                Spacer().frame(height: .spacing8)
+                ShimmerBox(cornerRadius: .roundedLg)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 96)
+            }
+            .padding(.horizontal, .spacing20)
+
+            // 실물 영수증 보관 여부 섹션
+            Spacer().frame(height: .spacing24)
+            sectionBand
+            VStack(alignment: .leading, spacing: 0) {
+                ShimmerBox().frame(width: 140, height: 18)
+                Spacer().frame(height: .spacing16)
+                ShimmerBox().frame(width: 110, height: 14)
+                Spacer().frame(height: .spacing12)
+                ShimmerBox().frame(width: 90, height: 14)
+            }
+            .padding(.horizontal, .spacing20)
+            .padding(.vertical, .spacing20)
+
+            // 보증 정보 섹션 (필드 2개)
+            sectionBand
+            VStack(alignment: .leading, spacing: 0) {
+                ShimmerBox().frame(width: 120, height: 18)
+                Spacer().frame(height: .spacing16)
+                ForEach(0..<2, id: \.self) { _ in
+                    ShimmerBox().frame(width: 96, height: 13)
+                    Spacer().frame(height: 10)
+                    ShimmerBox().frame(width: contentWidth * 0.5, height: 18)
+                    Spacer().frame(height: .spacing16)
+                }
+            }
+            .padding(.horizontal, .spacing20)
+            .padding(.vertical, .spacing20)
+
+            // 원본 영수증 섹션 (제목 + 썸네일 3개) + 공식 AS 접수 버튼
+            sectionBand
+            VStack(alignment: .leading, spacing: 0) {
+                ShimmerBox().frame(width: 120, height: 18)
+                    .padding(.horizontal, .spacing20)
+
+                Spacer().frame(height: .spacing16)
+                HStack(spacing: .spacing12) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        ShimmerBox(cornerRadius: .rounded2xl)
+                            .aspectRatio(1, contentMode: .fit)
+                    }
+                }
+                .padding(.horizontal, .spacing20)
+
+                Spacer().frame(height: .spacing20)
+                ShimmerBox(cornerRadius: .roundedXl)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+                    .padding(.horizontal, .spacing20)
+            }
+            .padding(.vertical, .spacing20)
+
+            Spacer().frame(height: .spacing24)
+        }
     }
 
     private var errorView: some View {
