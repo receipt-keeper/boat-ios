@@ -19,17 +19,20 @@ struct DDayBadge: View {
     /// 임박(빨강) 판정 기준일. 단일 출처: Receipt.expiringThresholdDays.
     private static let expiringThresholdDays = Receipt.expiringThresholdDays
 
+    // 디자인 가이드: 너비 hug(내용에 맞춤, 고정/최소폭 없음) · 높이 28 · radius rounded_sm(4)
+    // · 테두리 1px · 좌우 패딩 16 · 상하 패딩 2.
     var body: some View {
         let style = Self.style(for: dDay)
         style.text
             .font(.pretendard(.medium, size: 13))
             .foregroundStyle(style.fg)
-            .frame(minWidth: 58)
-            .frame(height: 26)
-            .padding(.horizontal, .spacing8)
-            .background(style.bg, in: RoundedRectangle(cornerRadius: .roundedLg))
+            .lineLimit(1)
+            .fixedSize()
+            .padding(.horizontal, 16)
+            .frame(height: 28)
+            .background(style.bg, in: RoundedRectangle(cornerRadius: .roundedSm))
             .overlay(
-                RoundedRectangle(cornerRadius: .roundedLg)
+                RoundedRectangle(cornerRadius: .roundedSm)
                     .stroke(style.border, lineWidth: 1)
             )
     }
