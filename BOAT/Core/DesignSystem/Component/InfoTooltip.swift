@@ -28,10 +28,11 @@ struct InfoTooltip: View {
             Text(message)
                 .font(.pretendard(.regular, size: 13))
                 .foregroundStyle(Color.gray700)
-                .multilineTextAlignment(.leading)
+                .multilineTextAlignment(.center)
                 .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.spacing12)
-                .frame(maxWidth: 260, alignment: .leading)
+                .frame(maxWidth: 260)
                 .presentationCompactAdaptation(.popover)
         }
     }

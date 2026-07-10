@@ -25,7 +25,9 @@ struct Receipt: Decodable, Identifiable, Hashable {
     let requiresPhysicalReceipt: Bool?
     let receiptFileIds: [String]?
     // 상세 조회 응답에만 포함 — 로컬 캐시(ReceiptEntity)는 왕복시키지 않으므로 기본값 필요.
-    let receiptFiles: [ReceiptFile]? = nil
+    // ⚠️ `let`에 초기값을 주면 Decodable 합성 시 JSON에서 아예 디코딩하지 않고 항상 nil이 된다
+    // (Xcode가 "will not be decoded" 경고를 띄운다) — 반드시 `var`여야 실제 값이 반영된다.
+    var receiptFiles: [ReceiptFile]? = nil
     let imageUrl: String?
     let warrantyDDay: Int?         // 만료까지 남은 일수 (음수면 만료)
     let serialNumber: String?

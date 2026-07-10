@@ -36,7 +36,6 @@ struct ReceiptDetailView: View {
                 ScrollView {
                     content(receipt)
                 }
-                supportButton(receipt)
             } else if isLoading {
                 loadingView
             } else {
@@ -163,7 +162,7 @@ struct ReceiptDetailView: View {
 
     private func content(_ r: Receipt) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            // 제품 이미지 — 전체 너비 풀블리드
+            // 제품 이미지 히어로 카드
             deviceImageBanner(r)
 
             Spacer().frame(height: .spacing24)
@@ -205,26 +204,43 @@ struct ReceiptDetailView: View {
             .padding(.top, .spacing24)
             .padding(.bottom, .spacing8)
 
-            // 원본 영수증
+            // 원본 영수증 + 공식 AS 접수 CTA (스크롤 콘텐츠에 포함 — 하단 고정 아님)
             sectionBand
-            originalReceiptSection(r)
-                .padding(.horizontal, .spacing20)
-                .padding(.top, .spacing24)
+            VStack(alignment: .leading, spacing: 0) {
+                originalReceiptSection(r)
+                Spacer().frame(height: .spacing20)
+                supportButton(r)
+            }
+            .padding(.horizontal, .spacing20)
+            .padding(.top, .spacing24)
 
             Spacer().frame(height: .spacing24)
         }
     }
 
+    // 대표 이미지 히어로 카드 — 상→하 연한 블루 그라데이션 배경 + 테두리(Android 16:9 카드 대응)
     private func deviceImageBanner(_ r: Receipt) -> some View {
-        Color.brandSenary
-            .frame(maxWidth: .infinity)
-            .frame(height: 200)
+        RoundedRectangle(cornerRadius: .rounded2xl)
+            .fill(
+                LinearGradient(
+                    colors: [Color(hex: "#E5F0FF"), Color(hex: "#F6FAFF")],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .aspectRatio(16.0 / 9.0, contentMode: .fit)
+            .overlay(
+                RoundedRectangle(cornerRadius: .rounded2xl)
+                    .stroke(Color.brandQuinary, lineWidth: 1)
+            )
             .overlay {
                 Image(r.deviceImageName)
                     .resizable()
                     .scaledToFit()
-                    .padding(44)
+                    .frame(width: 120, height: 120)
             }
+            .padding(.horizontal, .spacing20)
+            .padding(.top, .spacing8)
     }
 
     // MARK: - 실물 영수증 보관 여부 (읽기 전용 라디오)
@@ -232,9 +248,12 @@ struct ReceiptDetailView: View {
     private func physicalSection(_ r: Receipt) -> some View {
         let kept = r.requiresPhysicalReceipt == true
         return VStack(alignment: .leading, spacing: .spacing16) {
-            Text("manual.physical_section")
-                .font(.pretendard(.bold, size: 18))
-                .foregroundStyle(Color.gray900)
+            HStack(spacing: 6) {
+                Text("manual.physical_section")
+                    .font(.pretendard(.bold, size: 18))
+                    .foregroundStyle(Color.gray900)
+                InfoTooltip(message: "manual.physical_help")
+            }
             radioDisplay("manual.physical_yes", selected: kept)
             radioDisplay("detail.physical_no", selected: !kept)
         }
@@ -305,14 +324,13 @@ struct ReceiptDetailView: View {
 
     private func memoSection(_ r: Receipt) -> some View {
         let memo = r.memo?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        let isEmpty = memo.isEmpty
         return VStack(alignment: .leading, spacing: .spacing8) {
             Text("detail.memo")
                 .font(.pretendard(.regular, size: 13))
                 .foregroundStyle(Color.gray500)
-            Text(isEmpty ? String(localized: "detail.memo_placeholder") : memo)
+            Text(memo)
                 .font(.pretendard(.regular, size: 15))
-                .foregroundStyle(isEmpty ? Color.gray400 : Color.gray800)
+                .foregroundStyle(Color.gray800)
                 .frame(maxWidth: .infinity, minHeight: 120, alignment: .topLeading)
                 .padding(.spacing16)
                 .background(Color.gray50, in: RoundedRectangle(cornerRadius: .roundedLg))
@@ -367,28 +385,28 @@ struct ReceiptDetailView: View {
             }
     }
 
-    // MARK: - 하단 CTA (공식 AS 접수 → supportUrl)
+    // MARK: - 공식 AS 접수 링크 (연한 블루 링크 스타일, 원본 영수증 섹션 하단 — 스크롤 콘텐츠 내부)
 
     private func supportButton(_ r: Receipt) -> some View {
         let url = r.supportUrl.flatMap { URL(string: $0) }
         return Button {
             if let url { openURL(url) }
         } label: {
-            Text("detail.support")
-                .font(.pretendard(.semibold, size: 16))
-                .foregroundStyle(url != nil ? Color.colorWhite : Color.gray500)
-                .frame(maxWidth: .infinity)
-                .frame(height: 56)
-                .background(
-                    url != nil ? Color.brandPrimary : Color.gray200,
-                    in: RoundedRectangle(cornerRadius: .roundedXl)
-                )
+            HStack(spacing: .spacing8) {
+                Text("detail.support")
+                    .font(.pretendard(.semibold, size: 15))
+                    .foregroundStyle(Color.brandPrimary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Color.brandPrimary)
+            }
+            .padding(.horizontal, .spacing16)
+            .padding(.vertical, 16)
+            .background(Color.brandSenary, in: RoundedRectangle(cornerRadius: .roundedXl))
         }
         .buttonStyle(.plain)
         .disabled(url == nil)
-        .padding(.horizontal, .spacing20)
-        .padding(.top, .spacing12)
-        .padding(.bottom, .spacing8)
     }
 
     // MARK: - 상태 뷰
