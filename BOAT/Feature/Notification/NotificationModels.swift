@@ -38,6 +38,7 @@ struct AppNotification: Identifiable, Hashable {
     let resourceType: String?
     let resourceId: String?
     let kind: String?
+    let messageType: String?
 
     /// 목록 썸네일용 에셋 — subCategory 기반 기기 이미지. Android DeviceImage.resolve(null, subCategory) 대응(category 미사용).
     var imageName: String {
@@ -85,7 +86,8 @@ extension NotificationDto {
             subCategory: metadata?["subCategory"],
             resourceType: resourceType,
             resourceId: resourceId,
-            kind: kind
+            kind: kind,
+            messageType: messageType
         )
     }
 

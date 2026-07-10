@@ -262,8 +262,7 @@ struct ReceiptEditView: View {
         }
         .sheet(isPresented: $showDatePicker) {
             PurchaseDatePickerSheet(
-                onConfirm: { purchaseDate = $0; showDatePicker = false },
-                onCancel:  { showDatePicker = false }
+                onSelect: { purchaseDate = $0; showDatePicker = false }
             )
             .presentationDetents([.medium])
         }
@@ -919,38 +918,3 @@ struct ReceiptEditView: View {
     }
 }
 
-// MARK: - 구매일 DatePicker 시트
-
-private struct PurchaseDatePickerSheet: View {
-    let onConfirm: (String) -> Void
-    let onCancel: () -> Void
-    @State private var date = Date()
-
-    var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Button("common.cancel", action: onCancel)
-                    .foregroundStyle(Color.gray600)
-                Spacer()
-                Button("common.confirm") {
-                    let f = DateFormatter()
-                    f.dateFormat = "yyyy.MM.dd"
-                    onConfirm(f.string(from: date))
-                }
-                .foregroundStyle(Color.brandPrimary)
-                .fontWeight(.semibold)
-            }
-            .font(.pretendard(.medium, size: 15))
-            .padding(.horizontal, .spacing20)
-            .padding(.vertical, .spacing16)
-
-            DatePicker("", selection: $date, displayedComponents: .date)
-                .datePickerStyle(.graphical)
-                .tint(Color.brandPrimary)
-                .padding(.horizontal, .spacing12)
-
-            Spacer()
-        }
-        .presentationBackground(Color.colorWhite)
-    }
-}

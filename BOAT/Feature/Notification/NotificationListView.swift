@@ -5,7 +5,7 @@
 //  상단 종 아이콘 → 수신 알림 목록. Android NotificationListScreen 대응.
 //  GET /api/v1/notifications 로 미읽음 알림을 불러와 카드형 리스트로 표시.
 //  카드 탭 → 읽음 처리(목록에서 제거) 후 리소스로 라우팅
-//  (receipt+resourceId → 상세 / kind=registration_prompt → 영수증 등록).
+//  (messageType=marketing → 홈 / receipt+resourceId → 상세 / kind=registration_prompt → 영수증 등록).
 //
 
 import SwiftUI
@@ -63,7 +63,11 @@ struct NotificationListView: View {
 
     private func handleTap(_ item: AppNotification) {
         viewModel.markReadAndRemove(item)
-        if item.resourceType == "receipt", let id = item.resourceId, !id.isEmpty {
+        if item.messageType == "marketing" {
+            // 홈 탭으로 이동 — 목록 자체를 닫고 MainTabView가 NotificationRouter를 관찰해 전환.
+            NotificationRouter.shared.shouldOpenHome = true
+            onBack()
+        } else if item.resourceType == "receipt", let id = item.resourceId, !id.isEmpty {
             detailReceipt = IdentifiedID(id: id)
         } else if item.kind == "registration_prompt" {
             showRegister = true

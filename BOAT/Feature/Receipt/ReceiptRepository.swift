@@ -7,6 +7,8 @@
 //                                          네트워크 실패 시 로컬 캐시로 폴백(오프라인 조회).
 //  - POST   /api/v1/receipts             — 파일 업로드 → fileId 수집 → 영수증 생성 → 로컬 캐시 저장.
 //  - DELETE /api/v1/receipts/{receiptId} — 영수증 삭제 → 로컬 캐시에서도 제거.
+//  생성/수정/삭제 성공 시 ReceiptChangeBus.notifyChanged()를 호출해, 어느 화면에서 일어난
+//  변경이든 홈/목록처럼 리스트를 들고 있는 다른 화면도 최신 데이터로 재조회하게 한다.
 //
 
 import UIKit
@@ -87,6 +89,7 @@ final class ReceiptRepository {
 
         // 3) 로컬 캐시 저장 (오프라인 조회용)
         local.upsert(receipt)
+        ReceiptChangeBus.shared.notifyChanged()
         return receipt
     }
 
@@ -94,6 +97,7 @@ final class ReceiptRepository {
     func deleteReceipt(id: String) async throws {
         try await APIClient.shared.requestVoid(ReceiptTarget.delete(receiptId: id))
         local.delete(id: id)
+        ReceiptChangeBus.shared.notifyChanged()
     }
 
     /// GET /api/v1/receipts/{receiptId} — 상세 조회.
@@ -131,6 +135,7 @@ final class ReceiptRepository {
         let receipt: Receipt = try await APIClient.shared.request(ReceiptTarget.update(receiptId: id, body: body))
 
         local.upsert(receipt)
+        ReceiptChangeBus.shared.notifyChanged()
         return receipt
     }
 }

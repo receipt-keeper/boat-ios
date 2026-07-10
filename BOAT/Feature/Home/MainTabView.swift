@@ -88,6 +88,12 @@ struct MainTabView: View {
             .fullScreenCover(item: pushReceiptBinding) { rid in
                 ReceiptDetailView(receiptId: rid.id, onBack: { NotificationRouter.shared.pendingReceiptId = nil })
             }
+            // 마케팅 알림(푸시 탭 또는 인앱 알림 목록 탭) → 홈 탭으로 전환
+            .onChange(of: NotificationRouter.shared.shouldOpenHome) { _, shouldOpen in
+                guard shouldOpen else { return }
+                selection = .home
+                NotificationRouter.shared.shouldOpenHome = false
+            }
     }
 
     private var pushReceiptBinding: Binding<IdentifiedID?> {
@@ -223,24 +229,15 @@ private struct HomeView: View {
         }
         .background(Color.colorWhite)
         .task {
-            // 첫 홈 진입/재방문 시마다 초기 API 병렬 호출 — 모두 완료되면 로딩 해제
-            async let credits: Void = { try? await CreditRepository.shared.fetchCredits() }()
-            async let user: Void = { try? await UserRepository.shared.refreshUser() }()
-            // AS 만료 예정: 만료 임박순(가까운 순서) / 최근 등록: 등록일 내림차순
-            async let expiring = try? await ReceiptRepository.shared.fetchReceipts(tab: .expiring, sort: .expiring, filter: .all)
-            async let recent = try? await ReceiptRepository.shared.fetchReceipts(tab: .all, sort: .recent, filter: .all)
-
-            let (_, _, expiringData, recentData) = await (credits, user, expiring, recent)
-
-            expiringWarranties = expiringData?.receipts.prefix(5).map { $0.toExpiringWarranty() } ?? []
-            // "N건"은 표시되는 카드 수가 아니라 만료 예정 목록 API의 전체 totalCount를 그대로 따른다.
-            expiringTotalCount = expiringData?.totalCount ?? expiringWarranties.count
-            recentReceipts = recentData?.receipts.prefix(5).map { $0.toRecentReceipt() } ?? []
-            hasAnyReceipts = (recentData?.totalCount ?? 0) > 0
-
+            // 첫 홈 진입 시에만 전체 로딩 오버레이를 덮는다.
+            await loadHomeData()
             withAnimation(.easeOut(duration: 0.3)) {
                 isInitializing = false
             }
+        }
+        // 다른 화면(등록/수정/삭제)에서 일어난 변경도 반영 — 조용히 재조회(로딩 오버레이 없이).
+        .onChange(of: ReceiptChangeBus.shared.version) { _, _ in
+            Task { await loadHomeData() }
         }
         .fullScreenCover(isPresented: $showReceiptRegister) {
             ReceiptRegisterView(
@@ -252,6 +249,23 @@ private struct HomeView: View {
         .fullScreenCover(item: $detailReceiptId) { rid in
             ReceiptDetailView(receiptId: rid.id, onBack: { detailReceiptId = nil })
         }
+    }
+
+    /// AS 만료 예정 / 최근 등록 데이터 병렬 조회. 진입 시(.task)와 ReceiptChangeBus 변경 시 모두 재사용.
+    private func loadHomeData() async {
+        async let credits: Void = { try? await CreditRepository.shared.fetchCredits() }()
+        async let user: Void = { try? await UserRepository.shared.refreshUser() }()
+        // AS 만료 예정: 만료 임박순(가까운 순서) / 최근 등록: 등록일 내림차순
+        async let expiring = try? await ReceiptRepository.shared.fetchReceipts(tab: .expiring, sort: .expiring, filter: .all)
+        async let recent = try? await ReceiptRepository.shared.fetchReceipts(tab: .all, sort: .recent, filter: .all)
+
+        let (_, _, expiringData, recentData) = await (credits, user, expiring, recent)
+
+        expiringWarranties = expiringData?.receipts.prefix(5).map { $0.toExpiringWarranty() } ?? []
+        // "N건"은 표시되는 카드 수가 아니라 만료 예정 목록 API의 전체 totalCount를 그대로 따른다.
+        expiringTotalCount = expiringData?.totalCount ?? expiringWarranties.count
+        recentReceipts = recentData?.receipts.prefix(5).map { $0.toRecentReceipt() } ?? []
+        hasAnyReceipts = (recentData?.totalCount ?? 0) > 0
     }
 
     // 초기 홈 (데이터 없을 때) — 등록 유도 배너(그라데이션 히어로 위) + 광고 배너

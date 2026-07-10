@@ -65,8 +65,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         [.banner, .list, .sound, .badge]
     }
 
-    /// 푸시 탭 → 페이로드의 resourceType/resourceId로 라우팅(현재는 receipt만).
-    /// NotificationRouter가 값을 들고 있으면 MainTabView가 관찰해 상세 화면을 띄운다.
+    /// 푸시 탭 → 페이로드의 messageType/resourceType/resourceId로 라우팅
+    /// (marketing → 홈 탭, receipt → 상세). NotificationRouter가 값을 들고 있으면
+    /// MainTabView가 관찰해 화면을 전환한다.
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse
@@ -74,6 +75,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let userInfo = response.notification.request.content.userInfo
         await NotificationRouter.shared.handle(
             notificationId: userInfo["notificationId"] as? String,
+            messageType: userInfo["messageType"] as? String,
             resourceType: userInfo["resourceType"] as? String,
             resourceId: userInfo["resourceId"] as? String
         )

@@ -105,6 +105,8 @@ struct ReceiptListView: View {
         .onChange(of: selectedTab) { _, _ in reload() }
         .onChange(of: selectedSort) { _, _ in reload() }
         .onChange(of: selectedFilter) { _, _ in reload() }
+        // 다른 화면(등록/수정/삭제)에서 일어난 변경도 반영 — 항상 최신 목록 유지.
+        .onChange(of: ReceiptChangeBus.shared.version) { _, _ in reload() }
         // 정렬 드롭다운 — 버튼 위치 기준으로 배치
         .overlayPreferenceValue(SortAnchorKey.self) { anchor in
             if sortExpanded, let anchor {
