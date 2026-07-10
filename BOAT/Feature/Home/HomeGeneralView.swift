@@ -262,35 +262,6 @@ private struct ExpiringWarrantyCard: View {
     }
 }
 
-// MARK: - D-day 뱃지 (dDay 기준: 만료/임박(≤30)/여유)
-
-private struct DDayBadge: View {
-    let dDay: Int
-
-    var body: some View {
-        let (text, bg, border, fg): (Text, Color, Color, Color) = {
-            if dDay <= 0 {
-                return (Text("receipt.list.expired"), .badgeExpiredBg, .badgeExpiredBorder, .badgeExpiredText)
-            } else if dDay <= 30 {
-                return (Text("receipt.list.dday \(dDay)"), .badgeWarningBg, .badgeWarningBorder, .badgeWarningText)
-            } else {
-                return (Text("receipt.list.dday \(dDay)"), .badgeSafeBg, .badgeSafeBorder, .badgeSafeText)
-            }
-        }()
-        return text
-            .font(.pretendard(.medium, size: 13))
-            .foregroundStyle(fg)
-            .frame(minWidth: 58)
-            .frame(height: 26)
-            .padding(.horizontal, .spacing8)
-            .background(bg, in: RoundedRectangle(cornerRadius: .roundedSm))
-            .overlay(
-                RoundedRectangle(cornerRadius: .roundedSm)
-                    .stroke(border, lineWidth: 1)
-            )
-    }
-}
-
 // MARK: - 캐러셀 페이지 인디케이터 (현재 카드는 넓은 pill, 나머지는 작은 dot)
 
 private struct CarouselIndicator: View {

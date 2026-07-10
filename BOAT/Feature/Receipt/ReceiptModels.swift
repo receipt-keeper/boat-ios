@@ -57,25 +57,12 @@ struct ReceiptPagination: Decodable {
     let totalCount: Int
 }
 
-// MARK: - D-day 배지 상태 (warrantyDDay 기준)
+// MARK: - 파생 표시값
 
 extension Receipt {
 
-    /// 만료 임박 기준 (이하이면 경고색). 서버 status=expiring 정의와 일치시킬 것.
+    /// 만료 임박 기준 (이하이면 경고색). D-day 표시는 공용 DDayBadge 컴포넌트가 담당.
     static let expiringThresholdDays = 30
-
-    enum WarrantyBadge {
-        case safe(dDay: Int)       // 여유 — 파란 배지 "D-N"
-        case expiring(dDay: Int)   // 임박 — 빨간 배지 "D-N"
-        case expired               // 만료 — 회색 배지 "만료"
-    }
-
-    var warrantyBadge: WarrantyBadge {
-        let dDay = warrantyDDay ?? 0
-        if dDay < 0 { return .expired }
-        if dDay <= Self.expiringThresholdDays { return .expiring(dDay: dDay) }
-        return .safe(dDay: dDay)
-    }
 
     /// "yyyy-MM-dd" → "yyyy. MM. dd"
     var formattedExpiresOn: String {

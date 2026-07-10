@@ -3,7 +3,7 @@
 //  BOAT
 //
 //  카테고리 필터 칩. Android BoatFilterChip 대응.
-//  선택 시 brandPrimary 채움(흰 글씨), 미선택 시 연한 brand 배경(파란 글씨).
+//  선택: brandPrimary 채움 + 흰 글씨(테두리 없음) / 미선택: 흰 배경 + 파란 글씨 + 옅은 파란 테두리.
 //
 
 import SwiftUI
@@ -22,8 +22,12 @@ struct BoatFilterChip: View {
                 .padding(.horizontal, 18)
                 .padding(.vertical, 10)
                 .background(
-                    selected ? Color.brandPrimary : Color.brandQuaternary,
+                    selected ? Color.brandPrimary : Color.colorWhite,
                     in: Capsule()
+                )
+                .overlay(
+                    Capsule()
+                        .stroke(Color.brandTertiary, lineWidth: selected ? 0 : 1)
                 )
         }
         .buttonStyle(.plain)

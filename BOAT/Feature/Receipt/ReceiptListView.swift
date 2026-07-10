@@ -381,7 +381,7 @@ struct ReceiptCard: View {
                             .foregroundStyle(Color.gray900)
                             .lineLimit(1)
                         Spacer(minLength: .spacing8)
-                        dayBadge
+                        DDayBadge(dDay: receipt.warrantyDDay)
                         if showKebab { kebab }
                     }
 
@@ -433,32 +433,6 @@ struct ReceiptCard: View {
         }
     }
 
-    // D-day 배지 (여유=파랑 / 임박=빨강 / 만료=회색)
-    @ViewBuilder
-    private var dayBadge: some View {
-        switch receipt.warrantyBadge {
-        case .safe(let dDay):
-            badge(text: Text("receipt.list.dday \(dDay)"),
-                  bg: .badgeSafeBg, border: .badgeSafeBorder, fg: .badgeSafeText)
-        case .expiring(let dDay):
-            badge(text: Text("receipt.list.dday \(dDay)"),
-                  bg: .badgeWarningBg, border: .badgeWarningBorder, fg: .badgeWarningText)
-        case .expired:
-            badge(text: Text("receipt.list.expired"),
-                  bg: .badgeExpiredBg, border: .badgeExpiredBorder, fg: .badgeExpiredText)
-        }
-    }
-
-    private func badge(text: Text, bg: Color, border: Color, fg: Color) -> some View {
-        text
-            .font(.pretendard(.bold, size: 13))
-            .foregroundStyle(fg)
-            .padding(.horizontal, .spacing12)
-            .padding(.vertical, 6)
-            .background(bg, in: Capsule())
-            .overlay(Capsule().stroke(border, lineWidth: 1))
-            .fixedSize()
-    }
 
     private var kebab: some View {
         Button(action: onKebab) {

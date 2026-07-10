@@ -299,31 +299,8 @@ struct ReceiptDetailView: View {
                     .foregroundStyle(Color.gray900)
             }
             Spacer()
-            ddayBadge(r)
+            DDayBadge(dDay: r.warrantyDDay)
         }
-    }
-
-    @ViewBuilder
-    private func ddayBadge(_ r: Receipt) -> some View {
-        switch r.warrantyBadge {
-        case .safe(let dDay):
-            badge(Text("receipt.list.dday \(dDay)"), bg: .badgeSafeBg, border: .badgeSafeBorder, fg: .badgeSafeText)
-        case .expiring(let dDay):
-            badge(Text("receipt.list.dday \(dDay)"), bg: .badgeWarningBg, border: .badgeWarningBorder, fg: .badgeWarningText)
-        case .expired:
-            badge(Text("receipt.list.expired"), bg: .badgeExpiredBg, border: .badgeExpiredBorder, fg: .badgeExpiredText)
-        }
-    }
-
-    private func badge(_ text: Text, bg: Color, border: Color, fg: Color) -> some View {
-        text
-            .font(.pretendard(.bold, size: 13))
-            .foregroundStyle(fg)
-            .padding(.horizontal, .spacing12)
-            .padding(.vertical, 6)
-            .background(bg, in: Capsule())
-            .overlay(Capsule().stroke(border, lineWidth: 1))
-            .fixedSize()
     }
 
     private func memoSection(_ r: Receipt) -> some View {
