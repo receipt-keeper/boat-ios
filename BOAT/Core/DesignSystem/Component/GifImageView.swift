@@ -20,6 +20,12 @@ struct GifImageView: UIViewRepresentable {
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .clear
         imageView.clipsToBounds = true
+        // UIImageView의 intrinsic content size(GIF 원본 픽셀)가 SwiftUI .frame()을 무시하고
+        // 원본 크기로 렌더되지 않도록, 오토레이아웃 우선순위를 낮춰 프레임에 맞춰 축소되게 한다.
+        imageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        imageView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        imageView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        imageView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
 
         guard let url = Bundle.main.url(forResource: name, withExtension: "gif"),
               let data = try? Data(contentsOf: url),
@@ -50,4 +56,14 @@ struct GifImageView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIImageView, context: Context) {}
+
+    /// SwiftUI가 제안한 크기를 그대로 채택해, UIImageView가 원본 GIF 크기(intrinsic)로
+    /// 커지지 않고 호출부의 .frame() 안에 정확히 들어가도록 한다.
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: UIImageView, context: Context) -> CGSize? {
+        guard let width = proposal.width, let height = proposal.height,
+              width != .infinity, height != .infinity else {
+            return nil
+        }
+        return CGSize(width: width, height: height)
+    }
 }
