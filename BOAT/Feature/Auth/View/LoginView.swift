@@ -27,13 +27,7 @@ struct LoginView: View {
 
             appleButton
 
-            if showDebugPanel {
-                Spacer().frame(height: .spacing20)
-                debugServerPanel
-                Spacer().frame(height: .spacing20)
-            } else {
-                Spacer().frame(height: 64)
-            }
+            Spacer().frame(height: 64)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.horizontal, .spacing20)
@@ -89,87 +83,6 @@ struct LoginView: View {
             )
         }
         .buttonStyle(.plain)
-    }
-
-    // MARK: - [DEBUG/TestFlight] 서버 URL 전환 패널
-
-    /// Debug 빌드 또는 TestFlight(sandboxReceipt) 환경에서만 노출
-    private var showDebugPanel: Bool {
-        #if DEBUG
-        return true
-        #else
-        return Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
-        #endif
-    }
-
-    private var debugServerPanel: some View {
-        VStack(spacing: .spacing8) {
-            HStack(spacing: .spacing12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("DEBUG")
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(Color.colorWhite)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(Color.red, in: RoundedRectangle(cornerRadius: 3))
-
-                    Text(DebugConfig.shared.useLocalServer
-                         ? "localhost:8000"
-                         : "boatlab-dev.luigi99.cloud")
-                        .font(.system(size: 12))
-                        .foregroundStyle(DebugConfig.shared.useLocalServer ? Color.red : Color.gray500)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-                }
-
-                Spacer()
-
-                Text("로컬 서버")
-                    .font(.pretendard(.medium, size: 13))
-                    .foregroundStyle(Color.gray600)
-
-                Toggle("", isOn: Binding(
-                    get: { DebugConfig.shared.useLocalServer },
-                    set: { DebugConfig.shared.useLocalServer = $0 }
-                ))
-                .labelsHidden()
-                .tint(Color.red)
-            }
-
-            Button {
-                Task {
-                    do {
-                        try await APIClient.shared.requestVoid(ExampleTarget.serverError)
-                    } catch {
-                        let message = (error as? APIError).flatMap {
-                            if case .server(_, let msg) = $0 { return msg } else { return nil }
-                        } ?? String(localized: "error.api.unknown")
-                        toast.showError(message)
-                    }
-                }
-            } label: {
-                Text("서버 에러 테스트")
-                    .font(.pretendard(.medium, size: 13))
-                    .foregroundStyle(Color.red)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 36)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: .roundedMd)
-                            .stroke(Color.red.opacity(0.5), lineWidth: 1)
-                    )
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal, .spacing16)
-        .padding(.vertical, .spacing12)
-        .background(
-            RoundedRectangle(cornerRadius: .roundedLg)
-                .stroke(Color.red.opacity(0.35), lineWidth: 1)
-        )
-        .background(
-            Color.red.opacity(0.04),
-            in: RoundedRectangle(cornerRadius: .roundedLg)
-        )
     }
 
     // MARK: - Apple 버튼 (검정 배경)
