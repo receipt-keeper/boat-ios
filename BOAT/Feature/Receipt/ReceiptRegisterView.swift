@@ -48,6 +48,8 @@ struct ReceiptRegisterView: View {
     @State private var analyzeFailed = false
     // 토큰 소진 시트 노출 직전 조회한 충전 프로모션 — redeemable이어야 충전 버튼 노출
     @State private var pendingPromo: Promotion?
+    // 뒤로가기 시 첨부된 영수증이 있으면 이탈 확인
+    @State private var showExitConfirm = false
     // 유의사항 접이식 섹션 — 진입 시 기본 펼침 상태
     @State private var noticeExpanded = true
     // 상단 검색/알림 아이콘
@@ -188,6 +190,14 @@ struct ReceiptRegisterView: View {
             NotificationListView(onBack: { showNotifications = false })
         }
         .boatToastHost(toast)
+        .boatDialog(
+            isPresented: $showExitConfirm,
+            title: "dialog.exit_draft.title",
+            message: "dialog.exit_draft.message",
+            confirmText: "dialog.exit_draft.confirm",
+            cancelText: "common.cancel",
+            onConfirm: onBack
+        )
     }
 
     /// 시트 닫고 직접 입력 화면 열기
@@ -202,7 +212,9 @@ struct ReceiptRegisterView: View {
 
     private var topBar: some View {
         HStack(spacing: .spacing16) {
-            Button(action: onBack) {
+            Button {
+                if images.isEmpty { onBack() } else { showExitConfirm = true }
+            } label: {
                 Image("icChevronLeft")
                     .renderingMode(.template)
                     .foregroundStyle(Color.gray900)
@@ -613,6 +625,8 @@ struct ReceiptRegisterView: View {
                         totalGrantedCount: balance.totalGrantedCount
                     )
                 }
+                let granted = result.benefit?.amount ?? promo.benefit?.amount ?? 5
+                toast.show(String(localized: "receipt.recharge.success \(granted)"), type: .info)
                 await checkUsage() // canAnalyze 재확인
             case .alreadyRedeemed:
                 toast.show(String(localized: "receipt.recharge.already"), type: .info)

@@ -67,6 +67,8 @@ struct ReceiptEditView: View {
 
     @State private var isSubmitting = false
     @State private var toast = BoatToastState()
+    // 뒤로가기 시 작성 중인 내용 이탈 확인
+    @State private var showExitConfirm = false
 
     init(receipt: Receipt, onBack: @escaping () -> Void, onUpdated: @escaping () -> Void = {}) {
         self.receiptId = receipt.receiptId
@@ -254,6 +256,14 @@ struct ReceiptEditView: View {
             Text("permission.camera.denied_message")
         }
         .boatToastHost(toast)
+        .boatDialog(
+            isPresented: $showExitConfirm,
+            title: "dialog.exit_draft.title",
+            message: "dialog.exit_draft.message",
+            confirmText: "dialog.exit_draft.confirm",
+            cancelText: "common.cancel",
+            onConfirm: onBack
+        )
     }
 
     // MARK: - Top Bar
@@ -264,7 +274,7 @@ struct ReceiptEditView: View {
                 .font(.pretendard(.bold, size: 18))
                 .foregroundStyle(Color.gray900)
             HStack {
-                Button(action: onBack) {
+                Button { showExitConfirm = true } label: {
                     Image("icChevronLeft")
                         .renderingMode(.template)
                         .foregroundStyle(Color.gray900)

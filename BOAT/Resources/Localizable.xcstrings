@@ -315,6 +315,66 @@
         }
       }
     },
+    "dialog.exit_draft.confirm": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "나가기"
+          }
+        }
+      }
+    },
+    "dialog.exit_draft.message": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지금 나가시면 작성 중인 내용이\n저장되지 않아요"
+          }
+        }
+      }
+    },
+    "dialog.exit_draft.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "작성 중인 화면을 나갈까요?"
+          }
+        }
+      }
+    },
+    "dialog.exit_ocr.confirm": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "돌아가기"
+          }
+        }
+      }
+    },
+    "dialog.exit_ocr.message": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이전 화면으로 돌아가면 영수증\n분석 횟수가 다시 차감될 수 있어요"
+          }
+        }
+      }
+    },
+    "dialog.exit_ocr.title": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "정말 뒤로 돌아가시겠어요?"
+          }
+        }
+      }
+    },
     "dialog.logout.message": {
       "localizations": {
         "ko": {
@@ -2178,6 +2238,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "이번 달 무료 충전은 이미 받으셨어요."
+          }
+        }
+      }
+    },
+    "receipt.recharge.success %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "무료 횟수 %lld회가 충전되었습니다."
           }
         }
       }

@@ -68,6 +68,8 @@ struct ReceiptManualInputView: View {
     @State private var isSubmitting = false
     @State private var completedReceipt: Receipt?
     @State private var toast = BoatToastState()
+    // 뒤로가기 시 작성 중인 내용 이탈 확인 (OCR 결과 기반 진입 시 문구 다름)
+    @State private var showExitConfirm = false
 
     init(images: [UIImage], ocrResult: OcrAnalysis? = nil, onBack: @escaping () -> Void, onComplete: @escaping () -> Void = {}) {
         _images = State(initialValue: images)
@@ -246,6 +248,14 @@ struct ReceiptManualInputView: View {
         .fullScreenCover(item: $completedReceipt) { receipt in
             ReceiptRegisterCompleteView(receiptId: receipt.receiptId, onGoHome: onComplete)
         }
+        .boatDialog(
+            isPresented: $showExitConfirm,
+            title: isFromOCR ? "dialog.exit_ocr.title" : "dialog.exit_draft.title",
+            message: isFromOCR ? "dialog.exit_ocr.message" : "dialog.exit_draft.message",
+            confirmText: isFromOCR ? "dialog.exit_ocr.confirm" : "dialog.exit_draft.confirm",
+            cancelText: "common.cancel",
+            onConfirm: onBack
+        )
     }
 
     // MARK: - Top Bar
@@ -256,7 +266,7 @@ struct ReceiptManualInputView: View {
                 .font(.pretendard(.bold, size: 18))
                 .foregroundStyle(Color.gray900)
             HStack {
-                Button(action: onBack) {
+                Button { showExitConfirm = true } label: {
                     Image("icChevronLeft")
                         .renderingMode(.template)
                         .foregroundStyle(Color.gray900)
