@@ -19,6 +19,7 @@ struct GifImageView: UIViewRepresentable {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .clear
+        imageView.clipsToBounds = true
 
         guard let url = Bundle.main.url(forResource: name, withExtension: "gif"),
               let data = try? Data(contentsOf: url),

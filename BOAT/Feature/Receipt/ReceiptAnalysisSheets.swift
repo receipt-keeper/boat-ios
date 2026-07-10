@@ -89,7 +89,7 @@ struct NoTokenSheet: View {
     // 반짝이는 스파클 GIF
     private var noTokenIcon: some View {
         GifImageView(name: "shiny_white")
-            .frame(width: 56, height: 56)
+            .frame(width: 32, height: 32)
     }
 
     // 무료 분석 유효기간 안내 박스 (충전 가능 시에만 노출)
@@ -119,65 +119,104 @@ struct NoTokenSheet: View {
 struct AnalysisFailedSheet: View {
     let onManualInput: () -> Void
     let onRetry: () -> Void
+    let onClose: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
-            failedIcon
+            HStack(alignment: .top) {
+                failedIcon
+                Spacer()
+                closeButton
+            }
 
-            Spacer().frame(height: .spacing20)
+            Spacer().frame(height: .spacing16)
             Text("receipt.fail.title")
-                .font(.pretendard(.bold, size: 22))
+                .font(.pretendard(.bold, size: 20))
                 .foregroundStyle(Color.gray900)
-                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             Spacer().frame(height: .spacing8)
             Text("receipt.fail.subtitle")
-                .font(.pretendard(.regular, size: 14))
-                .foregroundStyle(Color.gray500)
-                .multilineTextAlignment(.center)
-                .lineSpacing(4)
+                .font(.pretendard(.semibold, size: 14))
+                .foregroundStyle(Color.brandPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-            Spacer().frame(height: .spacing20)
-            Button(action: onManualInput) {
-                Text("receipt.fail.manual")
-                    .font(.pretendard(.bold, size: 15))
-                    .foregroundStyle(Color.brandPrimary)
-                    .underline()
-                    .padding(.vertical, .spacing8)
-            }
-            .buttonStyle(.plain)
+            Spacer().frame(height: .spacing16)
+            noticeBox
 
-            Spacer().frame(height: .spacing8)
+            Spacer().frame(height: .spacing24)
             primaryButton("receipt.fail.retry", action: onRetry)
+            Spacer().frame(height: .spacing8)
+            outlinedButton("receipt.fail.manual", action: onManualInput)
         }
         .padding(.horizontal, .spacing20)
-        .padding(.top, .spacing24)
+        .padding(.top, .spacing8)
         .padding(.bottom, .spacing16)
         .frame(maxWidth: .infinity)
+    }
+
+    private var closeButton: some View {
+        Button(action: onClose) {
+            Image(systemName: "xmark")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(Color.gray900)
+                .frame(width: 32, height: 32)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 
     // 영수증 문서 아이콘 + 빨간 X 배지
     private var failedIcon: some View {
         ZStack(alignment: .bottomTrailing) {
             Image(systemName: "doc.text.fill")
-                .font(.system(size: 64))
+                .font(.system(size: 28))
                 .foregroundStyle(Color.brandPrimary)
-                .frame(width: 72, height: 72)
+                .frame(width: 32, height: 32)
 
             ZStack {
                 Circle()
                     .fill(Color.systemError)
-                    .frame(width: 28, height: 28)
+                    .frame(width: 16, height: 16)
                     .overlay(
                         Circle()
-                            .stroke(Color.colorWhite, lineWidth: 2)
+                            .stroke(Color.colorWhite, lineWidth: 1.5)
                     )
                 Image(systemName: "xmark")
-                    .font(.system(size: 11, weight: .bold))
+                    .font(.system(size: 7, weight: .bold))
                     .foregroundStyle(Color.colorWhite)
             }
-            .offset(x: 4, y: 4)
+            .offset(x: 3, y: 3)
         }
+    }
+
+    // 촬영 유의사항 안내 박스
+    private var noticeBox: some View {
+        VStack(alignment: .leading, spacing: .spacing8) {
+            Text("receipt.token.notice.title")
+                .font(.pretendard(.semibold, size: 14))
+                .foregroundStyle(Color.gray900)
+
+            VStack(alignment: .leading, spacing: 4) {
+                noticeBullet("receipt.fail.notice.bullet1")
+                noticeBullet("receipt.fail.notice.bullet2")
+                noticeBullet("receipt.fail.notice.bullet3")
+            }
+        }
+        .padding(.spacing16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.gray50, in: RoundedRectangle(cornerRadius: .roundedLg))
+    }
+
+    private func noticeBullet(_ key: LocalizedStringKey) -> some View {
+        HStack(alignment: .top, spacing: .spacing4) {
+            Text("•")
+            Text(key)
+        }
+        .font(.pretendard(.regular, size: 13))
+        .foregroundStyle(Color.gray600)
+        .lineSpacing(3)
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 
@@ -224,6 +263,6 @@ private func outlinedButton(_ label: LocalizedStringKey, action: @escaping () ->
 }
 
 #Preview("분석 실패") {
-    AnalysisFailedSheet(onManualInput: {}, onRetry: {})
+    AnalysisFailedSheet(onManualInput: {}, onRetry: {}, onClose: {})
         .background(Color.colorWhite)
 }

@@ -29,7 +29,7 @@ struct ReceiptPromoSheet: View {
             Spacer().frame(height: .spacing8)
 
             GifImageView(name: "shiny_white")
-                .frame(width: 44, height: 44)
+                .frame(width: 32, height: 32)
 
             Spacer().frame(height: .spacing16)
 

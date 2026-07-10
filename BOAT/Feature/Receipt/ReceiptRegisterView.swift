@@ -165,9 +165,10 @@ struct ReceiptRegisterView: View {
                         onRetry: {
                             activeSheet = nil
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { analyze() }
-                        }
+                        },
+                        onClose: { activeSheet = nil }
                     )
-                    .presentationDetents([.height(360)])
+                    .presentationDetents([.height(480)])
                 }
             }
             .presentationDragIndicator(.hidden)

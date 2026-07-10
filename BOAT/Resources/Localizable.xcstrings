@@ -5,8 +5,17 @@
     "  |  ": {},
     " *": {},
     "!": {},
-    "[TEST] 푸시": {},
     "%lld": {},
+    "%lld / %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld / %2$lld"
+          }
+        }
+      }
+    },
     "%lld/%lld": {
       "localizations": {
         "ko": {
@@ -17,6 +26,7 @@
         }
       }
     },
+    "•": {},
     "• %@": {},
     "|": {},
     "0": {},
@@ -124,6 +134,7 @@
       }
     },
     "detail.memo_placeholder": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -601,7 +612,18 @@
         }
       }
     },
+    "home.days_ago_today": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오늘"
+          }
+        }
+      }
+    },
     "home.dday %lld": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -643,7 +665,6 @@
       }
     },
     "home.expiring_empty": {
-      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -683,6 +704,16 @@
         }
       }
     },
+    "home.label.brand": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "브랜드"
+          }
+        }
+      }
+    },
     "home.label.purchase": {
       "localizations": {
         "ko": {
@@ -694,6 +725,7 @@
       }
     },
     "home.label.vendor": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -704,6 +736,7 @@
       }
     },
     "home.label.warranty": {
+      "extractionState": "stale",
       "localizations": {
         "ko": {
           "stringUnit": {
@@ -760,6 +793,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "로그아웃"
+          }
+        }
+      }
+    },
+    "home.warranty_end %@": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 보증종료"
           }
         }
       }
@@ -1401,16 +1444,6 @@
         }
       }
     },
-    "mypage.section.settings": {
-      "localizations": {
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "설정"
-          }
-        }
-      }
-    },
     "mypage.section.help": {
       "localizations": {
         "ko": {
@@ -1427,6 +1460,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "알림"
+          }
+        }
+      }
+    },
+    "mypage.section.settings": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설정"
           }
         }
       }
@@ -2016,7 +2059,7 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "영수증 다시 업로드"
+            "value": "영수증 다시 업로드하기"
           }
         }
       }
@@ -2026,7 +2069,7 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "사진이 흐릿하거나 인식되지 않았어요.\n다시 시도해 주세요."
+            "value": "다시 업로드하거나 직접 입력으로 등록해 보세요."
           }
         }
       }
@@ -2036,7 +2079,7 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "영수증 분석에 실패했어요"
+            "value": "영수증 분석에 실패했어요!"
           }
         }
       }
@@ -2674,45 +2717,37 @@
       }
     },
     "경고": {},
-    "내용": {},
     "다시 업로드해 주세요": {},
-    "되고 있습니다.": {},
-    "등록된 모든 디바이스로 즉시 발송됩니다.": {},
-    "등록된 영수증이 ": {},
     "로컬 서버": {},
-    "발송": {},
     "분석 결과": {},
     "서버 에러 테스트": {},
-    "안전하게\n관리": {},
-    "제목": {},
     "카메라를 사용할 수 없습니다.": {},
-    "테스트 푸시 발송": {},
-    "home.warranty_end %@": {
+    "receipt.fail.notice.bullet1": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ 보증종료"
+            "value": "영수증 전체가 보이도록 촬영해 주세요."
           }
         }
       }
     },
-    "home.label.brand": {
+    "receipt.fail.notice.bullet2": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "브랜드"
+            "value": "흔들리지 않게 선명하게 찍어주세요."
           }
         }
       }
     },
-    "home.days_ago_today": {
+    "receipt.fail.notice.bullet3": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "오늘"
+            "value": "그림자가 생기지 않도록 촬영해 주세요."
           }
         }
       }
