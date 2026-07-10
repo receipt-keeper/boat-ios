@@ -2751,6 +2751,16 @@
           }
         }
       }
+    },
+    "home.expiring_more_count %lld": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld건"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -113,6 +113,12 @@ private struct ExpiringWarrantySection: View {
     private let mascotOffsetY: CGFloat = 8
     private let mascotTrailing: CGFloat = 44
 
+    // 캐러셀 맨 끝 "N건 더보기" 카드 — 전체 건수가 노출된 카드 수보다 많을 때만.
+    private static let moreCardID = "__more__"
+    private var hasMoreCard: Bool { totalCount > expiring.count }
+    private var moreCount: Int { max(0, totalCount - expiring.count) }
+    private var pageCount: Int { expiring.count + (hasMoreCard ? 1 : 0) }
+
     var body: some View {
         ZStack(alignment: .topTrailing) {
             // 1) 몸통 — 맨 아래 (카드에 하단부가 가려진다)
@@ -127,7 +133,7 @@ private struct ExpiringWarrantySection: View {
                 carousel
 
                 Spacer().frame(height: 14)
-                CarouselIndicator(count: expiring.count, activeIndex: activeIndex)
+                CarouselIndicator(count: pageCount, activeIndex: activeIndex)
                     .frame(maxWidth: .infinity)
             }
             .padding(.top, .spacing24)
@@ -142,8 +148,9 @@ private struct ExpiringWarrantySection: View {
     }
 
     private var activeIndex: Int {
-        guard let visibleID, let idx = expiring.firstIndex(where: { $0.id == visibleID }) else { return 0 }
-        return idx
+        guard let visibleID else { return 0 }
+        if visibleID == Self.moreCardID { return pageCount - 1 }
+        return expiring.firstIndex(where: { $0.id == visibleID }) ?? 0
     }
 
     private func mascot(_ name: String) -> some View {
@@ -194,12 +201,38 @@ private struct ExpiringWarrantySection: View {
                         .onTapGesture { onTap(item) }
                         .id(item.id)
                 }
+                if hasMoreCard {
+                    moreCard
+                        .id(Self.moreCardID)
+                }
             }
             .scrollTargetLayout()
         }
         .contentMargins(.horizontal, .spacing20, for: .scrollContent)
         .scrollTargetBehavior(.viewAligned)
         .scrollPosition(id: $visibleID, anchor: .leading)
+    }
+
+    /// 캐러셀 맨 끝 슬림 카드 — 남은 만료 예정 건수를 안내하고 탭 시 목록으로 이동.
+    private var moreCard: some View {
+        Button(action: onMore) {
+            VStack(spacing: .spacing8) {
+                Text("home.expiring_more_count \(moreCount)")
+                    .font(.pretendard(.bold, size: 18))
+                    .foregroundStyle(Color.colorWhite)
+                HStack(spacing: 2) {
+                    Text("home.more")
+                        .font(.pretendard(.medium, size: 14))
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                }
+                .foregroundStyle(Color.colorWhite.opacity(0.9))
+            }
+            .frame(width: 92)
+            .frame(maxHeight: .infinity)
+            .background(Color.colorWhite.opacity(0.18), in: RoundedRectangle(cornerRadius: .rounded2xl))
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -455,6 +488,12 @@ private struct RecentReceiptItem: View {
 
 #Preview("만료 예정 있음") {
     HomeGeneralView(expiring: HomeMock.expiringWarranties, recent: HomeMock.recentReceipts)
+        .background(Color.gray50)
+}
+
+#Preview("만료 예정 다수(더보기 카드)") {
+    // 전체 8건, 노출 3건 → 캐러셀 끝에 "5건 더보기" 카드 노출
+    HomeGeneralView(expiring: HomeMock.expiringWarranties, expiringTotalCount: 8, recent: HomeMock.recentReceipts)
         .background(Color.gray50)
 }
 
