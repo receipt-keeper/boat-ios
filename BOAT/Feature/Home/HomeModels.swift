@@ -79,7 +79,10 @@ extension Receipt {
         return out.string(from: date)
     }
 
-    /// ISO8601 registeredAt → 오늘까지 경과일 (파싱 실패 시 0)
+    /// ISO8601 registeredAt → 경과일 (파싱 실패 시 0).
+    /// Android(diffMs / 24h, 자정 기준 아님)와 동일하게 "경과 시간 ÷ 24시간" 방식으로 계산한다.
+    /// Calendar.dateComponents(.day)를 쓰면 자정을 막 넘긴 경우 실제로는 몇 분밖에 안 지났어도
+    /// "1일 전"으로 표시돼 Android와 어긋난다.
     private static func daysAgo(_ iso: String?) -> Int {
         guard let iso else { return 0 }
         var date = ISO8601DateFormatter().date(from: iso)
@@ -89,7 +92,8 @@ extension Receipt {
             date = formatter.date(from: iso)
         }
         guard let date else { return 0 }
-        let days = Calendar.current.dateComponents([.day], from: date, to: Date()).day ?? 0
+        let elapsedSeconds = Date().timeIntervalSince(date)
+        let days = Int(elapsedSeconds / 86400)
         return max(0, days)
     }
 }
