@@ -105,9 +105,7 @@ private struct ZoomableImagePage: View {
                 .scaleEffect(scale)
                 .offset(offset)
                 .contentShape(Rectangle())
-                .gesture(magnifyGesture)
-                // 확대 상태(scale > 1)일 때만 팬 제스처를 소비 — 그 외엔 TabView 스와이프가 우선하도록 비활성화.
-                .gesture(dragGesture(in: geo.size), including: scale > 1 ? .all : .subviews)
+                .gesture(zoomPanGesture(size: geo.size))
                 .onTapGesture(count: 2) { resetZoom() }
                 .onTapGesture(count: 1) { onSingleTap() }
         }
@@ -122,6 +120,20 @@ private struct ZoomableImagePage: View {
                 .scaledToFit()
         case .remote(let file):
             AuthenticatedImage(contentPath: file.contentPath, contentMode: .fit)
+        }
+    }
+
+    /// 확대 중(scale > 1)엔 핀치와 팬을 별개의 .gesture()로 따로 붙이면 두 인식기가 같은
+    /// 두 손가락 터치를 놓고 매 프레임 경합하면서 뚝뚝 끊기므로, simultaneously로 하나의
+    /// 인식기처럼 묶어 같이 갱신되게 한다. 확대 전엔 팬 자체를 아예 붙이지 않아 TabView
+    /// 스와이프가 그대로 우선한다(핀치만은 항상 살아있어 확대를 시작할 수 있어야 함).
+    private func zoomPanGesture(size: CGSize) -> AnyGesture<Void> {
+        if scale > 1 {
+            return AnyGesture(
+                magnifyGesture.simultaneously(with: dragGesture(in: size)).map { _ in () }
+            )
+        } else {
+            return AnyGesture(magnifyGesture.map { _ in () })
         }
     }
 
