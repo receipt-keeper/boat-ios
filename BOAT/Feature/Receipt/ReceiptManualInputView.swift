@@ -118,6 +118,16 @@ struct ReceiptManualInputView: View {
     private var remainingSlots: Int { max(0, Self.maxPhotos - images.count) }
     private var canAddMore: Bool { images.count < Self.maxPhotos }
 
+    /// 소분류 칩 노출 순서 — 선택된 항목을 맨 앞으로 재정렬 (나머지는 지정 순서 유지)
+    private var displayedSubcategories: [String] {
+        let base = selectedCategory.orderedSubcategories
+        guard let selected = selectedSubcategory, let index = base.firstIndex(of: selected) else { return base }
+        var reordered = base
+        reordered.remove(at: index)
+        reordered.insert(selected, at: 0)
+        return reordered
+    }
+
     private var totalWarrantyMonths: Int? {
         switch selectedWarranty {
         case 0: return 6
@@ -389,13 +399,14 @@ struct ReceiptManualInputView: View {
                     .stroke(categoryExpanded ? Color.brandPrimary : Color.gray300, lineWidth: 1)
             )
 
-            // 소분류 칩 (지정 순서)
+            // 소분류 칩 — 선택된 항목이 항상 맨 앞에 오도록 재정렬
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: .spacing12) {
-                    ForEach(selectedCategory.orderedSubcategories, id: \.self) { name in
+                    ForEach(displayedSubcategories, id: \.self) { name in
                         subcategoryChip(name)
                     }
                 }
+                .animation(.easeInOut(duration: 0.2), value: selectedSubcategory)
             }
         }
         .padding(.spacing16)
