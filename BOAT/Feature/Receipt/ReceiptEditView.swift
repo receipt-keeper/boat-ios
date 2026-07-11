@@ -754,17 +754,19 @@ struct ReceiptEditView: View {
                 showViewer = true
             }
             .overlay(alignment: .topTrailing) {
-                Button {
-                    removeExistingFile(at: index)
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(Color.colorWhite)
-                        .frame(width: 24, height: 24)
-                        .background(Color.gray900.opacity(0.5), in: Circle())
+                if canRemoveImages {
+                    Button {
+                        removeExistingFile(at: index)
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(Color.colorWhite)
+                            .frame(width: 24, height: 24)
+                            .background(Color.gray900.opacity(0.5), in: Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(6)
                 }
-                .buttonStyle(.plain)
-                .padding(6)
             }
     }
 
@@ -780,18 +782,19 @@ struct ReceiptEditView: View {
                 showViewer = true
             }
             .overlay(alignment: .topTrailing) {
-                Button {
-                    guard canRemoveImages else { return }
-                    newImages.remove(at: index)
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(Color.colorWhite)
-                        .frame(width: 24, height: 24)
-                        .background(Color.gray900.opacity(0.5), in: Circle())
+                if canRemoveImages {
+                    Button {
+                        newImages.remove(at: index)
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(Color.colorWhite)
+                            .frame(width: 24, height: 24)
+                            .background(Color.gray900.opacity(0.5), in: Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(6)
                 }
-                .buttonStyle(.plain)
-                .padding(6)
             }
     }
 
