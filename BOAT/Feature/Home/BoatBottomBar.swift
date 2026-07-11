@@ -33,8 +33,15 @@ struct BoatBottomBar: View {
         .padding(.horizontal, horizontalPadding)
         .frame(maxWidth: .infinity)
         .frame(height: barHeight)
-        .background(Capsule().fill(.ultraThinMaterial))
-        .overlay(Capsule().stroke(Color.colorWhite.opacity(0.6), lineWidth: 1))
+        // Android(HazeStyle: backgroundColor=White, tint=White 12%)와 동일하게 흰색으로 틴트한
+        // 프로스트 유리 — .ultraThinMaterial 단독으로는 배경(파란 히어로)의 색·명도를 그대로
+        // 반영해 탁하고 어둡게 보인다.
+        .background {
+            Capsule()
+                .fill(.ultraThinMaterial)
+                .overlay(Capsule().fill(Color.colorWhite.opacity(0.12)))
+        }
+        .overlay(Capsule().stroke(Color.colorWhite.opacity(0.7), lineWidth: 1))
         // 등록 메뉴 노출 시 pill도 함께 dim 처리 (탭하면 닫힘)
         .overlay {
             if dimmed {
@@ -62,16 +69,17 @@ struct BoatBottomBar: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 24, height: 24)
+                    .foregroundStyle(selected ? Color.brandPrimary : Color.gray900)
                 Text(label)
-                    .font(.pretendard(.medium, size: 11))
+                    .font(.pretendard(selected ? .semibold : .medium, size: 11))
+                    .foregroundStyle(selected ? Color.brandPrimary : Color.gray700)
             }
-            .foregroundStyle(selected ? Color.brandPrimary : Color.gray800)
             .frame(height: 46)          // 선택 하이라이트 높이 (62 pill 내 상하 8 여백)
             .padding(.horizontal, 16)   // 하이라이트 좌우 패딩
             // 선택 탭 뒤 연한 파란 라운드 하이라이트 (탭 전환 시 페이드)
             .background {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(Color.brandQuaternary)
+                    .fill(Color.brandSenary)
                     .opacity(selected ? 1 : 0)
             }
             .contentShape(Rectangle())

@@ -158,9 +158,14 @@ struct MainTabView: View {
                 // 메뉴가 열리면 +가 45도 회전해 X 모양이 되고, 탭하면 닫힘(toggle)
                 .rotationEffect(.degrees(showAddMenu ? 45 : 0))
                 .frame(width: 62, height: 62) // pill 높이와 동일
-                .background(.ultraThinMaterial, in: Circle())
+                // 하단 탭 pill과 동일한 흰색 틴트 프로스트 유리(Android HazeStyle 대응)
+                .background {
+                    Circle()
+                        .fill(.ultraThinMaterial)
+                        .overlay(Circle().fill(Color.colorWhite.opacity(0.12)))
+                }
                 .overlay(
-                    Circle().stroke(Color.colorWhite.opacity(0.6), lineWidth: 1)
+                    Circle().stroke(Color.colorWhite.opacity(0.7), lineWidth: 1)
                 )
                 .shadow(color: .black.opacity(0.12), radius: 16, y: 6)
         }
