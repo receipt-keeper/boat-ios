@@ -616,8 +616,15 @@ struct ReceiptRegisterView: View {
     }
 
     /// 토큰 소진 시트 노출 전 프로모션 상태를 미리 조회 — redeemable일 때만 충전 버튼을 보여준다.
+    /// 무료 토큰 소진 직후엔 서버에서 충전 이벤트가 redeemable로 반영되기까지 약간의 지연이 있을 수 있어,
+    /// 첫 조회가 redeemable이 아니면 잠깐 기다렸다가 한 번 더 조회한다(그래도 아니면 "모두 소진"으로 확정).
     private func presentNoTokenSheet() async {
-        pendingPromo = try? await PromotionRepository.shared.fetchOcrRecharge()
+        var promo = try? await PromotionRepository.shared.fetchOcrRecharge()
+        if promo?.state != .redeemable {
+            try? await Task.sleep(for: .milliseconds(700))
+            promo = (try? await PromotionRepository.shared.fetchOcrRecharge()) ?? promo
+        }
+        pendingPromo = promo
         activeSheet = .noToken
     }
 
