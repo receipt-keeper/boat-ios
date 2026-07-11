@@ -506,6 +506,14 @@ struct ReceiptRegisterView: View {
                 }
                 .buttonStyle(.plain)
                 .padding(6)
+                // 상위 Image의 onTapGesture(뷰어 열기)가 같은 영역에서 이 버튼의 탭을
+                // 가로채는 경우가 있어, 삭제 탭이 항상 먼저 인식되도록 우선순위를 준다.
+                .highPriorityGesture(
+                    TapGesture().onEnded {
+                        images.remove(at: index)
+                        analyzeFailed = false
+                    }
+                )
             }
     }
 
