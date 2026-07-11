@@ -99,6 +99,9 @@ private struct ZoomableImagePage: View {
         GeometryReader { geo in
             content
                 .frame(width: geo.size.width, height: geo.size.height)
+                // 확대/드래그 시마다 원본 이미지를 다시 그리지 않도록, 변형 전에 하나의 텍스처로
+                // 평탄화한다 (GPU 합성만 하면 되므로 팬 제스처 중 끊김이 사라진다).
+                .drawingGroup()
                 .scaleEffect(scale)
                 .offset(offset)
                 .contentShape(Rectangle())
