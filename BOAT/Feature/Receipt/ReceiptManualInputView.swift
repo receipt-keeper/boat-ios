@@ -25,6 +25,9 @@ struct ReceiptManualInputView: View {
     /// OCR 분석 성공 후 진입(true) — 타이틀 "영수증 입력" + 추가하기 타일이 맨 뒤로 이동.
     /// 직접 입력 진입(false) — 타이틀 "영수증 직접 입력" + 추가하기 타일이 맨 앞.
     private let isFromOCR: Bool
+    /// OCR로 최초 설정된 소분류(현재 OcrAnalysis엔 subCategory가 없어 항상 nil) — 진입 시점
+    /// 값만 소분류 칩 맨 앞 고정에 쓰고, 이후 사용자가 다른 소분류로 바꿔도 이 값은 안 바뀐다.
+    private let originalSubcategory: String?
 
     private static let maxPhotos = 5
     private static let warrantyOptions: [LocalizedStringKey] = [
@@ -79,6 +82,7 @@ struct ReceiptManualInputView: View {
         self.onBack = onBack
         self.onComplete = onComplete
         self.isFromOCR = ocrResult != nil
+        self.originalSubcategory = nil
 
         // 기본 대분류는 주방가전 (디자인 기본값). OCR 카테고리가 있으면 그걸로.
         _selectedCategory = State(initialValue: .kitchen)
@@ -118,13 +122,14 @@ struct ReceiptManualInputView: View {
     private var remainingSlots: Int { max(0, Self.maxPhotos - images.count) }
     private var canAddMore: Bool { images.count < Self.maxPhotos }
 
-    /// 소분류 칩 노출 순서 — 선택된 항목을 맨 앞으로 재정렬 (나머지는 지정 순서 유지)
+    /// 소분류 칩 노출 순서 — OCR로 최초 설정된 소분류만 맨 앞에 고정(1회성). 이후 사용자가
+    /// 다른 소분류를 직접 선택해도 배열 순서 자체는 바뀌지 않는다(선택 표시만 이동).
     private var displayedSubcategories: [String] {
         let base = selectedCategory.orderedSubcategories
-        guard let selected = selectedSubcategory, let index = base.firstIndex(of: selected) else { return base }
+        guard let original = originalSubcategory, let index = base.firstIndex(of: original) else { return base }
         var reordered = base
         reordered.remove(at: index)
-        reordered.insert(selected, at: 0)
+        reordered.insert(original, at: 0)
         return reordered
     }
 
@@ -401,14 +406,13 @@ struct ReceiptManualInputView: View {
                     .stroke(categoryExpanded ? Color.brandPrimary : Color.gray300, lineWidth: 1)
             )
 
-            // 소분류 칩 — 선택된 항목이 항상 맨 앞에 오도록 재정렬
+            // 소분류 칩 — OCR로 최초 설정된 소분류만 맨 앞에 고정, 이후 선택 변경엔 순서 유지.
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: .spacing12) {
                     ForEach(displayedSubcategories, id: \.self) { name in
                         subcategoryChip(name)
                     }
                 }
-                .animation(.easeInOut(duration: 0.2), value: selectedSubcategory)
             }
         }
         .padding(.spacing16)

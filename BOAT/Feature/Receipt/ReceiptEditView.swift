@@ -162,13 +162,14 @@ struct ReceiptEditView: View {
     private var totalFileCount: Int { existingFiles.count + newImages.count }
     private var canAddMore: Bool { totalFileCount < Self.maxPhotos }
 
-    /// 소분류 칩 노출 순서 — 선택된 항목을 맨 앞으로 재정렬 (나머지는 지정 순서 유지)
+    /// 소분류 칩 노출 순서 — 진입 시점의 기존 소분류만 맨 앞에 고정(1회성). 이후 사용자가
+    /// 다른 소분류를 직접 선택해도 배열 순서 자체는 바뀌지 않는다(선택 표시만 이동).
     private var displayedSubcategories: [String] {
         let base = selectedCategory.orderedSubcategories
-        guard let selected = selectedSubcategory, let index = base.firstIndex(of: selected) else { return base }
+        guard let original = originalSubcategory, let index = base.firstIndex(of: original) else { return base }
         var reordered = base
         reordered.remove(at: index)
-        reordered.insert(selected, at: 0)
+        reordered.insert(original, at: 0)
         return reordered
     }
     private var remainingSlots: Int { max(0, Self.maxPhotos - totalFileCount) }
@@ -420,14 +421,13 @@ struct ReceiptEditView: View {
                     .stroke(categoryExpanded ? Color.brandPrimary : Color.gray300, lineWidth: 1)
             )
 
-            // 소분류 칩 — 선택된 항목이 항상 맨 앞에 오도록 재정렬
+            // 소분류 칩 — 진입 시점의 기존 소분류만 맨 앞에 고정, 이후 선택 변경엔 순서 유지.
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: .spacing12) {
                     ForEach(displayedSubcategories, id: \.self) { name in
                         subcategoryChip(name)
                     }
                 }
-                .animation(.easeInOut(duration: 0.2), value: selectedSubcategory)
             }
         }
         .padding(.spacing16)
