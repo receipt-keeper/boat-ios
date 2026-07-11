@@ -886,12 +886,13 @@ struct ReceiptEditView: View {
     private func warrantyChip(_ label: LocalizedStringKey, selected: Bool, onTap: @escaping () -> Void) -> some View {
         Button(action: onTap) {
             Text(label)
-                .font(.pretendard(.medium, size: 13))
-                .foregroundStyle(selected ? Color.brandPrimary : Color.gray700)
+                .font(.pretendard(selected ? .semibold : .medium, size: 13))
+                .foregroundStyle(selected ? Color.colorWhite : Color.gray700)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
+                .background(selected ? Color.brandPrimary : Color.clear, in: Capsule())
                 .overlay(
-                    Capsule().stroke(selected ? Color.brandPrimary : Color.gray300, lineWidth: 1)
+                    Capsule().stroke(selected ? Color.clear : Color.gray300, lineWidth: 1)
                 )
         }
         .buttonStyle(.plain)
