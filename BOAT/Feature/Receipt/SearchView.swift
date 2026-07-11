@@ -39,6 +39,10 @@ struct SearchView: View {
             focused = true
         }
         .onChange(of: query) { _, newValue in
+            if newValue.count > 100 {
+                query = String(newValue.prefix(100))
+                return
+            }
             searchTask?.cancel()
             let trimmed = newValue.trimmingCharacters(in: .whitespaces)
             guard !trimmed.isEmpty else {
