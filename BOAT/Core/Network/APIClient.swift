@@ -61,14 +61,7 @@ final class APIClient {
                 throw APIError.network
             }
             // 4xx → 상태코드는 항상 보존 (404 판별 등에 필요), 메시지는 서버 본문 우선
-            let serverMessage: String
-            if let data = response.data,
-               let envelope = try? JSONDecoder().decode(APIResponse<APIErrorData>.self, from: data),
-               let msg = envelope.data?.message, !msg.isEmpty {
-                serverMessage = msg
-            } else {
-                serverMessage = String(localized: "error.api.unknown")
-            }
+            let serverMessage = Self.parseErrorMessage(from: response.data)
             throw APIError.server(statusCode: statusCode, message: serverMessage)
         }
     }
@@ -132,19 +125,29 @@ final class APIClient {
         case .failure:
             guard let statusCode = response.response?.statusCode else { throw APIError.network }
             if statusCode >= 500 { throw APIError.network }
-            let serverMessage: String
-            if let data = response.data,
-               let envelope = try? JSONDecoder().decode(APIResponse<APIErrorData>.self, from: data),
-               let msg = envelope.data?.message, !msg.isEmpty {
-                serverMessage = msg
-            } else {
-                serverMessage = String(localized: "error.api.unknown")
-            }
+            let serverMessage = Self.parseErrorMessage(from: response.data)
             throw APIError.server(statusCode: statusCode, message: serverMessage)
         }
     }
 
     // MARK: - Private
+
+    /// 실패 응답 본문에서 사용자 노출 문구를 꺼낸다.
+    /// errors 목록이 있으면 첫 번째 필드 에러 메시지를 우선하고, 없으면 data.message를 사용한다.
+    /// (Android ApiErrorParser.parseMessage와 동일 규칙)
+    private static func parseErrorMessage(from data: Data?) -> String {
+        guard let data,
+              let envelope = try? JSONDecoder().decode(APIResponse<APIErrorData>.self, from: data) else {
+            return String(localized: "error.api.unknown")
+        }
+        if let fieldMessage = envelope.data?.errors?.first?.message, !fieldMessage.isEmpty {
+            return fieldMessage
+        }
+        if let message = envelope.data?.message, !message.isEmpty {
+            return message
+        }
+        return String(localized: "error.api.unknown")
+    }
 
     private func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
         // 204 No Content 등 본문이 비어있고 data가 필요 없는 응답(EmptyData)은 성공 처리

@@ -856,7 +856,7 @@ struct ReceiptManualInputView: View {
                 let receipt = try await ReceiptRepository.shared.createReceipt(images: imagesToUpload, fields: fields)
                 completedReceipt = receipt
             } catch {
-                toast.showError(String(localized: "receipt.register.fail"))
+                toast.showError((error as? LocalizedError)?.errorDescription ?? String(localized: "receipt.register.fail"))
             }
         }
     }
