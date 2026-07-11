@@ -184,7 +184,8 @@ struct ReceiptManualInputView: View {
     }
 
     private var canSubmit: Bool {
-        !productName.trimmingCharacters(in: .whitespaces).isEmpty
+        !images.isEmpty
+            && !productName.trimmingCharacters(in: .whitespaces).isEmpty
             && !purchaseDate.isEmpty
             && totalWarrantyMonths != nil
     }
