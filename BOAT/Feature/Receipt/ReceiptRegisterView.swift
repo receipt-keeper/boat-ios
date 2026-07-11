@@ -81,6 +81,7 @@ struct ReceiptRegisterView: View {
 
                         Spacer().frame(height: .spacing12)
                         noticeSection
+                            .zIndex(1) // 펼쳐졌을 때 아래 첨부내역 섹션 위로 덮이도록
 
                         Spacer().frame(height: .spacing24)
                         attachmentsHeader
@@ -328,7 +329,18 @@ struct ReceiptRegisterView: View {
 
     // MARK: - 유의사항 (접이식)
 
+    /// 유의사항 헤더 행의 collapsed 높이. 펼침 여부와 무관하게 레이아웃(스크롤 흐름)에서는
+    /// 항상 이 높이만 차지한다 — 펼쳐진 내용은 noticeCard가 overlay로 그 아래를 덮으며
+    /// 표시되므로, 첨부내역 섹션이 아래로 밀려나지 않고 펼쳐진 카드 뒤에 가려지는 개념이 된다.
+    private let noticeCollapsedHeight: CGFloat = 52
+
     private var noticeSection: some View {
+        Color.clear
+            .frame(height: noticeCollapsedHeight)
+            .overlay(alignment: .top) { noticeCard }
+    }
+
+    private var noticeCard: some View {
         VStack(alignment: .leading, spacing: 0) {
             Button {
                 withAnimation(.easeInOut(duration: 0.2)) { noticeExpanded.toggle() }
@@ -345,7 +357,7 @@ struct ReceiptRegisterView: View {
                         .rotationEffect(.degrees(noticeExpanded ? 180 : 0))
                 }
                 .padding(.horizontal, .spacing16)
-                .frame(height: 52)
+                .frame(height: noticeCollapsedHeight)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
@@ -382,6 +394,7 @@ struct ReceiptRegisterView: View {
             RoundedRectangle(cornerRadius: .roundedLg)
                 .stroke(Color.gray300, lineWidth: 1)
         )
+        .shadow(color: .black.opacity(noticeExpanded ? 0.08 : 0), radius: 12, y: 4)
     }
 
     private var noticeIcon: some View {
