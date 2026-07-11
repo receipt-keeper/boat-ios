@@ -166,10 +166,9 @@ struct ReceiptRegisterView: View {
                 case .failed:
                     AnalysisFailedSheet(
                         onManualInput: { openManualInput() },
-                        onRetry: {
-                            activeSheet = nil
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { analyze() }
-                        },
+                        // 시트만 내리고 등록 화면(실패 오버레이 표시된 첨부 목록)에 그대로 머무른다.
+                        // 재분석은 사용자가 이미지를 교체한 뒤 직접 "분석 시작"을 눌러야 한다.
+                        onRetry: { activeSheet = nil },
                         onClose: { activeSheet = nil }
                     )
                     .presentationDetents([.height(480)])
