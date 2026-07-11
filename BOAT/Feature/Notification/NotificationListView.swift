@@ -3,8 +3,9 @@
 //  BOAT
 //
 //  상단 종 아이콘 → 수신 알림 목록. Android NotificationListScreen 대응.
-//  GET /api/v1/notifications 로 미읽음 알림을 불러와 카드형 리스트로 표시.
-//  카드 탭 → 읽음 처리(목록에서 제거) 후 리소스로 라우팅
+//  GET /api/v1/notifications 로 읽음/미읽음 알림을 모두 불러와 카드형 리스트로 표시.
+//  이미 읽은 카드는 흐리게 표시 + 탭 비활성화(disabled).
+//  카드 탭 → 읽음 처리(목록엔 남기고 disabled로 전환) 후 리소스로 라우팅
 //  (messageType=marketing → 홈 / receipt+resourceId → 상세 / kind=registration_prompt → 영수증 등록).
 //
 
@@ -35,6 +36,9 @@ struct NotificationListView: View {
                             NotificationCard(item: item)
                                 .contentShape(Rectangle())
                                 .onTapGesture { handleTap(item) }
+                                // 이미 읽은 알림은 다시 누를 필요가 없으므로 흐리게 + 탭 비활성화.
+                                .opacity(item.isRead ? 0.5 : 1)
+                                .allowsHitTesting(!item.isRead)
                         }
                     }
                     .padding(.horizontal, .spacing20)
@@ -64,7 +68,7 @@ struct NotificationListView: View {
     // MARK: - 탭 라우팅 (Android route() 대응)
 
     private func handleTap(_ item: AppNotification) {
-        viewModel.markReadAndRemove(item)
+        viewModel.markAsRead(item)
         if item.messageType == "marketing" {
             // 홈 탭으로 이동 — 목록 자체를 닫고 MainTabView가 NotificationRouter를 관찰해 전환.
             NotificationRouter.shared.shouldOpenHome = true
