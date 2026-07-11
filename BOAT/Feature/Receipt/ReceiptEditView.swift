@@ -174,9 +174,9 @@ struct ReceiptEditView: View {
     private var remainingSlots: Int { max(0, Self.maxPhotos - totalFileCount) }
     /// 첨부 이미지는 수정 후에도 최소 1장 이상 유지해야 한다 (서버 스펙).
     private var canRemoveImages: Bool { totalFileCount > Self.minPhotos }
-    /// 이미지 뷰어용 전체 목록 — 화면에 보이는 순서(기존 첨부 → 신규 첨부)와 동일해야 인덱스가 맞는다.
+    /// 이미지 뷰어용 전체 목록 — 화면에 보이는 순서(최근 추가한 신규 첨부 → 기존 첨부)와 동일해야 인덱스가 맞는다.
     private var viewerItems: [ImageViewerItem] {
-        existingFiles.map { .remote($0) } + newImages.map { .local($0) }
+        newImages.reversed().map { .local($0) } + existingFiles.map { .remote($0) }
     }
 
     private var totalWarrantyMonths: Int? {
@@ -706,16 +706,18 @@ struct ReceiptEditView: View {
                 .font(.pretendard(.bold, size: 18))
                 .foregroundStyle(Color.gray900)
 
+            // "+" 추가 버튼은 항상 맨 왼쪽 고정. 그다음은 가장 최근에 추가한 신규 이미지부터,
+            // 마지막으로 기존 첨부 순서로 배치한다.
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: .spacing12) {
-                    ForEach(Array(existingFiles.enumerated()), id: \.element.fileId) { index, file in
-                        existingFileThumbnail(file, index: index)
-                    }
-                    ForEach(Array(newImages.enumerated()), id: \.offset) { index, image in
-                        imageThumbnail(image, index: index)
-                    }
                     if canAddMore {
                         addTile
+                    }
+                    ForEach(Array(newImages.enumerated().reversed()), id: \.offset) { index, image in
+                        imageThumbnail(image, index: index, viewerIndex: newImages.count - 1 - index)
+                    }
+                    ForEach(Array(existingFiles.enumerated()), id: \.element.fileId) { index, file in
+                        existingFileThumbnail(file, index: index)
                     }
                 }
             }
@@ -762,7 +764,7 @@ struct ReceiptEditView: View {
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
             .contentShape(RoundedRectangle(cornerRadius: .roundedLg))
             .onTapGesture {
-                viewerIndex = index
+                viewerIndex = newImages.count + index
                 showViewer = true
             }
             .overlay(alignment: .topTrailing) {
@@ -782,7 +784,7 @@ struct ReceiptEditView: View {
             }
     }
 
-    private func imageThumbnail(_ image: UIImage, index: Int) -> some View {
+    private func imageThumbnail(_ image: UIImage, index: Int, viewerIndex viewerIdx: Int) -> some View {
         Image(uiImage: image)
             .resizable()
             .scaledToFill()
@@ -790,7 +792,7 @@ struct ReceiptEditView: View {
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
             .contentShape(RoundedRectangle(cornerRadius: .roundedLg))
             .onTapGesture {
-                viewerIndex = existingFiles.count + index
+                viewerIndex = viewerIdx
                 showViewer = true
             }
             .overlay(alignment: .topTrailing) {
