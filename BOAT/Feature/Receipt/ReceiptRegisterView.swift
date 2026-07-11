@@ -653,6 +653,8 @@ struct ReceiptRegisterView: View {
                 let granted = result.benefit?.amount ?? promo.benefit?.amount ?? 5
                 toast.show(String(localized: "receipt.recharge.success \(granted)"), type: .info)
                 await checkUsage() // canAnalyze 재확인
+                // 충전 즉시 분석까지 이어서 진행 — 업로드 화면에 머물지 않고 바로 OCR 분석 시작.
+                analyze()
             case .alreadyRedeemed:
                 toast.show(String(localized: "receipt.recharge.already"), type: .info)
             case .unavailable, .expired, .exhausted, .unknown:
