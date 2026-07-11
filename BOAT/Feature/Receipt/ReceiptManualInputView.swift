@@ -25,8 +25,8 @@ struct ReceiptManualInputView: View {
     /// OCR 분석 성공 후 진입(true) — 타이틀 "영수증 입력" + 추가하기 타일이 맨 뒤로 이동.
     /// 직접 입력 진입(false) — 타이틀 "영수증 직접 입력" + 추가하기 타일이 맨 앞.
     private let isFromOCR: Bool
-    /// OCR로 최초 설정된 소분류(현재 OcrAnalysis엔 subCategory가 없어 항상 nil) — 진입 시점
-    /// 값만 소분류 칩 맨 앞 고정에 쓰고, 이후 사용자가 다른 소분류로 바꿔도 이 값은 안 바뀐다.
+    /// OCR로 최초 설정된(또는 매칭 실패 시 nil) 소분류 — 진입 시점 값만 소분류 칩 맨 앞
+    /// 고정에 쓰고, 이후 사용자가 다른 소분류로 바꿔도 이 값은 안 바뀐다.
     private let originalSubcategory: String?
 
     private static let maxPhotos = 5
@@ -82,15 +82,24 @@ struct ReceiptManualInputView: View {
         self.onBack = onBack
         self.onComplete = onComplete
         self.isFromOCR = ocrResult != nil
-        self.originalSubcategory = nil
 
         // 기본 대분류는 주방가전 (디자인 기본값). OCR 카테고리가 있으면 그걸로.
-        _selectedCategory = State(initialValue: .kitchen)
+        var category = DeviceCategory.kitchen
+        if let cat = ocrResult?.category, let matched = DeviceCategory.from(serverValue: cat) {
+            category = matched
+        }
+        _selectedCategory = State(initialValue: category)
+
+        // OCR이 인식한 소분류 — 매칭되면 소분류 칩 초기 선택 + 맨 앞 고정 기준값으로 쓴다.
+        let subcategory = Self.matchSubcategory(ocrResult?.subCategory, in: category)
+        _selectedSubcategory = State(initialValue: subcategory)
+        self.originalSubcategory = subcategory
 
         guard let ocr = ocrResult else { return }
 
         _productName = State(initialValue: ocr.itemName ?? "")
         _brand = State(initialValue: ocr.brandName ?? "")
+        _serial = State(initialValue: ocr.serialNumber ?? "")
 
         if let dateStr = ocr.paymentDate {
             let parts = dateStr.split(separator: "-").map(String.init)
@@ -100,9 +109,6 @@ struct ReceiptManualInputView: View {
         }
         if let amount = ocr.totalAmount {
             _price = State(initialValue: "\(amount)")
-        }
-        if let cat = ocr.category, let category = DeviceCategory.from(serverValue: cat) {
-            _selectedCategory = State(initialValue: category)
         }
         if let months = ocr.periodMonths {
             switch months {
@@ -115,6 +121,14 @@ struct ReceiptManualInputView: View {
                 _customMonthsText = State(initialValue: "\(months)")
             }
         }
+    }
+
+    /// 서버 subCategory 원문을 대분류의 지정 소분류 목록 중 하나로 정규화 매칭 (없으면 nil).
+    /// (ReceiptEditView.matchSubcategory와 동일 로직)
+    private static func matchSubcategory(_ raw: String?, in category: DeviceCategory) -> String? {
+        guard let raw, !raw.isEmpty else { return nil }
+        let key = DeviceCategory.normalizeCategory(raw)
+        return category.orderedSubcategories.first { DeviceCategory.normalizeCategory($0) == key }
     }
 
     // MARK: - Computed

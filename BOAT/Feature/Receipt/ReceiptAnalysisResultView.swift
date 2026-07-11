@@ -95,12 +95,14 @@ struct ReceiptAnalysisResultView: View {
         result: OcrAnalysis(
             itemName: "삼성 냉장고 875L",
             brandName: "삼성",
+            serialNumber: "SN-20240526-001",
             paymentLocation: "전자랜드",
             paymentDate: "2024-05-26",
             totalAmount: 5137000,
             periodMonths: 12,
             expiresOn: "2025-05-26",
             category: "가전",
+            subCategory: "냉장고",
             needsReview: true,
             warnings: ["무상 AS 기간을 찾지 못해 12개월 기본값을 적용했습니다."]
         ),
