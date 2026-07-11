@@ -53,7 +53,7 @@ struct ReceiptRegisterCompleteView: View {
         .background(Color.colorWhite)
         // 뒤로가기 없이 상세로 이동 — 여기서 뒤로가면(onBack) 완료 화면으로 돌아오지 않고 바로 홈으로.
         .fullScreenCover(isPresented: $showDetail) {
-            ReceiptDetailView(receiptId: receiptId, onBack: onGoHome)
+            ReceiptDetailView(receiptId: receiptId, onBack: onGoHome, showCloseButton: true)
         }
     }
 

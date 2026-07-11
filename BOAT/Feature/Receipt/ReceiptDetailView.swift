@@ -15,6 +15,9 @@ struct ReceiptDetailView: View {
     let onBack: () -> Void
     /// 삭제 완료 콜백 — 상위(목록)에서 목록 갱신 + 삭제 토스트 + 상세 닫기 처리
     var onDeleted: () -> Void = {}
+    /// true면 상단 좌측 버튼을 뒤로가기(←) 대신 닫기(X)로 표시.
+    /// 등록 완료 화면의 "보러가기"처럼 이전 화면으로 돌아갈 수 없는 진입 경로에서 사용.
+    var showCloseButton: Bool = false
 
     @Environment(\.openURL) private var openURL
 
@@ -136,7 +139,7 @@ struct ReceiptDetailView: View {
     private var topBar: some View {
         HStack {
             Button(action: onBack) {
-                Image("icChevronLeft")
+                Image(showCloseButton ? "icon_close" : "icChevronLeft")
                     .renderingMode(.template)
                     .foregroundStyle(Color.gray900)
                     .frame(width: 24, height: 24)
