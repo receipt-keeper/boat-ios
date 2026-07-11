@@ -994,6 +994,16 @@
         }
       }
     },
+    "manual.image_required": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "영수증 이미지를 1장 이상 등록해 주세요."
+          }
+        }
+      }
+    },
     "manual.image_section": {
       "localizations": {
         "ko": {

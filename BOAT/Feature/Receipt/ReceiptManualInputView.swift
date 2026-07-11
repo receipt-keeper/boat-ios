@@ -316,7 +316,7 @@ struct ReceiptManualInputView: View {
 
     private var imageSection: some View {
         VStack(alignment: .leading, spacing: .spacing12) {
-            sectionTitle("manual.image_section")
+            sectionTitle("manual.image_section", required: true)
 
             // 직접 입력: + 버튼 항상 왼쪽 고정. OCR 분석 결과 확인: + 버튼이 이미지들 뒤로 밀려남.
             ScrollView(.horizontal, showsIndicators: false) {
@@ -719,16 +719,24 @@ struct ReceiptManualInputView: View {
                 )
         }
         .buttonStyle(.plain)
-        .disabled(!enabled)
+        // 이미지 미첨부 시 탭해서 경고 토스트를 띄워야 하므로 여기서 막지 않고 submit() 안에서 처리한다.
+        .disabled(isSubmitting)
     }
 
     // MARK: - 작은 컴포넌트
 
-    private func sectionTitle(_ key: LocalizedStringKey) -> some View {
-        Text(key)
-            .font(.pretendard(.bold, size: 18))
-            .foregroundStyle(Color.gray900)
-            .frame(maxWidth: .infinity, alignment: .leading)
+    private func sectionTitle(_ key: LocalizedStringKey, required: Bool = false) -> some View {
+        HStack(spacing: 0) {
+            Text(key)
+                .font(.pretendard(.bold, size: 18))
+                .foregroundStyle(Color.gray900)
+            if required {
+                Text(" *")
+                    .font(.pretendard(.bold, size: 18))
+                    .foregroundStyle(Color.systemError)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func collapsibleHeader(_ key: LocalizedStringKey, expanded: Binding<Bool>) -> some View {
@@ -864,7 +872,12 @@ struct ReceiptManualInputView: View {
     }
 
     private func submit() {
-        guard canSubmit, !isSubmitting else { return }
+        guard !isSubmitting else { return }
+        guard !images.isEmpty else {
+            toast.showError(String(localized: "manual.image_required"))
+            return
+        }
+        guard canSubmit else { return }
 
         let sub = (selectedSubcategory == "기타" ? nil : selectedSubcategory)
         let fields = ReceiptCreateFields(
