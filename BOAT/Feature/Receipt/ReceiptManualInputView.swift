@@ -290,11 +290,10 @@ struct ReceiptManualInputView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: .spacing12) {
-                    if !isFromOCR { addTile }
                     ForEach(Array(images.enumerated()), id: \.offset) { index, image in
                         imageThumbnail(image, index: index)
                     }
-                    if isFromOCR { addTile }
+                    addTile
                 }
             }
         }

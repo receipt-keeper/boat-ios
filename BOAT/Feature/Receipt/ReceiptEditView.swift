@@ -637,14 +637,14 @@ struct ReceiptEditView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: .spacing12) {
-                    if canAddMore {
-                        addTile
-                    }
                     ForEach(Array(existingFiles.enumerated()), id: \.element.fileId) { index, file in
                         existingFileThumbnail(file, index: index)
                     }
                     ForEach(Array(newImages.enumerated()), id: \.offset) { index, image in
                         imageThumbnail(image, index: index)
+                    }
+                    if canAddMore {
+                        addTile
                     }
                 }
             }
