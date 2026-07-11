@@ -15,12 +15,23 @@ struct NotificationPermissionGate: View {
 
     @Environment(PermissionManager.self) private var permissions
 
+    @State private var showPriming = false
     @State private var showSettingsDialog = false
 
     var body: some View {
         Color.clear
             .frame(width: 0, height: 0)
             .task { await check() }
+            // 미결정 상태 → 시스템 다이얼로그 전에 목적을 먼저 설명 (App Store 심사 가이드 5.1.1 —
+            // "왜 필요한지 맥락 없이 바로 시스템 권한을 띄우지 말 것")
+            .boatDialog(
+                isPresented: $showPriming,
+                title: "permission.notif.title",
+                message: "permission.notif.message",
+                confirmText: "permission.notif.confirm",
+                cancelText: "permission.notif.later",
+                onConfirm: { Task { await requestAfterPriming() } }
+            )
             .boatDialog(
                 isPresented: $showSettingsDialog,
                 title: "permission.notif.denied_title",
@@ -31,7 +42,7 @@ struct NotificationPermissionGate: View {
             )
     }
 
-    /// 알림이 꺼져 있으면: 미결정 상태 → 시스템 권한 요청 / 거부 상태 → 설정 유도 다이얼로그.
+    /// 알림이 꺼져 있으면: 미결정 상태 → 사전 설명 다이얼로그 / 거부 상태 → 설정 유도 다이얼로그.
     /// MainTabView가 살아있는 동안(로그인 세션) 한 번만 호출된다.
     private func check() async {
         await permissions.refreshAll()
@@ -39,11 +50,16 @@ struct NotificationPermissionGate: View {
         case .granted:
             break
         case .notDetermined:
-            _ = await permissions.requestNotificationPermission()
-            if permissions.notificationStatus == .denied {
-                showSettingsDialog = true
-            }
+            showPriming = true
         case .denied:
+            showSettingsDialog = true
+        }
+    }
+
+    /// 사전 설명 다이얼로그에서 "알림 받기" 확인 시에만 실제 시스템 권한 다이얼로그 노출
+    private func requestAfterPriming() async {
+        _ = await permissions.requestNotificationPermission()
+        if permissions.notificationStatus == .denied {
             showSettingsDialog = true
         }
     }
