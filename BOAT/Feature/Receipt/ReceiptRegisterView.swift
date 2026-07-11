@@ -585,6 +585,8 @@ struct ReceiptRegisterView: View {
         guard slots > 0 else { showMaxAlert = true; return }
         images.append(contentsOf: new.prefix(slots))
         analyzeFailed = false
+        // 사진을 1장 이상 등록하면 유의사항 아코디언을 자동으로 접는다.
+        withAnimation(.easeInOut(duration: 0.2)) { noticeExpanded = false }
     }
 
     private func loadGalleryImages(_ items: [PhotosPickerItem]) {
