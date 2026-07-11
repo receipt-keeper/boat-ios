@@ -39,7 +39,9 @@ final class ReceiptListViewModel {
 
     /// 탭/정렬/카테고리 변경 또는 첫 진입 시 호출 — 첫 페이지부터 다시 조회.
     /// q: 검색어(제품명/메모) — 검색 화면에서만 사용, 목록 탭에서는 nil.
-    func reload(tab: ReceiptTab, sort: ReceiptSort, filter: ReceiptFilter, q: String? = nil) async {
+    /// silent: 다른 화면의 변경(등록/수정/삭제) 동기화용 배경 재조회. true면 로딩 스피너를 띄우지
+    ///   않고 기존 목록을 유지한 채 새 데이터로 교체한다(전체 리스트가 잠깐 사라졌다 나타나는 깜빡임 방지).
+    func reload(tab: ReceiptTab, sort: ReceiptSort, filter: ReceiptFilter, q: String? = nil, silent: Bool = false) async {
         self.tab = tab
         self.sort = sort
         self.filter = filter
@@ -48,7 +50,7 @@ final class ReceiptListViewModel {
         generation += 1
         let token = generation
 
-        isLoading = true
+        if !silent { isLoading = true }
         isLoadingMore = false
         errorMessage = nil
 
@@ -63,12 +65,15 @@ final class ReceiptListViewModel {
             hasNext = data.pagination.hasNext
         } catch {
             guard token == generation else { return }
-            receipts = []
-            totalCount = 0
-            nextCursor = nil
-            hasNext = false
-            errorMessage = (error as? LocalizedError)?.errorDescription
-                ?? String(localized: "error.api.unknown")
+            // 배경(silent) 재조회 실패 시엔 현재 보이는 목록을 유지한다(깜빡임/의도치 않은 비움 방지).
+            if !silent {
+                receipts = []
+                totalCount = 0
+                nextCursor = nil
+                hasNext = false
+                errorMessage = (error as? LocalizedError)?.errorDescription
+                    ?? String(localized: "error.api.unknown")
+            }
         }
 
         guard token == generation else { return }

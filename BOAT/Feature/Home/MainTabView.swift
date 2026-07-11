@@ -185,6 +185,8 @@ private struct HomeView: View {
     @State private var isInitializing = true
     // 홈 콘텐츠 — 등록된 영수증이 있으면 일반(요약 대시보드), 없으면 초기(온보딩) 화면
     @State private var hasAnyReceipts = false
+    // 직전(마지막 조회)에 영수증이 있었는지 — 콜드 스타트 시 어떤 스켈레톤(일반/초기)을 보여줄지 결정.
+    @AppStorage("boat.home.hadReceipts") private var hadReceiptsLastTime = false
     @State private var expiringWarranties: [ExpiringWarranty] = []
     @State private var expiringTotalCount = 0
     @State private var recentReceipts: [RecentReceipt] = []
@@ -222,9 +224,10 @@ private struct HomeView: View {
                 }
             }
 
-            // 초기 로딩 중에는 HomeLoadingView가 전체를 덮음
+            // 초기 로딩(API 조회) 중에는 스켈레톤이 전체를 덮음.
+            // 직전에 영수증이 있었으면 일반(대시보드) 스켈레톤, 없었으면 초기 스켈레톤.
             if isInitializing {
-                HomeLoadingView()
+                HomeSkeleton(hasList: hadReceiptsLastTime)
                     .transition(.opacity)
             }
         }
@@ -280,6 +283,8 @@ private struct HomeView: View {
         expiringTotalCount = expiringData?.totalCount ?? expiringWarranties.count
         recentReceipts = recentData?.receipts.prefix(5).map { $0.toRecentReceipt() } ?? []
         hasAnyReceipts = (recentData?.totalCount ?? 0) > 0
+        // 다음 콜드 스타트 때 올바른 스켈레톤을 고르도록 최신 상태 저장. (recent 조회 성공 시에만)
+        if recentData != nil { hadReceiptsLastTime = hasAnyReceipts }
     }
 
     // 초기 홈 (데이터 없을 때) — 등록 유도 배너(그라데이션 히어로 위) + 광고 배너

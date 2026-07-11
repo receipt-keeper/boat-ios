@@ -66,48 +66,15 @@ struct ReceiptListView: View {
     @State private var toast = BoatToastState()
 
     var body: some View {
-        VStack(spacing: 0) {
-            // 헤더 + inner tab (흰 배경)
-            VStack(spacing: 0) {
-                BoatHeader(
-                    title: "tab.list",
-                    showUnreadBadge: NotificationBadgeStore.shared.hasUnread,
-                    onSearch: onSearch,
-                    onNotification: onNotification
-                )
-                innerTabRow
-            }
-            .background(Color.colorWhite)
-
-            // 카테고리 필터 칩 (가로 스크롤)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: .spacing8) {
-                    ForEach(ReceiptFilter.allCases, id: \.self) { filter in
-                        BoatFilterChip(
-                            label: filter.label,
-                            selected: filter == selectedFilter,
-                            onTap: { selectedFilter = filter }
-                        )
-                    }
-                }
-                .padding(.horizontal, .spacing20)
-                .padding(.vertical, .spacing12)
-            }
-
-            // 카운트 + 정렬
-            countSortRow
-
-            // 리스트 영역
-            listContent
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
+        mainContent
         .background(Color.gray50)
         .task { await viewModel.reload(tab: selectedTab, sort: selectedSort, filter: selectedFilter) }
         .onChange(of: selectedTab) { _, _ in reload() }
         .onChange(of: selectedSort) { _, _ in reload() }
         .onChange(of: selectedFilter) { _, _ in reload() }
-        // 다른 화면(등록/수정/삭제)에서 일어난 변경도 반영 — 항상 최신 목록 유지.
-        .onChange(of: ReceiptChangeBus.shared.version) { _, _ in reload() }
+        // 다른 화면(등록/수정/삭제)에서 일어난 변경도 반영 — 스피너 없이 조용히 갱신
+        // (기존 목록이 잠깐 사라졌다 다시 나타나는 깜빡임 방지).
+        .onChange(of: ReceiptChangeBus.shared.version) { _, _ in reload(silent: true) }
         // 정렬 드롭다운 — 버튼 위치 기준으로 배치
         .overlayPreferenceValue(SortAnchorKey.self) { anchor in
             if sortExpanded, let anchor {
@@ -165,10 +132,56 @@ struct ReceiptListView: View {
                 onBack: { editReceipt = nil },
                 onUpdated: {
                     editReceipt = nil
-                    reload()
+                    // 목록 재조회는 ReceiptChangeBus가 조용히 처리(스피너 깜빡임 방지) — 여기선 토스트만.
+                    reload(silent: true)
                     toast.show(String(localized: "detail.updated_toast"), type: .info)
                 }
             )
+        }
+    }
+
+    // 로딩 중(=표시할 데이터 조회 중)에는 화면 전체를 스켈레톤으로 대체.
+    // silent 갱신(등록/수정/삭제 동기화)은 isLoading을 올리지 않으므로 기존 목록이 유지된다.
+    @ViewBuilder
+    private var mainContent: some View {
+        if viewModel.isLoading {
+            ReceiptListSkeleton()
+        } else {
+            VStack(spacing: 0) {
+                // 헤더 + inner tab (흰 배경)
+                VStack(spacing: 0) {
+                    BoatHeader(
+                        title: "tab.list",
+                        showUnreadBadge: NotificationBadgeStore.shared.hasUnread,
+                        onSearch: onSearch,
+                        onNotification: onNotification
+                    )
+                    innerTabRow
+                }
+                .background(Color.colorWhite)
+
+                // 카테고리 필터 칩 (가로 스크롤)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: .spacing8) {
+                        ForEach(ReceiptFilter.allCases, id: \.self) { filter in
+                            BoatFilterChip(
+                                label: filter.label,
+                                selected: filter == selectedFilter,
+                                onTap: { selectedFilter = filter }
+                            )
+                        }
+                    }
+                    .padding(.horizontal, .spacing20)
+                    .padding(.vertical, .spacing12)
+                }
+
+                // 카운트 + 정렬
+                countSortRow
+
+                // 리스트 영역
+                listContent
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
         }
     }
 
@@ -308,8 +321,8 @@ struct ReceiptListView: View {
         .padding(.vertical, .spacing8)
     }
 
-    private func reload() {
-        Task { await viewModel.reload(tab: selectedTab, sort: selectedSort, filter: selectedFilter) }
+    private func reload(silent: Bool = false) {
+        Task { await viewModel.reload(tab: selectedTab, sort: selectedSort, filter: selectedFilter, silent: silent) }
     }
 
     /// 삭제 API 호출 → 성공 시 로컬 DB/목록 갱신은 ViewModel에서 처리 + 삭제 토스트, 실패 시 에러 토스트.
@@ -324,13 +337,10 @@ struct ReceiptListView: View {
 
     // MARK: - 리스트 영역 (로딩 / 빈 상태 / 카드 목록)
 
+    // 로딩 중에는 mainContent가 스켈레톤을 보여주므로 여기선 빈 상태/목록만 처리.
     @ViewBuilder
     private var listContent: some View {
-        if viewModel.isLoading {
-            ProgressView()
-                .tint(Color.brandPrimary)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else if viewModel.receipts.isEmpty {
+        if viewModel.receipts.isEmpty {
             Text("receipt.empty")
                 .font(.pretendard(.medium, size: 16))
                 .foregroundStyle(Color.gray500)
