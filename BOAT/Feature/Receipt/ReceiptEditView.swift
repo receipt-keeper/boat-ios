@@ -74,41 +74,80 @@ struct ReceiptEditView: View {
     // 뒤로가기 시 작성 중인 내용 이탈 확인
     @State private var showExitConfirm = false
 
+    // 원본 스냅샷 — 뒤로가기 시 실제로 변경된 내용이 있는지 비교하기 위함 (변경 없으면 확인 팝업 생략)
+    private let originalCategory: DeviceCategory
+    private let originalSubcategory: String?
+    private let originalProductName: String
+    private let originalPurchaseDate: String
+    private let originalWarranty: Int?
+    private let originalCustomMonthsText: String
+    private let originalMemo: String
+    private let originalPhysicalReceipt: Bool?
+    private let originalBrand: String
+    private let originalPrice: String
+    private let originalSerial: String
+    private let originalFileIds: [String]
+
     init(receipt: Receipt, onBack: @escaping () -> Void, onUpdated: @escaping () -> Void = {}) {
         self.receiptId = receipt.receiptId
         self.onBack = onBack
         self.onUpdated = onUpdated
 
         let category = DeviceCategory.from(serverValue: receipt.category) ?? .kitchen
+        let subcategory = Self.matchSubcategory(receipt.subCategory, in: category)
         _selectedCategory = State(initialValue: category)
-        _selectedSubcategory = State(initialValue: Self.matchSubcategory(receipt.subCategory, in: category))
+        _selectedSubcategory = State(initialValue: subcategory)
+        originalCategory = category
+        originalSubcategory = subcategory
 
-        _productName = State(initialValue: receipt.itemName)
-        _brand = State(initialValue: receipt.brandName ?? "")
-        _serial = State(initialValue: receipt.serialNumber ?? "")
-        _price = State(initialValue: receipt.totalAmount.map { "\($0)" } ?? "")
-        _memo = State(initialValue: receipt.memo ?? "")
+        let name = receipt.itemName
+        let brandValue = receipt.brandName ?? ""
+        let serialValue = receipt.serialNumber ?? ""
+        let priceValue = receipt.totalAmount.map { "\($0)" } ?? ""
+        let memoValue = receipt.memo ?? ""
+        let existingFilesValue = receipt.receiptFiles ?? []
+        _productName = State(initialValue: name)
+        _brand = State(initialValue: brandValue)
+        _serial = State(initialValue: serialValue)
+        _price = State(initialValue: priceValue)
+        _memo = State(initialValue: memoValue)
         _physicalReceipt = State(initialValue: receipt.requiresPhysicalReceipt)
-        _existingFiles = State(initialValue: receipt.receiptFiles ?? [])
+        _existingFiles = State(initialValue: existingFilesValue)
+        originalProductName = name
+        originalBrand = brandValue
+        originalSerial = serialValue
+        originalPrice = priceValue
+        originalMemo = memoValue
+        originalPhysicalReceipt = receipt.requiresPhysicalReceipt
+        originalFileIds = existingFilesValue.map(\.fileId)
 
+        let dateValue: String
         if let dateStr = receipt.paymentDate {
             let parts = dateStr.split(separator: "-").map(String.init)
-            _purchaseDate = State(initialValue: parts.count == 3 ? parts.joined(separator: ".") : "")
+            dateValue = parts.count == 3 ? parts.joined(separator: ".") : ""
         } else {
-            _purchaseDate = State(initialValue: "")
+            dateValue = ""
         }
+        _purchaseDate = State(initialValue: dateValue)
+        originalPurchaseDate = dateValue
 
+        var warrantyValue: Int?
+        var customMonthsValue = ""
         if let months = receipt.periodMonths {
             switch months {
-            case 6:  _selectedWarranty = State(initialValue: 0)
-            case 12: _selectedWarranty = State(initialValue: 1)
-            case 24: _selectedWarranty = State(initialValue: 2)
-            case 36: _selectedWarranty = State(initialValue: 3)
+            case 6:  warrantyValue = 0
+            case 12: warrantyValue = 1
+            case 24: warrantyValue = 2
+            case 36: warrantyValue = 3
             default:
-                _selectedWarranty = State(initialValue: 4)
-                _customMonthsText = State(initialValue: "\(months)")
+                warrantyValue = 4
+                customMonthsValue = "\(months)"
             }
         }
+        _selectedWarranty = State(initialValue: warrantyValue)
+        _customMonthsText = State(initialValue: customMonthsValue)
+        originalWarranty = warrantyValue
+        originalCustomMonthsText = customMonthsValue
     }
 
     /// 서버 subCategory 원문을 대분류의 지정 소분류 목록 중 하나로 정규화 매칭 (없으면 nil).
@@ -197,6 +236,24 @@ struct ReceiptEditView: View {
     private var apiPaymentDate: String? {
         guard !purchaseDate.isEmpty else { return nil }
         return purchaseDate.replacingOccurrences(of: ".", with: "-")
+    }
+
+    /// 원본 대비 실제로 변경된 내용이 있는지 — 없으면 뒤로가기 시 이탈 확인 팝업을 생략한다.
+    private var hasChanges: Bool {
+        selectedCategory != originalCategory
+            || selectedSubcategory != originalSubcategory
+            || productName != originalProductName
+            || purchaseDate != originalPurchaseDate
+            || selectedWarranty != originalWarranty
+            || customMonthsText != originalCustomMonthsText
+            || customIsYears
+            || memo != originalMemo
+            || physicalReceipt != originalPhysicalReceipt
+            || brand != originalBrand
+            || price != originalPrice
+            || serial != originalSerial
+            || !newImages.isEmpty
+            || existingFiles.map(\.fileId) != originalFileIds
     }
 
     // MARK: - Body
@@ -294,7 +351,9 @@ struct ReceiptEditView: View {
                 .font(.pretendard(.bold, size: 18))
                 .foregroundStyle(Color.gray900)
             HStack {
-                Button { showExitConfirm = true } label: {
+                Button {
+                    if hasChanges { showExitConfirm = true } else { onBack() }
+                } label: {
                     Image("icChevronLeft")
                         .renderingMode(.template)
                         .foregroundStyle(Color.gray900)
