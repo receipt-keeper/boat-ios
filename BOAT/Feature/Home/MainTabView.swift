@@ -96,10 +96,16 @@ struct MainTabView: View {
             .fullScreenCover(item: pushReceiptBinding) { rid in
                 ReceiptDetailView(receiptId: rid.id, onBack: { NotificationRouter.shared.pendingReceiptId = nil })
             }
-            // 마케팅 알림(푸시 탭 또는 인앱 알림 목록 탭) → 홈 탭으로 전환
+            // 마케팅 알림(푸시 탭 또는 인앱 알림 목록 탭) → 홈 탭으로 전환.
+            // 탭만 바꿔서는 이미 떠 있는 fullScreenCover(검색/알림 목록/이전 상세 등)가 안 닫히므로
+            // 여기서 소유한 모달들을 함께 정리한다. (같은 탭이면 switch로도 안 바뀌므로 필수)
             .onChange(of: NotificationRouter.shared.shouldOpenHome) { _, shouldOpen in
                 guard shouldOpen else { return }
                 selection = .home
+                showSearch = false
+                showNotifications = false
+                showRegisterFromFab = false
+                NotificationRouter.shared.pendingReceiptId = nil
                 NotificationRouter.shared.shouldOpenHome = false
             }
     }
@@ -255,6 +261,13 @@ private struct HomeView: View {
         // 다른 화면(등록/수정/삭제)에서 일어난 변경도 반영 — 조용히 재조회(로딩 오버레이 없이).
         .onChange(of: ReceiptChangeBus.shared.version) { _, _ in
             Task { await loadHomeData() }
+        }
+        // 마케팅 알림 탭 시 홈으로 이동 — 이미 홈 탭이면 MainTabView의 selection이 안 바뀌어
+        // 이 화면 자체는 새로 그려지지 않으므로, 여기서 직접 열려있던 상세/등록 화면을 닫아준다.
+        .onChange(of: NotificationRouter.shared.shouldOpenHome) { _, shouldOpen in
+            guard shouldOpen else { return }
+            detailReceiptId = nil
+            showReceiptRegister = false
         }
         .fullScreenCover(isPresented: $showReceiptRegister) {
             ReceiptRegisterView(
