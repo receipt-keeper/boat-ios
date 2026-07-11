@@ -83,11 +83,14 @@ struct ReceiptRegisterView: View {
                         noticeSection
                             .zIndex(1) // 펼쳐졌을 때 아래 첨부내역 섹션 위로 덮이도록
 
-                        Spacer().frame(height: .spacing24)
-                        attachmentsHeader
+                        // 아직 첨부한 사진이 없으면 "영수증 첨부내역" 섹션 자체를 노출하지 않는다.
+                        if !images.isEmpty {
+                            Spacer().frame(height: .spacing24)
+                            attachmentsHeader
 
-                        Spacer().frame(height: .spacing12)
-                        thumbnailRow
+                            Spacer().frame(height: .spacing12)
+                            thumbnailRow
+                        }
                     }
                     .padding(.horizontal, .spacing20)
                     .padding(.top, .spacing8)
@@ -464,31 +467,15 @@ struct ReceiptRegisterView: View {
         }
     }
 
+    // images.isEmpty일 땐 호출부(body)에서 이 섹션 자체를 노출하지 않으므로 항상 채워진 상태.
     private var thumbnailRow: some View {
-        Group {
-            if images.isEmpty {
-                emptySlot
-            } else {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: .spacing12) {
-                        ForEach(Array(images.enumerated()), id: \.offset) { index, image in
-                            thumbnail(image, index: index)
-                        }
-                    }
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: .spacing12) {
+                ForEach(Array(images.enumerated()), id: \.offset) { index, image in
+                    thumbnail(image, index: index)
                 }
             }
         }
-    }
-
-    private var emptySlot: some View {
-        RoundedRectangle(cornerRadius: .roundedLg)
-            .strokeBorder(Color.gray300, style: StrokeStyle(lineWidth: 1, dash: [4]))
-            .frame(width: 100, height: 100)
-            .overlay {
-                Image(systemName: "photo")
-                    .font(.system(size: 28))
-                    .foregroundStyle(Color.gray400)
-            }
     }
 
     private func thumbnail(_ image: UIImage, index: Int) -> some View {
