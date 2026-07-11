@@ -79,21 +79,27 @@ extension Receipt {
         return out.string(from: date)
     }
 
-    /// ISO8601 registeredAt → 경과일 (파싱 실패 시 0).
-    /// Android(diffMs / 24h, 자정 기준 아님)와 동일하게 "경과 시간 ÷ 24시간" 방식으로 계산한다.
-    /// Calendar.dateComponents(.day)를 쓰면 자정을 막 넘긴 경우 실제로는 몇 분밖에 안 지났어도
-    /// "1일 전"으로 표시돼 Android와 어긋난다.
+    /// ISO8601 registeredAt(서버는 UTC 기준으로 내려줌) → 경과일 (파싱 실패 시 0).
+    /// Android와 동일하게: ①타임존 표기가 없어도 UTC로 파싱 ②시스템(로컬) 타임존 자정 기준으로
+    /// 날짜만 비교. 어제 등록한 영수증을 로컬 시간대로 변환 없이 그대로 비교하면(=UTC를 로컬로
+    /// 착각) 자정 부근에서 "오늘"로 잘못 표시되던 문제가 있었다.
     private static func daysAgo(_ iso: String?) -> Int {
         guard let iso else { return 0 }
         var date = ISO8601DateFormatter().date(from: iso)
         if date == nil {
+            // 타임존 표기가 없는 응답 — 서버 시각은 UTC이므로 UTC로 파싱해야 한다.
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+            formatter.timeZone = TimeZone(identifier: "UTC")
             date = formatter.date(from: iso)
         }
         guard let date else { return 0 }
-        let elapsedSeconds = Date().timeIntervalSince(date)
-        let days = Int(elapsedSeconds / 86400)
+
+        // 로컬 타임존 자정으로 변환한 뒤 날짜(달력일) 차이만 비교.
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: Date())
+        let startOfRegistered = calendar.startOfDay(for: date)
+        let days = Int(startOfToday.timeIntervalSince(startOfRegistered) / 86400)
         return max(0, days)
     }
 }
