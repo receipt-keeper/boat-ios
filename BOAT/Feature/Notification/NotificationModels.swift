@@ -91,15 +91,10 @@ extension NotificationDto {
         )
     }
 
-    /// "2026-06-15T12:00:00" (또는 타임존 포함 ISO8601) → Date.
-    /// 서버 시각은 UTC 기준이므로, 타임존 표기가 없는 응답도 UTC로 파싱해야 한다.
+    /// 서버 UTC 시각 문자열 → Date. 소수초+Z / Z만 / 타임존 표기 없음 등 여러 포맷을
+    /// ServerDate가 순서대로 시도해 파싱한다.
     private static func parseDate(_ iso: String?) -> Date? {
-        guard let iso, !iso.isEmpty else { return nil }
-        if let date = ISO8601DateFormatter().date(from: iso) { return date }
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        formatter.timeZone = TimeZone(identifier: "UTC")
-        return formatter.date(from: iso)
+        ServerDate.parse(iso)
     }
 }
 
