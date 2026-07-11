@@ -4,8 +4,8 @@
 //
 //  상단 종 아이콘 → 수신 알림 목록. Android NotificationListScreen 대응.
 //  GET /api/v1/notifications 로 읽음/미읽음 알림을 모두 불러와 카드형 리스트로 표시.
-//  이미 읽은 카드는 흐리게 표시 + 탭 비활성화(disabled).
-//  카드 탭 → 읽음 처리(목록엔 남기고 disabled로 전환) 후 리소스로 라우팅
+//  이미 읽은 카드는 흐리게 표시(disabled 스타일)만 하고, 탭은 그대로 허용한다.
+//  카드 탭 → 읽음 처리(목록엔 남기고 흐리게 전환) 후 리소스로 라우팅
 //  (messageType=marketing → 홈 / receipt+resourceId → 상세 / kind=registration_prompt → 영수증 등록).
 //
 
@@ -36,9 +36,8 @@ struct NotificationListView: View {
                             NotificationCard(item: item)
                                 .contentShape(Rectangle())
                                 .onTapGesture { handleTap(item) }
-                                // 이미 읽은 알림은 다시 누를 필요가 없으므로 흐리게 + 탭 비활성화.
+                                // 읽은 알림은 흐리게 표시만 하고, 탭해서 다시 리소스로 이동하는 건 그대로 허용.
                                 .opacity(item.isRead ? 0.5 : 1)
-                                .allowsHitTesting(!item.isRead)
                         }
                     }
                     .padding(.horizontal, .spacing20)
