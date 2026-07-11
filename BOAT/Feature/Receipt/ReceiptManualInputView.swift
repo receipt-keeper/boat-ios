@@ -298,12 +298,14 @@ struct ReceiptManualInputView: View {
         VStack(alignment: .leading, spacing: .spacing12) {
             sectionTitle("manual.image_section")
 
+            // 직접 입력: + 버튼 항상 왼쪽 고정. OCR 분석 결과 확인: + 버튼이 이미지들 뒤로 밀려남.
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: .spacing12) {
+                    if !isFromOCR { addTile }
                     ForEach(Array(images.enumerated()), id: \.offset) { index, image in
                         imageThumbnail(image, index: index)
                     }
-                    addTile
+                    if isFromOCR { addTile }
                 }
             }
         }
