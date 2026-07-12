@@ -2794,6 +2794,16 @@
         }
       }
     },
+    "privacy_policy.title" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개인정보 처리방침"
+          }
+        }
+      }
+    },
     "경고" : {
 
     },
