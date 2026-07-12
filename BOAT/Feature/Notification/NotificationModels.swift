@@ -56,10 +56,9 @@ struct AppNotification: Identifiable, Hashable {
     /// 7일 미만="N일 전" / 7일 이상="yyyy.MM.dd"
     var displayTime: String {
         guard let createdAt else { return "" }
-        let seconds = Date().timeIntervalSince(createdAt)
+        // 서버-클라 시각차로 미래 시각처럼 계산되는 경우 0으로 clamp (Android coerceAtLeast(0) 대응).
+        let seconds = max(0, Date().timeIntervalSince(createdAt))
         switch seconds {
-        case ..<0:
-            return Self.absoluteDate(createdAt) // 서버-클라 시각차로 미래 시각인 경우 폴백
         case ..<60:
             return String(localized: "notif.time.just_now")
         case ..<3600:
