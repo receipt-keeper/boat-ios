@@ -1646,6 +1646,26 @@
         }
       }
     },
+    "notif.persistent.brand" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "보트랩"
+          }
+        }
+      }
+    },
+    "notif.persistent.footer" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "([Boatlab] 수신거부: 설정 내 알림 메뉴에서 변경 가능)"
+          }
+        }
+      }
+    },
     "notif.settings.alarm" : {
       "localizations" : {
         "ko" : {
@@ -1672,6 +1692,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "수신 동의가 철회되었습니다."
+          }
+        }
+      }
+    },
+    "notif.settings.footnote" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "*수신 거부 및 철회는 언제든 본 페이지에서 변경 가능합니다."
           }
         }
       }

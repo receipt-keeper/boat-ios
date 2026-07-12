@@ -77,6 +77,14 @@ struct AppNotification: Identifiable, Hashable {
         formatter.dateFormat = "yyyy.MM.dd"
         return formatter.string(from: date)
     }
+
+    /// 상시 유도 알림 카드 전용 — 상대 시간 대신 항상 절대 날짜("yyyy. MM. dd")를 노출한다.
+    var persistentDisplayDate: String {
+        guard let createdAt else { return "" }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy. MM. dd"
+        return formatter.string(from: createdAt)
+    }
 }
 
 extension NotificationDto {

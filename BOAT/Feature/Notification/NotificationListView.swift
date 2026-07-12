@@ -129,6 +129,21 @@ private struct NotificationCard: View {
     let item: AppNotification
 
     var body: some View {
+        // 상시 유도 알림(마케팅/등록·미사용·분석 리마인더)은 특정 영수증과 무관한 공지형
+        // 카드라 전용 레이아웃(고정 브랜드명/타이틀/본문/고정 안내문)을 쓴다.
+        if NotificationRouter.shouldRouteHome(messageType: item.messageType, kind: item.kind) {
+            PersistentNotificationCard(item: item)
+        } else {
+            ReceiptNotificationCard(item: item)
+        }
+    }
+}
+
+/// 특정 영수증에 연결된 일반 알림(만료 임박/AS 안내 등) 카드.
+private struct ReceiptNotificationCard: View {
+    let item: AppNotification
+
+    var body: some View {
         HStack(alignment: .center, spacing: 14) {
             thumbnail
             VStack(alignment: .leading, spacing: 6) {
@@ -157,11 +172,60 @@ private struct NotificationCard: View {
     }
 
     private var thumbnail: some View {
+        NotificationThumbnail(imageName: item.imageName)
+    }
+}
+
+/// 상시 유도 알림(마케팅/등록·미사용·분석 리마인더) 전용 카드.
+/// 상단 "보트랩" + 날짜 → 타이틀 → 본문 → 고정 수신거부 안내문 순 배치.
+/// 이미지 에셋은 텍스트 블록 첫 줄에 상단 정렬한다.
+private struct PersistentNotificationCard: View {
+    let item: AppNotification
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            NotificationThumbnail(imageName: item.imageName)
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .center) {
+                    Text("notif.persistent.brand")
+                        .font(.pretendard(.regular, size: 14))
+                        .foregroundStyle(Color.gray500)
+                    Spacer(minLength: .spacing8)
+                    Text(item.persistentDisplayDate)
+                        .font(.pretendard(.regular, size: 14))
+                        .foregroundStyle(Color.gray500)
+                }
+                Text(item.productName)
+                    .font(.pretendard(.bold, size: 17))
+                    .foregroundStyle(Color.gray900)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(item.message)
+                    .font(.pretendard(.regular, size: 14))
+                    .foregroundStyle(Color.gray600)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("notif.persistent.footer")
+                    .font(.pretendard(.regular, size: 13))
+                    .foregroundStyle(Color.gray400)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.spacing16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.colorWhite)
+        .clipShape(RoundedRectangle(cornerRadius: .rounded2xl))
+        .shadow(color: Color.brandPrimary.opacity(0.08), radius: 4, x: 0, y: 0)
+    }
+}
+
+private struct NotificationThumbnail: View {
+    let imageName: String
+
+    var body: some View {
         RoundedRectangle(cornerRadius: 14)
             .fill(Color.gray100)
             .frame(width: 56, height: 56)
             .overlay {
-                Image(item.imageName)
+                Image(imageName)
                     .resizable()
                     .scaledToFit()
                     .padding(8)
