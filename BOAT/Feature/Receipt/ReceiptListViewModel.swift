@@ -60,7 +60,10 @@ final class ReceiptListViewModel {
             )
             guard token == generation else { return } // 더 최신 요청이 들어왔으면 폐기
             receipts = data.receipts
-            totalCount = data.pagination.totalCount
+            // 대분류 필터는 클라이언트에서 걸러내므로(ReceiptRepository 참고), 서버 totalCount는
+            // 필터 무관 전체 건수라 그대로 쓸 수 없다 — 전체 탭만 서버 값을, 나머지는 로드된
+            // 필터링 결과 개수를 카운트로 노출한다(스크롤할수록 정확해짐).
+            totalCount = filter == .all ? data.pagination.totalCount : receipts.count
             nextCursor = data.pagination.nextCursor
             hasNext = data.pagination.hasNext
         } catch {
@@ -125,7 +128,7 @@ final class ReceiptListViewModel {
             )
             guard token == generation else { return }
             receipts.append(contentsOf: data.receipts)
-            totalCount = data.pagination.totalCount
+            totalCount = filter == .all ? data.pagination.totalCount : receipts.count
             nextCursor = data.pagination.nextCursor
             hasNext = data.pagination.hasNext
         } catch {

@@ -25,6 +25,9 @@ final class ReceiptRepository {
 
     /// GET /api/v1/receipts
     /// 성공 시 첫 페이지를 로컬 캐시에 동기화. 네트워크 실패 시 로컬 캐시로 폴백.
+    /// 카테고리는 서버 필터(category 파라미터)를 믿지 않고, 전체를 받아 클라이언트에서
+    /// 직접 걸러낸다 — 서버 필터가 category 표기 편차 등으로 누락시키는 경우가 있었다.
+    /// (서버가 내려준 순서는 그대로 유지한 채 filter만 적용)
     func fetchReceipts(
         tab: ReceiptTab,
         sort: ReceiptSort,
@@ -39,7 +42,7 @@ final class ReceiptRepository {
                     sort: sort.apiSort,
                     limit: Self.pageSize,
                     cursor: cursor,
-                    category: filter.apiCategory,
+                    category: nil,
                     q: q
                 )
             )
@@ -47,7 +50,8 @@ final class ReceiptRepository {
             if cursor == nil {
                 local.upsertAll(data.receipts)
             }
-            return data
+            let filtered = data.receipts.filter { matchesCategory($0, filter: filter) }
+            return ReceiptListData(receipts: filtered, totalCount: data.totalCount, pagination: data.pagination)
         } catch {
             // 네트워크/서버 실패 → 로컬 캐시 폴백. 캐시도 비어있으면 원래 에러를 던진다.
             guard cursor == nil, !local.isEmpty else { throw error }
@@ -69,6 +73,13 @@ final class ReceiptRepository {
                 )
             )
         }
+    }
+
+    /// 대분류 필터 매칭 — 공백/표기 편차 흡수 후 비교 ("주방 가전"/"주방가전" 등).
+    /// (LocalReceiptStore.matchesCategory와 동일 로직)
+    private func matchesCategory(_ receipt: Receipt, filter: ReceiptFilter) -> Bool {
+        guard let category = filter.apiCategory else { return true }
+        return DeviceCategory.normalizeCategory(receipt.category) == DeviceCategory.normalizeCategory(category)
     }
 
     /// 영수증 등록: 이미지 업로드 → fileId 수집 → POST /api/v1/receipts → 로컬 캐시 저장.
