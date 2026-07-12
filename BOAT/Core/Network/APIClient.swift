@@ -61,8 +61,8 @@ final class APIClient {
                 throw APIError.network
             }
             // 4xx → 상태코드는 항상 보존 (404 판별 등에 필요), 메시지는 서버 본문 우선
-            let serverMessage = Self.parseErrorMessage(from: response.data)
-            throw APIError.server(statusCode: statusCode, message: serverMessage)
+            let parsed = Self.parseError(from: response.data)
+            throw APIError.server(statusCode: statusCode, message: parsed.message, fieldErrors: parsed.fieldErrors)
         }
     }
 
@@ -95,7 +95,7 @@ final class APIClient {
             if statusCode >= 500 {
                 throw APIError.network
             }
-            throw APIError.server(statusCode: statusCode, message: String(localized: "error.api.unknown"))
+            throw APIError.server(statusCode: statusCode, message: String(localized: "error.api.unknown"), fieldErrors: [])
         }
     }
 
@@ -125,28 +125,29 @@ final class APIClient {
         case .failure:
             guard let statusCode = response.response?.statusCode else { throw APIError.network }
             if statusCode >= 500 { throw APIError.network }
-            let serverMessage = Self.parseErrorMessage(from: response.data)
-            throw APIError.server(statusCode: statusCode, message: serverMessage)
+            let parsed = Self.parseError(from: response.data)
+            throw APIError.server(statusCode: statusCode, message: parsed.message, fieldErrors: parsed.fieldErrors)
         }
     }
 
     // MARK: - Private
 
-    /// 실패 응답 본문에서 사용자 노출 문구를 꺼낸다.
-    /// errors 목록이 있으면 첫 번째 필드 에러 메시지를 우선하고, 없으면 data.message를 사용한다.
+    /// 실패 응답 본문에서 사용자 노출 문구 + 필드별 에러 목록(data.errors)을 꺼낸다.
+    /// 문구는 errors 목록이 있으면 첫 번째 필드 에러 메시지를 우선하고, 없으면 data.message를 사용한다.
     /// (Android ApiErrorParser.parseMessage와 동일 규칙)
-    private static func parseErrorMessage(from data: Data?) -> String {
+    private static func parseError(from data: Data?) -> (message: String, fieldErrors: [APIErrorData.FieldError]) {
         guard let data,
               let envelope = try? JSONDecoder().decode(APIResponse<APIErrorData>.self, from: data) else {
-            return String(localized: "error.api.unknown")
+            return (String(localized: "error.api.unknown"), [])
         }
-        if let fieldMessage = envelope.data?.errors?.first?.message, !fieldMessage.isEmpty {
-            return fieldMessage
+        let fieldErrors = envelope.data?.errors ?? []
+        if let fieldMessage = fieldErrors.first?.message, !fieldMessage.isEmpty {
+            return (fieldMessage, fieldErrors)
         }
         if let message = envelope.data?.message, !message.isEmpty {
-            return message
+            return (message, fieldErrors)
         }
-        return String(localized: "error.api.unknown")
+        return (String(localized: "error.api.unknown"), fieldErrors)
     }
 
     private func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {

@@ -31,6 +31,7 @@ struct APIErrorData: Decodable {
 
     struct FieldError: Decodable {
         let field: String?
+        let fileIndex: Int?
         let message: String?
     }
 }

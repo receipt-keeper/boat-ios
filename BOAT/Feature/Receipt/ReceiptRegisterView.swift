@@ -44,8 +44,9 @@ struct ReceiptRegisterView: View {
     @State private var toast = BoatToastState()
     // [TEST] 토큰 소진 시트의 무료 충전 버튼 — 중복 탭 방지
     @State private var isRecharging = false
-    // OCR 실패 시 썸네일 실패 오버레이 표시
-    @State private var analyzeFailed = false
+    // OCR 실패 시 썸네일 실패 오버레이 표시 — 서버가 errors[].fileIndex로 알려준 특정 이미지만
+    // 표시한다. fileIndex 정보가 없는 실패(네트워크 오류 등)는 전체 이미지에 표시(폴백).
+    @State private var failedImageIndices: Set<Int> = []
     // 토큰 소진 시트 노출 직전 조회한 충전 프로모션 — redeemable이어야 충전 버튼 노출
     @State private var pendingPromo: Promotion?
     // 뒤로가기 시 첨부된 영수증이 있으면 이탈 확인
@@ -478,7 +479,8 @@ struct ReceiptRegisterView: View {
     }
 
     private func thumbnail(_ image: UIImage, index: Int) -> some View {
-        Image(uiImage: image)
+        let failed = failedImageIndices.contains(index)
+        return Image(uiImage: image)
             .resizable()
             .scaledToFill()
             .frame(width: 100, height: 100)
@@ -489,20 +491,19 @@ struct ReceiptRegisterView: View {
                 showViewer = true
             }
             .overlay {
-                if analyzeFailed {
+                if failed {
                     failOverlay
                 }
             }
             .overlay(alignment: .topTrailing) {
                 Button {
-                    images.remove(at: index)
-                    analyzeFailed = false
+                    removeImage(at: index)
                 } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 11, weight: .bold))
                         .foregroundStyle(Color.colorWhite)
                         .frame(width: 22, height: 22)
-                        .background(analyzeFailed ? Color.systemError : Color.gray500.opacity(0.8), in: Circle())
+                        .background(failed ? Color.systemError : Color.gray500.opacity(0.8), in: Circle())
                 }
                 .buttonStyle(.plain)
                 .padding(6)
@@ -510,11 +511,19 @@ struct ReceiptRegisterView: View {
                 // 가로채는 경우가 있어, 삭제 탭이 항상 먼저 인식되도록 우선순위를 준다.
                 .highPriorityGesture(
                     TapGesture().onEnded {
-                        images.remove(at: index)
-                        analyzeFailed = false
+                        removeImage(at: index)
                     }
                 )
             }
+    }
+
+    /// 이미지 삭제 + 실패 인덱스 집합을 삭제된 위치에 맞춰 재정렬(뒤쪽 인덱스 한 칸씩 당김).
+    private func removeImage(at index: Int) {
+        images.remove(at: index)
+        failedImageIndices = Set(failedImageIndices.compactMap { i -> Int? in
+            if i == index { return nil }
+            return i > index ? i - 1 : i
+        })
     }
 
     private var failOverlay: some View {
@@ -591,7 +600,7 @@ struct ReceiptRegisterView: View {
         let slots = remainingSlots
         guard slots > 0 else { showMaxAlert = true; return }
         images.append(contentsOf: new.prefix(slots))
-        analyzeFailed = false
+        failedImageIndices.removeAll()
         // 사진을 1장 이상 등록하면 유의사항 아코디언을 자동으로 접는다.
         withAnimation(.easeInOut(duration: 0.2)) { noticeExpanded = false }
     }
@@ -668,7 +677,7 @@ struct ReceiptRegisterView: View {
             case .unavailable, .expired, .exhausted, .unknown:
                 toast.show(String(localized: "receipt.recharge.unavailable"), type: .info)
             }
-        } catch let APIError.server(statusCode, _) where statusCode == 409 {
+        } catch let APIError.server(statusCode, _, _) where statusCode == 409 {
             // 이미 이번 달 수령함(경합/직접 호출) — 안내 후 상태만 재확인
             toast.show(String(localized: "receipt.recharge.already"), type: .info)
             await checkUsage()
@@ -693,7 +702,7 @@ struct ReceiptRegisterView: View {
         }
 
         // 3) OCR 분석 API 호출 → 성공 시 결과 화면, 실패 시 실패 시트
-        analyzeFailed = false
+        failedImageIndices.removeAll()
         Task {
             isAnalyzing = true
             defer { isAnalyzing = false }
@@ -704,7 +713,14 @@ struct ReceiptRegisterView: View {
                 ocrResult = result
                 showManualInput = true
             } catch {
-                analyzeFailed = true
+                // 서버가 errors[].fileIndex로 특정 이미지를 지목했으면 그 이미지들만 표시하고,
+                // 그 외(네트워크 오류 등 파일 단위로 특정 안 되는 실패)는 전체에 표시(폴백).
+                if let apiError = error as? APIError, case .server(_, _, let fieldErrors) = apiError {
+                    let indices = fieldErrors.compactMap(\.fileIndex)
+                    failedImageIndices = indices.isEmpty ? Set(images.indices) : Set(indices)
+                } else {
+                    failedImageIndices = Set(images.indices)
+                }
                 activeSheet = .failed
             }
         }

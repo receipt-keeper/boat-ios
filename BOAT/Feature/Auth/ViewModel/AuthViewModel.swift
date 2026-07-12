@@ -174,7 +174,7 @@ class AuthViewModel {
                 self.route = .home
             }
         } catch {
-            if let apiError = error as? APIError, case .server(404, _) = apiError {
+            if let apiError = error as? APIError, case .server(404, _, _) = apiError {
                 // 404 미가입 → 약관 동의 화면으로
                 await MainActor.run {
                     self.pendingFirebaseToken = firebaseToken
