@@ -287,9 +287,13 @@ struct ReceiptEditView: View {
                     .padding(.horizontal, .spacing20)
                     .padding(.top, .spacing8)
                 }
+                .scrollDismissesKeyboard(.interactively)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.gray50)
+            .contentShape(Rectangle())
+            // 입력창 외부(빈 영역) 탭 시 키보드 닫기 — 화면 전체(배경 포함)에 적용.
+            .onTapGesture { endEditing() }
 
             if isSubmitting {
                 HomeLoadingView(message: "receipt.edit.loading")
@@ -914,6 +918,11 @@ struct ReceiptEditView: View {
     }
 
     // MARK: - Actions
+
+    /// 입력창 외부 탭 시 현재 포커스된 필드의 키보드를 닫는다.
+    private func endEditing() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
 
     private func openCamera() {
         guard canAddMore else { return }
