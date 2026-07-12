@@ -13,9 +13,17 @@ struct PurchaseDatePickerSheet: View {
 
     @State private var date = Date()
 
+    // 오늘 이후(미래) 날짜는 선택 불가. 상한을 정확한 현재 시각(Date())으로 두면 그래픽 캘린더에서
+    // 오늘 당일까지 비활성화되는 것처럼 보이는 문제가 있어, 오늘의 끝(23:59:59)까지로 잡는다.
+    private var upperBound: Date {
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: Date())
+        return calendar.date(byAdding: .day, value: 1, to: startOfToday)!.addingTimeInterval(-1)
+    }
+
     var body: some View {
         VStack(spacing: 0) {
-            DatePicker("", selection: $date, displayedComponents: .date)
+            DatePicker("", selection: $date, in: ...upperBound, displayedComponents: .date)
                 .datePickerStyle(.graphical)
                 .tint(Color.brandPrimary)
                 .padding(.horizontal, .spacing12)
