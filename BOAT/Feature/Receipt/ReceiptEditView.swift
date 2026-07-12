@@ -32,7 +32,7 @@ struct ReceiptEditView: View {
     private static let productNameLimit = 50
     private static let memoLimit = 100
     private static let brandLimit = 50
-    private static let serialLimit = 30
+    private static let serialLimit = 50
 
     // 카테고리
     @State private var selectedCategory: DeviceCategory

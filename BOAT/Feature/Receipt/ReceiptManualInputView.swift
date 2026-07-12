@@ -31,6 +31,8 @@ struct ReceiptManualInputView: View {
 
     private static let maxPhotos = 5
     private static let productNameLimit = 50
+    private static let brandLimit = 50
+    private static let serialLimit = 50
     private static let warrantyOptions: [LocalizedStringKey] = [
         "manual.warranty_6m", "manual.warranty_1y", "manual.warranty_2y", "manual.warranty_3y", "manual.warranty_custom",
     ]
@@ -99,8 +101,8 @@ struct ReceiptManualInputView: View {
         guard let ocr = ocrResult else { return }
 
         _productName = State(initialValue: String((ocr.itemName ?? "").prefix(Self.productNameLimit)))
-        _brand = State(initialValue: ocr.brandName ?? "")
-        _serial = State(initialValue: ocr.serialNumber ?? "")
+        _brand = State(initialValue: String((ocr.brandName ?? "").prefix(Self.brandLimit)))
+        _serial = State(initialValue: String((ocr.serialNumber ?? "").prefix(Self.serialLimit)))
 
         if let dateStr = ocr.paymentDate {
             let parts = dateStr.split(separator: "-").map(String.init)
@@ -682,7 +684,14 @@ struct ReceiptManualInputView: View {
             if warrantyExpanded {
                 Spacer().frame(height: .spacing16)
                 VStack(alignment: .leading, spacing: .spacing16) {
-                    BoatInputField(text: $brand, label: "manual.brand", placeholder: "manual.brand_hint")
+                    BoatInputField(
+                        text: Binding(
+                            get: { brand },
+                            set: { brand = String($0.prefix(Self.brandLimit)) }
+                        ),
+                        label: "manual.brand",
+                        placeholder: "manual.brand_hint"
+                    )
                     BoatInputField(
                         text: priceDisplayBinding,
                         label: "manual.price",
@@ -706,7 +715,14 @@ struct ReceiptManualInputView: View {
                 InfoTooltip(message: "manual.serial_help")
             }
             Spacer().frame(height: .spacing8)
-            TextField("", text: $serial, prompt: Text("manual.serial_hint").foregroundStyle(Color.gray400))
+            TextField(
+                "",
+                text: Binding(
+                    get: { serial },
+                    set: { serial = String($0.prefix(Self.serialLimit)) }
+                ),
+                prompt: Text("manual.serial_hint").foregroundStyle(Color.gray400)
+            )
                 .font(.pretendard(.regular, size: 15))
                 .foregroundStyle(Color.gray900)
                 .padding(.horizontal, .spacing16)
