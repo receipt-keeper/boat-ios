@@ -333,8 +333,8 @@ private struct ExpiringEmptyBanner: View {
     var onMore: () -> Void = {}
 
     private let mascotSize = CGSize(width: 88, height: 107)
-    private let mascotOffsetY: CGFloat = 8
-    private let mascotTrailing: CGFloat = 32
+    private let mascotOffsetY: CGFloat = 18.5
+    private let mascotTrailing: CGFloat = 44
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
