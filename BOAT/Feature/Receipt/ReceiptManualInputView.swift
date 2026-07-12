@@ -219,7 +219,14 @@ struct ReceiptManualInputView: View {
                     .padding(.horizontal, .spacing20)
                     .padding(.top, .spacing8)
                     .padding(.bottom, .spacing16)
+                    .frame(maxWidth: .infinity)
+                    .contentShape(Rectangle())
+                    // 입력창 외부(빈 영역) 탭 시 키보드 닫기. ScrollView를 감싸는 상위 뷰가 아니라
+                    // 스크롤되는 콘텐츠 쪽에 달아야 한다 — ScrollView 자체 제스처에 가려 상위
+                    // onTapGesture가 거의 인식되지 않는 문제가 있었다.
+                    .onTapGesture { endEditing() }
                 }
+                .scrollDismissesKeyboard(.interactively)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.gray50)
@@ -850,6 +857,11 @@ struct ReceiptManualInputView: View {
     }
 
     // MARK: - Actions
+
+    /// 입력창 외부 탭 시 현재 포커스된 필드의 키보드를 닫는다.
+    private func endEditing() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
 
     private var apiPaymentDate: String? {
         guard !purchaseDate.isEmpty else { return nil }

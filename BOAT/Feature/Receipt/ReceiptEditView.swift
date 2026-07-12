@@ -285,14 +285,17 @@ struct ReceiptEditView: View {
                     }
                     .padding(.horizontal, .spacing20)
                     .padding(.top, .spacing8)
+                    .frame(maxWidth: .infinity)
+                    .contentShape(Rectangle())
+                    // 입력창 외부(빈 영역) 탭 시 키보드 닫기. ScrollView를 감싸는 상위 뷰가 아니라
+                    // 스크롤되는 콘텐츠 쪽에 달아야 한다 — ScrollView 자체 제스처에 가려 상위
+                    // onTapGesture가 거의 인식되지 않는 문제가 있었다.
+                    .onTapGesture { endEditing() }
                 }
                 .scrollDismissesKeyboard(.interactively)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.gray50)
-            .contentShape(Rectangle())
-            // 입력창 외부(빈 영역) 탭 시 키보드 닫기 — 화면 전체(배경 포함)에 적용.
-            .onTapGesture { endEditing() }
 
             if isSubmitting {
                 HomeLoadingView(message: "receipt.edit.loading")
