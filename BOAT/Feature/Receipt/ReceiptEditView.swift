@@ -610,42 +610,43 @@ struct ReceiptEditView: View {
     // MARK: - 실물 영수증 보관 여부 (체크박스)
 
     private var physicalCard: some View {
-        VStack(alignment: .leading, spacing: .spacing16) {
-            HStack(spacing: 6) {
+        VStack(alignment: .leading, spacing: .spacing8) {
+            HStack(alignment: .top, spacing: .spacing12) {
                 Text("manual.physical_section")
                     .font(.pretendard(.bold, size: 18))
                     .foregroundStyle(Color.gray900)
-                InfoTooltip(message: "manual.physical_help")
+                Spacer()
+                physicalCheckbox
             }
-            checkboxRow("manual.physical_yes", checked: physicalReceipt) { physicalReceipt.toggle() }
+            Text("manual.physical_help")
+                .font(.pretendard(.regular, size: 14))
+                .foregroundStyle(Color.gray600)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.spacing16)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+        .overlay(
+            RoundedRectangle(cornerRadius: .rounded2xl)
+                .stroke(Color.gray200, lineWidth: 1)
+        )
     }
 
-    /// 기존 라디오 컴포넌트와 동일한 색상 체계(선택: brandPrimary / 비선택: gray300, gray600)를
-    /// 그대로 적용한 체크박스.
-    private func checkboxRow(_ label: LocalizedStringKey, checked: Bool, onTap: @escaping () -> Void) -> some View {
-        Button(action: onTap) {
-            HStack(spacing: .spacing12) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: .roundedSm)
-                        .fill(checked ? Color.brandPrimary : Color.colorWhite)
-                    RoundedRectangle(cornerRadius: .roundedSm)
-                        .stroke(checked ? Color.brandPrimary : Color.gray300, lineWidth: 1.5)
-                    if checked {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundStyle(Color.colorWhite)
-                    }
+    /// 기존 체크박스와 동일한 색상 체계(선택: brandPrimary / 비선택: gray300)를 그대로 적용.
+    private var physicalCheckbox: some View {
+        Button { physicalReceipt.toggle() } label: {
+            ZStack {
+                RoundedRectangle(cornerRadius: .roundedSm)
+                    .fill(physicalReceipt ? Color.brandPrimary : Color.colorWhite)
+                RoundedRectangle(cornerRadius: .roundedSm)
+                    .stroke(physicalReceipt ? Color.brandPrimary : Color.gray300, lineWidth: 1.5)
+                if physicalReceipt {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(Color.colorWhite)
                 }
-                .frame(width: 22, height: 22)
-                Text(label)
-                    .font(.pretendard(.regular, size: 15))
-                    .foregroundStyle(checked ? Color.gray900 : Color.gray600)
-                Spacer()
             }
+            .frame(width: 24, height: 24)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
