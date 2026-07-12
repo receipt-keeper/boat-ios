@@ -624,9 +624,9 @@ struct ReceiptManualInputView: View {
 
     private var physicalCard: some View {
         VStack(alignment: .leading, spacing: .spacing8) {
-            HStack(alignment: .top, spacing: .spacing12) {
+            HStack(alignment: .center, spacing: .spacing12) {
                 Text("manual.physical_section")
-                    .font(.pretendard(.bold, size: 18))
+                    .font(.pretendard(.bold, size: 16))
                     .foregroundStyle(Color.gray900)
                 Spacer()
                 physicalCheckbox
@@ -634,6 +634,7 @@ struct ReceiptManualInputView: View {
             Text("manual.physical_help")
                 .font(.pretendard(.regular, size: 14))
                 .foregroundStyle(Color.gray600)
+                .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
