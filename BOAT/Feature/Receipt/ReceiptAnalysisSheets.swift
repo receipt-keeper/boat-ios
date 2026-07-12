@@ -35,19 +35,21 @@ struct NoTokenSheet: View {
 
             Spacer().frame(height: .spacing16)
             Text("receipt.token.title")
-                .font(.pretendard(.bold, size: 20))
+                .font(.pretendard(.bold, size: 24))
                 .foregroundStyle(Color.gray900)
                 .multilineTextAlignment(canRecharge ? .leading : .center)
                 .frame(maxWidth: .infinity, alignment: canRecharge ? .leading : .center)
 
             Spacer().frame(height: .spacing8)
             if canRecharge {
-                Text("receipt.token.subtitle")
-                    .font(.pretendard(.semibold, size: 14))
+                (Text("receipt.token.subtitle_prefix")
+                    + Text("receipt.token.subtitle_emphasis").underline()
+                    + Text("receipt.token.subtitle_suffix"))
+                    .font(.pretendard(.bold, size: 18))
                     .foregroundStyle(Color.brandPrimary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                Spacer().frame(height: .spacing16)
+                Spacer().frame(height: .spacing24)
                 noticeBox
             } else {
                 Text("receipt.token.subtitle_none")
@@ -101,7 +103,9 @@ struct NoTokenSheet: View {
 
             HStack(alignment: .top, spacing: .spacing4) {
                 Text("•")
-                Text("receipt.token.notice.body")
+                (Text("receipt.token.notice.body_prefix")
+                    + Text("receipt.token.notice.body_emphasis").foregroundColor(Color.brandPrimary).underline()
+                    + Text("receipt.token.notice.body_suffix"))
             }
             .font(.pretendard(.regular, size: 13))
             .foregroundStyle(Color.gray600)

@@ -1432,22 +1432,82 @@
         }
       }
     },
-    "mypage.promo.event_bullet1" : {
+    "mypage.promo.bullet1_prefix" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "무료 분석 5회를 제공해 드리고 있습니다. 지급일 기준 30일 이내에 사용해야 하며, 기간이 지나면 자동으로 소멸됩니다."
+            "value" : "매월 1일 "
           }
         }
       }
     },
-    "mypage.promo.event_bullet2" : {
+    "mypage.promo.bullet1_suffix" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이미 지급받은 경우에는 추가 지급되지 않으며, 별도 공지가 없는 경우 매월 1일 무료 분석 5회가 지급될 예정입니다."
+            "value" : "가 지급되며, 매월 1일 초기화됩니다."
+          }
+        }
+      }
+    },
+    "mypage.promo.bullet2_prefix" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가입 후 첫 달 이벤트로, "
+          }
+        }
+      }
+    },
+    "mypage.promo.bullet2_suffix" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "를 모두 사용할 시에 5회를 추가로 제공합니다. (계정당 1회)"
+          }
+        }
+      }
+    },
+    "mypage.promo.bullet3_prefix" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이벤트로 제공되는 "
+          }
+        }
+      }
+    },
+    "mypage.promo.bullet3_suffix" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "는 지급된 달의 말일까지 사용이 가능하며, 사용하지 않은 횟수는 자동 소멸됩니다."
+          }
+        }
+      }
+    },
+    "mypage.promo.emphasis_free5" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "무료 분석 5회"
+          }
+        }
+      }
+    },
+    "mypage.promo.emphasis_extra5" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "추가 5회"
           }
         }
       }
@@ -2554,12 +2614,32 @@
         }
       }
     },
-    "receipt.token.notice.body" : {
+    "receipt.token.notice.body_prefix" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이벤트로 제공되는 무료 분석 5회는 지급일 기준 30일 이내에 사용해야 하며 기간이 지나면 자동으로 소멸됩니다."
+            "value" : "이벤트로 제공되는 "
+          }
+        }
+      }
+    },
+    "receipt.token.notice.body_emphasis" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "추가 5회"
+          }
+        }
+      }
+    },
+    "receipt.token.notice.body_suffix" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "는 지급된 달의 말일까지 사용할 수 있으며, 사용하지 않은 횟수는 자동으로 소멸됩니다. (계정당 1회)"
           }
         }
       }
@@ -2584,12 +2664,32 @@
         }
       }
     },
-    "receipt.token.subtitle" : {
+    "receipt.token.subtitle_prefix" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "오픈 기념으로 무료 연장해 드려요."
+            "value" : "오픈 이벤트로 "
+          }
+        }
+      }
+    },
+    "receipt.token.subtitle_emphasis" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "무료 분석 5회"
+          }
+        }
+      }
+    },
+    "receipt.token.subtitle_suffix" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "를 추가로 드려요."
           }
         }
       }

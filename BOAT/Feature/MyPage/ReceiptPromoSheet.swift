@@ -65,26 +65,31 @@ struct ReceiptPromoSheet: View {
     private var eventInfoBox: some View {
         VStack(alignment: .leading, spacing: .spacing12) {
             Text("mypage.promo.event_title")
-                .font(.pretendard(.semibold, size: 15))
+                .font(.pretendard(.bold, size: 15))
                 .foregroundStyle(Color.brandPrimary)
+                .underline()
 
             VStack(alignment: .leading, spacing: .spacing8) {
-                bullet("mypage.promo.event_bullet1")
-                bullet("mypage.promo.event_bullet2")
+                bullet(prefix: "mypage.promo.bullet1_prefix", emphasis: "mypage.promo.emphasis_free5", suffix: "mypage.promo.bullet1_suffix")
+                bullet(prefix: "mypage.promo.bullet2_prefix", emphasis: "mypage.promo.emphasis_free5", suffix: "mypage.promo.bullet2_suffix")
+                bullet(prefix: "mypage.promo.bullet3_prefix", emphasis: "mypage.promo.emphasis_extra5", suffix: "mypage.promo.bullet3_suffix")
             }
         }
-        .padding(.spacing16)
+        .padding(.spacing20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.gray50, in: RoundedRectangle(cornerRadius: .roundedLg))
     }
 
-    private func bullet(_ key: LocalizedStringKey) -> some View {
+    /// 밑줄 강조 구간(무료 분석 5회 / 추가 5회)만 브랜드 컬러 + 밑줄을 적용한 불릿 텍스트.
+    private func bullet(prefix: LocalizedStringKey, emphasis: LocalizedStringKey, suffix: LocalizedStringKey) -> some View {
         HStack(alignment: .top, spacing: .spacing8) {
             Circle()
                 .fill(Color.gray600)
                 .frame(width: 4, height: 4)
                 .padding(.top, 8)
-            Text(key)
+            (Text(prefix)
+                + Text(emphasis).foregroundColor(Color.brandPrimary).fontWeight(.bold).underline()
+                + Text(suffix))
                 .font(.pretendard(.regular, size: 14))
                 .foregroundStyle(Color.gray700)
                 .lineSpacing(3)
