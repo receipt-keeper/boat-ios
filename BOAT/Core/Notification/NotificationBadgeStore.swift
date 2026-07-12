@@ -27,15 +27,25 @@ final class NotificationBadgeStore {
         set { UserDefaults.standard.set(newValue.timeIntervalSince1970, forKey: seenKey) }
     }
 
+    /// refresh() 세대 토큰 — 홈/마이 등 여러 화면에서 거의 동시에 refresh()를 호출할 수 있는데,
+    /// 먼저 시작된 호출이 네트워크 지연으로 더 나중에 끝나면 최신 결과를 오래된 값으로 덮어써
+    /// 방금 읽음 처리한 알림의 Red Dot이 다시 켜지는 것처럼 보일 수 있다. 가장 최근에 시작된
+    /// 호출의 결과만 반영되도록 막는다.
+    private var generation = 0
+
     /// 미읽음 알림을 조회해 Red Dot 표시 여부를 갱신. (홈/목록/마이 진입·앱 복귀 시 호출)
     func refresh() async {
+        generation += 1
+        let token = generation
         guard let unread = try? await NotificationRepository.shared.fetchUnread() else { return }
+        guard token == generation else { return } // 그사이 더 최신 refresh()가 시작됐으면 이 결과는 버림
         let seen = lastSeenAt
         hasUnread = unread.contains { ($0.createdAt ?? .distantPast) > seen }
     }
 
     /// 알림 목록 진입 시 호출 — 현재 시각을 "본 시각"으로 기록하고 Red Dot을 즉시 해제.
     func markSeen() {
+        generation += 1 // 진행 중이던 refresh() 결과가 이후에 도착해 덮어쓰지 않도록 한다.
         lastSeenAt = Date()
         hasUnread = false
     }
