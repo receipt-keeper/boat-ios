@@ -12,6 +12,8 @@ import SwiftUI
 struct SearchView: View {
 
     let onBack: () -> Void
+    /// 상세에서 영수증 삭제 시 호출 — 검색 화면 자체를 닫고 목록 탭으로 이동시킨다(상위에서 처리).
+    var onDeleted: () -> Void = {}
 
     @State private var query = ""
     @FocusState private var focused: Bool
@@ -62,7 +64,17 @@ struct SearchView: View {
             ReceiptRegisterView(onBack: { showRegister = false })
         }
         .fullScreenCover(item: $detailReceipt) { receipt in
-            ReceiptDetailView(receiptId: receipt.receiptId, onBack: { detailReceipt = nil })
+            ReceiptDetailView(
+                receiptId: receipt.receiptId,
+                onBack: { detailReceipt = nil },
+                // 검색 결과 화면은 삭제를 반영해 다시 그리지 않으므로, 상세를 닫는 것에 그치지 않고
+                // 검색 화면 자체를 닫은 뒤 (갱신된) 목록 탭으로 이동시킨다.
+                onDeleted: {
+                    detailReceipt = nil
+                    onBack()
+                    onDeleted()
+                }
+            )
         }
     }
 

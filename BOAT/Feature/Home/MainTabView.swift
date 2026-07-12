@@ -90,7 +90,14 @@ struct MainTabView: View {
             }
             // 어느 탭에서든 돋보기 → 검색
             .fullScreenCover(isPresented: $showSearch) {
-                SearchView(onBack: { showSearch = false })
+                SearchView(
+                    onBack: { showSearch = false },
+                    // 검색 결과에서 연 상세를 삭제하면 검색 화면을 닫고 목록 탭(갱신됨)으로 이동.
+                    onDeleted: {
+                        showSearch = false
+                        selection = .list
+                    }
+                )
             }
             // 푸시 알림 탭 → 영수증 상세 (NotificationRouter가 payload의 resourceId를 세팅)
             .fullScreenCover(item: pushReceiptBinding) { rid in
