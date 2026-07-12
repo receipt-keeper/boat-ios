@@ -42,8 +42,13 @@ struct AppNotification: Identifiable, Hashable {
     var isRead: Bool
 
     /// 목록 썸네일용 에셋 — subCategory 기반 기기 이미지. Android DeviceImage.resolve(null, subCategory) 대응(category 미사용).
+    /// 단, 상시 유도 알림(마케팅/등록·미사용·분석 리마인더)은 특정 영수증과 무관하므로
+    /// 항상 대분류 "기타" 기본 이미지로 고정한다.
     var imageName: String {
-        DeviceImage.assetName(category: nil, subCategory: subCategory)
+        guard !NotificationRouter.shouldRouteHome(messageType: messageType, kind: kind) else {
+            return DeviceCategory.other.imageName
+        }
+        return DeviceImage.assetName(category: nil, subCategory: subCategory)
     }
 
     /// 알림 시간 표시 정책(UX 확정본):
