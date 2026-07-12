@@ -68,8 +68,9 @@ struct NotificationListView: View {
 
     private func handleTap(_ item: AppNotification) {
         viewModel.markAsRead(item)
-        if item.messageType == "marketing" {
-            // 홈 탭으로 이동 — 목록 자체를 닫고 MainTabView가 NotificationRouter를 관찰해 전환.
+        if NotificationRouter.shouldRouteHome(messageType: item.messageType, kind: item.kind) {
+            // 홈 탭으로 이동(마케팅 또는 상시 유도 알림) — 목록 자체를 닫고
+            // MainTabView가 NotificationRouter를 관찰해 전환.
             NotificationRouter.shared.shouldOpenHome = true
             onBack()
         } else if item.resourceType == "receipt", let id = item.resourceId, !id.isEmpty {

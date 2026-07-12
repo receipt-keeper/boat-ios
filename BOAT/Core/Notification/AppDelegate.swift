@@ -77,7 +77,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             notificationId: userInfo["notificationId"] as? String,
             messageType: userInfo["messageType"] as? String,
             resourceType: userInfo["resourceType"] as? String,
-            resourceId: userInfo["resourceId"] as? String
+            resourceId: userInfo["resourceId"] as? String,
+            kind: userInfo["kind"] as? String
         )
     }
 }

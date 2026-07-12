@@ -20,15 +20,30 @@ final class NotificationRouter {
     /// true면 홈 탭으로 이동해야 함(messageType=marketing). 소비 후 반드시 false로 되돌릴 것.
     var shouldOpenHome = false
 
+    /// 홈 탭으로 이동해야 하는 "상시 유도" 알림 kind. Android NotificationRouting.kt와 동일 목록.
+    /// (서버가 이 kind들에도 resourceType/resourceId를 함께 내려줄 수 있어, 상세로 새는 걸 막기
+    /// 위해 messageType=marketing과 동일하게 리소스 라우팅보다 먼저 확인해야 한다)
+    private static let homeRoutingKinds: Set<String> = [
+        "receipt_registration_reminder",
+        "receipt_inactivity_reminder",
+        "receipt_analysis_reminder",
+    ]
+
+    /// messageType/kind로 홈 탭 이동 대상인지 판단 — 푸시 라우팅(handle)과 인앱 알림 목록 탭
+    /// (NotificationListView.handleTap)이 동일 기준을 쓰도록 공유한다.
+    static func shouldRouteHome(messageType: String?, kind: String?) -> Bool {
+        messageType == "marketing" || homeRoutingKinds.contains(kind ?? "")
+    }
+
     /// 푸시 payload를 해석해 읽음 처리 + 라우팅 대상을 세팅한다.
     /// - notificationId가 있으면 리소스 종류와 무관하게 항상 읽음 처리(best-effort, 인앱 카드 탭과 동일 정책).
-    /// - messageType이 "marketing"이면 홈 탭으로 이동(리소스 라우팅보다 우선).
+    /// - messageType이 "marketing"이거나 kind가 homeRoutingKinds에 속하면 홈 탭으로 이동(리소스 라우팅보다 우선).
     /// - 그 외 resourceType이 "receipt"고 resourceId가 있으면 영수증 상세로 이동시킨다.
-    func handle(notificationId: String?, messageType: String?, resourceType: String?, resourceId: String?) {
+    func handle(notificationId: String?, messageType: String?, resourceType: String?, resourceId: String?, kind: String? = nil) {
         if let notificationId, !notificationId.isEmpty {
             Task { await NotificationRepository.shared.markRead(id: notificationId) }
         }
-        if messageType == "marketing" {
+        if Self.shouldRouteHome(messageType: messageType, kind: kind) {
             shouldOpenHome = true
             return
         }
