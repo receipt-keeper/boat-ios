@@ -50,8 +50,11 @@ final class ReceiptRepository {
             if cursor == nil {
                 local.upsertAll(data.receipts)
             }
-            let filtered = data.receipts.filter { matchesCategory($0, filter: filter) }
-            return ReceiptListData(receipts: filtered, totalCount: data.totalCount, pagination: data.pagination)
+            let categoryFiltered = data.receipts.filter { matchesCategory($0, filter: filter) }
+            let filtered = Self.excludeAlreadyExpired(categoryFiltered, tab: tab)
+            // "만료" 탭과 겹치지 않도록 걸러낸 만큼, 화면에 노출되는 totalCount("N건")도 함께 줄인다.
+            let removedCount = categoryFiltered.count - filtered.count
+            return ReceiptListData(receipts: filtered, totalCount: max(0, data.totalCount - removedCount), pagination: data.pagination)
         } catch {
             // 네트워크/서버 실패 → 로컬 캐시 폴백. 캐시도 비어있으면 원래 에러를 던진다.
             guard cursor == nil, !local.isEmpty else { throw error }
@@ -62,14 +65,15 @@ final class ReceiptRepository {
                 q: q
             )
             guard !cached.isEmpty else { throw error }
+            let filtered = Self.excludeAlreadyExpired(cached, tab: tab)
             return ReceiptListData(
-                receipts: cached,
-                totalCount: cached.count,
+                receipts: filtered,
+                totalCount: filtered.count,
                 pagination: ReceiptPagination(
                     hasNext: false,
                     limit: Self.pageSize,
                     nextCursor: nil,
-                    totalCount: cached.count
+                    totalCount: filtered.count
                 )
             )
         }
@@ -80,6 +84,13 @@ final class ReceiptRepository {
     private func matchesCategory(_ receipt: Receipt, filter: ReceiptFilter) -> Bool {
         guard let category = filter.apiCategory else { return true }
         return DeviceCategory.normalizeCategory(receipt.category) == DeviceCategory.normalizeCategory(category)
+    }
+
+    /// "만료 예정(expiring)" 탭은 서버가 잘못 포함시킨 이미 만료된 항목(warrantyDDay 음수)을
+    /// 클라이언트에서 한 번 더 걸러낸다 — "만료" 탭이 별도로 있으므로 두 목록이 겹치면 안 된다.
+    private static func excludeAlreadyExpired(_ receipts: [Receipt], tab: ReceiptTab) -> [Receipt] {
+        guard tab == .expiring else { return receipts }
+        return receipts.filter { !$0.isAlreadyExpired }
     }
 
     /// 영수증 등록: 이미지 업로드 → fileId 수집 → POST /api/v1/receipts → 로컬 캐시 저장.

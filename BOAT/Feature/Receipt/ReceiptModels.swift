@@ -84,4 +84,12 @@ extension Receipt {
     var deviceImageName: String {
         DeviceImage.assetName(category: category, subCategory: subCategory)
     }
+
+    /// warrantyDDay(만료까지 남은 일수)가 음수면 이미 만료된 상태.
+    /// "만료 예정" 목록은 "만료" 탭과 겹치면 안 되므로, 서버가 만료 예정 상태로 내려줘도
+    /// 이 값이 음수인 항목은 만료 예정 목록에서 제외해야 한다.
+    var isAlreadyExpired: Bool {
+        guard let warrantyDDay else { return false }
+        return warrantyDDay < 0
+    }
 }
