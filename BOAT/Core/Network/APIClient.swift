@@ -62,10 +62,12 @@ final class APIClient {
         case .failure:
             // HTTP 응답 없음(연결 실패) → 네트워크
             guard let statusCode = response.response?.statusCode else {
+                Self.reportNetworkFailure(path: target.path, method: target.method.rawValue, statusCode: nil, underlyingError: response.error)
                 throw APIError.network
             }
             // 5xx → 네트워크 문구 (Android ApiErrorParser 규칙)
             if statusCode >= 500 {
+                Self.reportNetworkFailure(path: target.path, method: target.method.rawValue, statusCode: statusCode, underlyingError: response.error)
                 throw APIError.network
             }
             // 4xx → 상태코드는 항상 보존 (404 판별 등에 필요), 메시지는 서버 본문 우선
@@ -98,9 +100,11 @@ final class APIClient {
             return data
         case .failure:
             guard let statusCode = response.response?.statusCode else {
+                Self.reportNetworkFailure(path: target.path, method: target.method.rawValue, statusCode: nil, underlyingError: response.error)
                 throw APIError.network
             }
             if statusCode >= 500 {
+                Self.reportNetworkFailure(path: target.path, method: target.method.rawValue, statusCode: statusCode, underlyingError: response.error)
                 throw APIError.network
             }
             throw APIError.server(statusCode: statusCode, message: String(localized: "error.api.unknown"), fieldErrors: [])
@@ -131,14 +135,31 @@ final class APIClient {
         case .success(let data):
             return try decode(T.self, from: data)
         case .failure:
-            guard let statusCode = response.response?.statusCode else { throw APIError.network }
-            if statusCode >= 500 { throw APIError.network }
+            guard let statusCode = response.response?.statusCode else {
+                Self.reportNetworkFailure(path: path, method: "POST", statusCode: nil, underlyingError: response.error)
+                throw APIError.network
+            }
+            if statusCode >= 500 {
+                Self.reportNetworkFailure(path: path, method: "POST", statusCode: statusCode, underlyingError: response.error)
+                throw APIError.network
+            }
             let parsed = Self.parseError(from: response.data)
             throw APIError.server(statusCode: statusCode, message: parsed.message, fieldErrors: parsed.fieldErrors)
         }
     }
 
     // MARK: - Private
+
+    /// 연결 실패(타임아웃/오프라인 등) 또는 5xx로 인한 네트워크 통신 실패 시,
+    /// 어떤 요청이 왜 실패했는지 Crashlytics에 non-fatal로 남긴다.
+    private static func reportNetworkFailure(path: String, method: String, statusCode: Int?, underlyingError: Error?) {
+        CrashReporter.setValue(path, forKey: "api_failed_path")
+        CrashReporter.setValue(method, forKey: "api_failed_method")
+        if let statusCode {
+            CrashReporter.setValue(statusCode, forKey: "api_failed_status_code")
+        }
+        CrashReporter.record(underlyingError ?? APIError.network)
+    }
 
     /// 실패 응답 본문에서 사용자 노출 문구 + 필드별 에러 목록(data.errors)을 꺼낸다.
     /// 문구는 errors 목록이 있으면 첫 번째 필드 에러 메시지를 우선하고, 없으면 data.message를 사용한다.
