@@ -140,28 +140,32 @@ private struct NotificationCard: View {
 }
 
 /// 특정 영수증에 연결된 일반 알림(만료 임박/AS 안내 등) 카드.
+/// 상단 "보트랩" + 상대 시간 → 타이틀 → 본문 순 배치(고정 안내문 없음).
+/// 이미지 에셋은 텍스트 블록 첫 줄에 상단 정렬한다.
 private struct ReceiptNotificationCard: View {
     let item: AppNotification
 
     var body: some View {
-        HStack(alignment: .center, spacing: 14) {
-            thumbnail
+        HStack(alignment: .top, spacing: 14) {
+            NotificationThumbnail(imageName: item.imageName)
             VStack(alignment: .leading, spacing: 6) {
                 HStack(alignment: .center) {
-                    Text(item.productName)
-                        .font(.pretendard(.bold, size: 16))
-                        .foregroundStyle(Color.gray900)
-                        .lineLimit(1)
+                    Text("notif.brand")
+                        .font(.pretendard(.regular, size: 14))
+                        .foregroundStyle(Color.gray500)
                     Spacer(minLength: .spacing8)
                     Text(item.displayTime)
                         .font(.pretendard(.regular, size: 14))
                         .foregroundStyle(Color.gray500)
                 }
+                Text(item.title)
+                    .font(.pretendard(.bold, size: 17))
+                    .foregroundStyle(Color.gray900)
+                    .fixedSize(horizontal: false, vertical: true)
                 Text(item.message)
                     .font(.pretendard(.regular, size: 14))
-                    .foregroundStyle(Color.gray500)
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .foregroundStyle(Color.gray600)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(.spacing16)
@@ -169,10 +173,6 @@ private struct ReceiptNotificationCard: View {
         .background(Color.colorWhite)
         .clipShape(RoundedRectangle(cornerRadius: .rounded2xl))
         .shadow(color: Color.brandPrimary.opacity(0.08), radius: 4, x: 0, y: 0)
-    }
-
-    private var thumbnail: some View {
-        NotificationThumbnail(imageName: item.imageName)
     }
 }
 
@@ -187,7 +187,7 @@ private struct PersistentNotificationCard: View {
             NotificationThumbnail(imageName: item.imageName)
             VStack(alignment: .leading, spacing: 6) {
                 HStack(alignment: .center) {
-                    Text("notif.persistent.brand")
+                    Text("notif.brand")
                         .font(.pretendard(.regular, size: 14))
                         .foregroundStyle(Color.gray500)
                     Spacer(minLength: .spacing8)
@@ -195,7 +195,7 @@ private struct PersistentNotificationCard: View {
                         .font(.pretendard(.regular, size: 14))
                         .foregroundStyle(Color.gray500)
                 }
-                Text(item.productName)
+                Text(item.title)
                     .font(.pretendard(.bold, size: 17))
                     .foregroundStyle(Color.gray900)
                     .fixedSize(horizontal: false, vertical: true)

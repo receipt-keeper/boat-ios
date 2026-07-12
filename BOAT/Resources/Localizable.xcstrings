@@ -1646,7 +1646,7 @@
         }
       }
     },
-    "notif.persistent.brand" : {
+    "notif.brand" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {

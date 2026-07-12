@@ -31,7 +31,8 @@ struct NotificationDto: Decodable {
 
 struct AppNotification: Identifiable, Hashable {
     let id: String
-    let productName: String
+    /// 카드 헤드라인(Bold) — 서버가 내려주는 알림 제목 그대로 ("무상 AS 만료 한 달 전" 등).
+    let title: String
     let message: String
     let createdAt: Date?
     let subCategory: String?
@@ -91,9 +92,7 @@ extension NotificationDto {
     func toAppNotification() -> AppNotification {
         AppNotification(
             id: notificationId,
-            productName: metadata?["productName"]?.nonBlank
-                ?? title?.nonBlank
-                ?? String(localized: "notif.fallback_title"),
+            title: title?.nonBlank ?? String(localized: "notif.fallback_title"),
             message: message ?? "",
             createdAt: Self.parseDate(createdAt),
             subCategory: metadata?["subCategory"],
