@@ -22,6 +22,7 @@ struct MyPageView: View {
     @State private var showNotificationSettings = false
     @State private var showReceiptRegister = false
     @State private var showPromoSheet = false
+    @State private var showTermsOfService = false
     @State private var toast = BoatToastState()
 
     private let inquiryEmail = "team.swyp8.app@gmail.com"
@@ -65,7 +66,7 @@ struct MyPageView: View {
 
             sectionLabel("mypage.section.help")
             settingRow("mypage.inquiry") { sendInquiryMail() }
-            settingRow("mypage.terms") { /* TODO: 서비스 이용약관 */ }
+            settingRow("mypage.terms") { showTermsOfService = true }
 
             Spacer()
 
@@ -77,6 +78,9 @@ struct MyPageView: View {
         .task { await NotificationBadgeStore.shared.refresh() }
         .fullScreenCover(isPresented: $showNotificationSettings) {
             NotificationSettingsView(onBack: { showNotificationSettings = false })
+        }
+        .fullScreenCover(isPresented: $showTermsOfService) {
+            TermsOfServiceView(onBack: { showTermsOfService = false })
         }
         .fullScreenCover(isPresented: $showReceiptRegister) {
             ReceiptRegisterView(

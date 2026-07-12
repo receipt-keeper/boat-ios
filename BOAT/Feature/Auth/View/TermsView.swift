@@ -17,6 +17,7 @@ struct TermsView: View {
     @State private var privacyPolicy = false
     @State private var marketing     = false
     @State private var toast = BoatToastState()
+    @State private var showTermsOfService = false
 
     private var allAgreed: Bool { ageConsent && serviceTerms && privacyPolicy && marketing }
     private var allRequired: Bool { ageConsent && serviceTerms && privacyPolicy }
@@ -40,7 +41,7 @@ struct TermsView: View {
                 Spacer().frame(height: .spacing8)
 
                 termsItem("terms.age", checked: $ageConsent, showView: false)
-                termsItem("terms.service", checked: $serviceTerms, showView: true)
+                termsItem("terms.service", checked: $serviceTerms, showView: true, onView: { showTermsOfService = true })
                 termsItem("terms.privacy", checked: $privacyPolicy, showView: true)
                 termsItem("terms.marketing", checked: $marketing, showView: true)
 
@@ -60,6 +61,9 @@ struct TermsView: View {
                 toast.showError(message)
                 viewModel.errorMessage = nil
             }
+        }
+        .fullScreenCover(isPresented: $showTermsOfService) {
+            TermsOfServiceView(onBack: { showTermsOfService = false })
         }
     }
 
@@ -125,7 +129,8 @@ struct TermsView: View {
     private func termsItem(
         _ titleKey: LocalizedStringKey,
         checked: Binding<Bool>,
-        showView: Bool
+        showView: Bool,
+        onView: (() -> Void)? = nil
     ) -> some View {
         Button {
             checked.wrappedValue.toggle()
@@ -137,10 +142,21 @@ struct TermsView: View {
                     .foregroundStyle(Color.gray700)
                 Spacer()
                 if showView {
-                    Text("terms.view")
-                        .font(.pretendard(.regular, size: 13))
-                        .foregroundStyle(Color.gray500)
-                        .underline()
+                    if let onView {
+                        // 상위 행 전체가 체크박스 토글 버튼이라, "보기" 탭이 그 탭에 묻히지
+                        // 않도록 우선순위를 줘서 전문 화면으로 이동시킨다.
+                        Text("terms.view")
+                            .font(.pretendard(.regular, size: 13))
+                            .foregroundStyle(Color.gray500)
+                            .underline()
+                            .contentShape(Rectangle())
+                            .highPriorityGesture(TapGesture().onEnded(onView))
+                    } else {
+                        Text("terms.view")
+                            .font(.pretendard(.regular, size: 13))
+                            .foregroundStyle(Color.gray500)
+                            .underline()
+                    }
                 }
             }
             .padding(.horizontal, .spacing16)
