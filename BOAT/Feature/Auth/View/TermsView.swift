@@ -19,6 +19,7 @@ struct TermsView: View {
     @State private var toast = BoatToastState()
     @State private var showTermsOfService = false
     @State private var showPrivacyPolicy = false
+    @State private var showMarketingConsent = false
 
     private var allAgreed: Bool { ageConsent && serviceTerms && privacyPolicy && marketing }
     private var allRequired: Bool { ageConsent && serviceTerms && privacyPolicy }
@@ -44,7 +45,7 @@ struct TermsView: View {
                 termsItem("terms.age", checked: $ageConsent, showView: false)
                 termsItem("terms.service", checked: $serviceTerms, showView: true, onView: { showTermsOfService = true })
                 termsItem("terms.privacy", checked: $privacyPolicy, showView: true, onView: { showPrivacyPolicy = true })
-                termsItem("terms.marketing", checked: $marketing, showView: true)
+                termsItem("terms.marketing", checked: $marketing, showView: true, onView: { showMarketingConsent = true })
 
                 Spacer()
 
@@ -68,6 +69,9 @@ struct TermsView: View {
         }
         .fullScreenCover(isPresented: $showPrivacyPolicy) {
             PrivacyPolicyView(onBack: { showPrivacyPolicy = false })
+        }
+        .fullScreenCover(isPresented: $showMarketingConsent) {
+            MarketingConsentView(onBack: { showMarketingConsent = false })
         }
     }
 

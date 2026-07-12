@@ -2804,6 +2804,16 @@
         }
       }
     },
+    "marketing_consent.title" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마케팅 정보 수신동의"
+          }
+        }
+      }
+    },
     "경고" : {
 
     },
