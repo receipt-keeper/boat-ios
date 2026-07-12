@@ -173,8 +173,6 @@ struct ReceiptEditView: View {
         return reordered
     }
     private var remainingSlots: Int { max(0, Self.maxPhotos - totalFileCount) }
-    /// 첨부 이미지는 수정 후에도 최소 1장 이상 유지해야 한다 (서버 스펙).
-    private var canRemoveImages: Bool { totalFileCount > Self.minPhotos }
     /// 이미지 뷰어용 전체 목록 — 화면에 보이는 순서(최근 추가한 신규 첨부 → 기존 첨부)와 동일해야 인덱스가 맞는다.
     private var viewerItems: [ImageViewerItem] {
         newImages.reversed().map { .local($0) } + existingFiles.map { .remote($0) }
@@ -773,19 +771,17 @@ struct ReceiptEditView: View {
                 showViewer = true
             }
             .overlay(alignment: .topTrailing) {
-                if canRemoveImages {
-                    Button {
-                        removeExistingFile(at: index)
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(Color.colorWhite)
-                            .frame(width: 24, height: 24)
-                            .background(Color.gray900.opacity(0.5), in: Circle())
-                    }
-                    .buttonStyle(.plain)
-                    .padding(6)
+                Button {
+                    removeExistingFile(at: index)
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(Color.colorWhite)
+                        .frame(width: 24, height: 24)
+                        .background(Color.gray900.opacity(0.5), in: Circle())
                 }
+                .buttonStyle(.plain)
+                .padding(6)
             }
     }
 
@@ -801,19 +797,17 @@ struct ReceiptEditView: View {
                 showViewer = true
             }
             .overlay(alignment: .topTrailing) {
-                if canRemoveImages {
-                    Button {
-                        newImages.remove(at: index)
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(Color.colorWhite)
-                            .frame(width: 24, height: 24)
-                            .background(Color.gray900.opacity(0.5), in: Circle())
-                    }
-                    .buttonStyle(.plain)
-                    .padding(6)
+                Button {
+                    newImages.remove(at: index)
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(Color.colorWhite)
+                        .frame(width: 24, height: 24)
+                        .background(Color.gray900.opacity(0.5), in: Circle())
                 }
+                .buttonStyle(.plain)
+                .padding(6)
             }
     }
 
@@ -835,7 +829,8 @@ struct ReceiptEditView: View {
                 )
         }
         .buttonStyle(.plain)
-        .disabled(!enabled)
+        // 이미지 미첨부 시 탭해서 경고 토스트를 띄워야 하므로 여기서 막지 않고 submit() 안에서 처리한다.
+        .disabled(isSubmitting)
     }
 
     // MARK: - 작은 컴포넌트
@@ -963,13 +958,17 @@ struct ReceiptEditView: View {
     }
 
     private func removeExistingFile(at index: Int) {
-        guard canRemoveImages else { return }
         existingFiles.remove(at: index)
     }
 
     /// 영수증 수정: 신규 이미지 업로드 → 유지할 기존 fileId와 합쳐 PATCH → 상세로 복귀.
     private func submit() {
-        guard canSubmit, !isSubmitting else { return }
+        guard !isSubmitting else { return }
+        guard totalFileCount >= Self.minPhotos else {
+            toast.showError(String(localized: "manual.image_required"))
+            return
+        }
+        guard canSubmit else { return }
 
         let sub = (selectedSubcategory == "기타" ? nil : selectedSubcategory)
         let fields = ReceiptUpdateFields(
