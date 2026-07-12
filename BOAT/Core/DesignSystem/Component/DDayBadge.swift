@@ -6,7 +6,8 @@
 //  앱 내 모든 D-day 표시는 이 컴포넌트로 통일한다(목록/상세/홈 등).
 //
 //  상태(dDay 기준):
-//  - nil 또는 0 이하 → "만료" (회색)
+//  - nil 또는 0 미만 → "만료" (회색)
+//  - 0              → "D-Day" (빨강, 만료 당일 — 당일까지는 아직 만료가 아니다)
 //  - 30 이하        → "D-N" (빨강, 임박)
 //  - 그 외          → "D-N" (파랑, 여유)
 //
@@ -38,8 +39,11 @@ struct DDayBadge: View {
     }
 
     private static func style(for dDay: Int?) -> (text: Text, bg: Color, border: Color, fg: Color) {
-        guard let dDay, dDay > 0 else {
+        guard let dDay, dDay >= 0 else {
             return (Text("receipt.list.expired"), .badgeExpiredBg, .badgeExpiredBorder, .badgeExpiredText)
+        }
+        if dDay == 0 {
+            return (Text("receipt.list.dday_today"), .badgeWarningBg, .badgeWarningBorder, .badgeWarningText)
         }
         if dDay <= expiringThresholdDays {
             return (Text("receipt.list.dday \(dDay)"), .badgeWarningBg, .badgeWarningBorder, .badgeWarningText)

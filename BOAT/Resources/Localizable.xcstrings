@@ -2356,6 +2356,16 @@
         }
       }
     },
+    "receipt.list.dday_today" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "D-Day"
+          }
+        }
+      }
+    },
     "receipt.list.expired" : {
       "localizations" : {
         "ko" : {
