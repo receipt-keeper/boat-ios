@@ -504,6 +504,9 @@ struct ReceiptRegisterView: View {
                         .foregroundStyle(Color.colorWhite)
                         .frame(width: 22, height: 22)
                         .background(failed ? Color.systemError : Color.gray500.opacity(0.8), in: Circle())
+                        // 시각적 크기는 그대로 두고 탭 영역만 사방 2pt씩 넓힌다.
+                        .padding(-2)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .padding(6)
