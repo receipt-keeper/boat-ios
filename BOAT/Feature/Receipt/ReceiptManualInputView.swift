@@ -7,7 +7,7 @@
 //  - 등록된 이미지 확인: 추가하기 타일(PhotoSourceSheet) + 썸네일(탭=뷰어, 삭제)
 //  - 카테고리: 대분류 드롭다운 + 소분류 칩(지정 순서)
 //  - 제품 정보 / 보증 정보: 접이식 섹션
-//  - 실물 영수증 보관 여부: 라디오(필요함 / 필요하지 않음)
+//  - 실물 영수증 보관 여부: 체크박스(필요함, 기본 unchecked)
 //  필수(*): 제품명 / 구매일 / 무상 AS 만료기간.
 //
 
@@ -60,8 +60,8 @@ struct ReceiptManualInputView: View {
     @State private var showDatePicker = false
     @State private var productExpanded = true
 
-    // 실물 영수증 보관 여부 (nil = 미선택)
-    @State private var physicalReceipt: Bool?
+    // 실물 영수증 보관 여부 (체크박스, 기본 unchecked)
+    @State private var physicalReceipt = false
 
     // 보증 정보
     @State private var brand = ""
@@ -620,7 +620,7 @@ struct ReceiptManualInputView: View {
         }
     }
 
-    // MARK: - 실물 영수증 보관 여부 (라디오)
+    // MARK: - 실물 영수증 보관 여부 (체크박스)
 
     private var physicalCard: some View {
         VStack(alignment: .leading, spacing: .spacing16) {
@@ -631,28 +631,33 @@ struct ReceiptManualInputView: View {
                 InfoTooltip(message: "manual.physical_help")
             }
 
-            radioRow("manual.physical_yes", selected: physicalReceipt == true) { physicalReceipt = true }
-            radioRow("manual.physical_no", selected: physicalReceipt == false) { physicalReceipt = false }
+            checkboxRow("manual.physical_yes", checked: physicalReceipt) { physicalReceipt.toggle() }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.spacing16)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
     }
 
-    private func radioRow(_ label: LocalizedStringKey, selected: Bool, onTap: @escaping () -> Void) -> some View {
+    /// 기존 라디오 컴포넌트와 동일한 색상 체계(선택: brandPrimary / 비선택: gray300, gray600)를
+    /// 그대로 적용한 체크박스.
+    private func checkboxRow(_ label: LocalizedStringKey, checked: Bool, onTap: @escaping () -> Void) -> some View {
         Button(action: onTap) {
             HStack(spacing: .spacing12) {
                 ZStack {
-                    Circle()
-                        .stroke(selected ? Color.brandPrimary : Color.gray300, lineWidth: 1.5)
-                        .frame(width: 22, height: 22)
-                    if selected {
-                        Circle().fill(Color.brandPrimary).frame(width: 12, height: 12)
+                    RoundedRectangle(cornerRadius: .roundedSm)
+                        .fill(checked ? Color.brandPrimary : Color.colorWhite)
+                    RoundedRectangle(cornerRadius: .roundedSm)
+                        .stroke(checked ? Color.brandPrimary : Color.gray300, lineWidth: 1.5)
+                    if checked {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(Color.colorWhite)
                     }
                 }
+                .frame(width: 22, height: 22)
                 Text(label)
                     .font(.pretendard(.regular, size: 15))
-                    .foregroundStyle(selected ? Color.gray900 : Color.gray600)
+                    .foregroundStyle(checked ? Color.gray900 : Color.gray600)
                 Spacer()
             }
             .contentShape(Rectangle())
@@ -895,7 +900,7 @@ struct ReceiptManualInputView: View {
             category: selectedCategory.rawValue,
             subCategory: sub,
             memo: memo.trimmingCharacters(in: .whitespaces),
-            requiresPhysicalReceipt: physicalReceipt ?? false
+            requiresPhysicalReceipt: physicalReceipt
         )
         let imagesToUpload = images
 

@@ -48,8 +48,8 @@ struct ReceiptEditView: View {
     @State private var memo: String
     @State private var showDatePicker = false
 
-    // 실물 영수증 보관 여부
-    @State private var physicalReceipt: Bool?
+    // 실물 영수증 보관 여부 (체크박스)
+    @State private var physicalReceipt = false
 
     // 보증 정보
     @State private var brand: String
@@ -82,7 +82,7 @@ struct ReceiptEditView: View {
     private let originalWarranty: Int?
     private let originalCustomMonthsText: String
     private let originalMemo: String
-    private let originalPhysicalReceipt: Bool?
+    private let originalPhysicalReceipt: Bool
     private let originalBrand: String
     private let originalPrice: String
     private let originalSerial: String
@@ -111,14 +111,14 @@ struct ReceiptEditView: View {
         _serial = State(initialValue: serialValue)
         _price = State(initialValue: priceValue)
         _memo = State(initialValue: memoValue)
-        _physicalReceipt = State(initialValue: receipt.requiresPhysicalReceipt)
+        _physicalReceipt = State(initialValue: receipt.requiresPhysicalReceipt ?? false)
         _existingFiles = State(initialValue: existingFilesValue)
         originalProductName = name
         originalBrand = brandValue
         originalSerial = serialValue
         originalPrice = priceValue
         originalMemo = memoValue
-        originalPhysicalReceipt = receipt.requiresPhysicalReceipt
+        originalPhysicalReceipt = receipt.requiresPhysicalReceipt ?? false
         originalFileIds = existingFilesValue.map(\.fileId)
 
         let dateValue: String
@@ -607,7 +607,7 @@ struct ReceiptEditView: View {
         }
     }
 
-    // MARK: - 실물 영수증 보관 여부
+    // MARK: - 실물 영수증 보관 여부 (체크박스)
 
     private var physicalCard: some View {
         VStack(alignment: .leading, spacing: .spacing16) {
@@ -617,28 +617,33 @@ struct ReceiptEditView: View {
                     .foregroundStyle(Color.gray900)
                 InfoTooltip(message: "manual.physical_help")
             }
-            radioRow("manual.physical_yes", selected: physicalReceipt == true) { physicalReceipt = true }
-            radioRow("detail.physical_no", selected: physicalReceipt == false) { physicalReceipt = false }
+            checkboxRow("manual.physical_yes", checked: physicalReceipt) { physicalReceipt.toggle() }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.spacing16)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
     }
 
-    private func radioRow(_ label: LocalizedStringKey, selected: Bool, onTap: @escaping () -> Void) -> some View {
+    /// 기존 라디오 컴포넌트와 동일한 색상 체계(선택: brandPrimary / 비선택: gray300, gray600)를
+    /// 그대로 적용한 체크박스.
+    private func checkboxRow(_ label: LocalizedStringKey, checked: Bool, onTap: @escaping () -> Void) -> some View {
         Button(action: onTap) {
             HStack(spacing: .spacing12) {
                 ZStack {
-                    Circle()
-                        .stroke(selected ? Color.brandPrimary : Color.gray300, lineWidth: 1.5)
-                        .frame(width: 22, height: 22)
-                    if selected {
-                        Circle().fill(Color.brandPrimary).frame(width: 12, height: 12)
+                    RoundedRectangle(cornerRadius: .roundedSm)
+                        .fill(checked ? Color.brandPrimary : Color.colorWhite)
+                    RoundedRectangle(cornerRadius: .roundedSm)
+                        .stroke(checked ? Color.brandPrimary : Color.gray300, lineWidth: 1.5)
+                    if checked {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(Color.colorWhite)
                     }
                 }
+                .frame(width: 22, height: 22)
                 Text(label)
                     .font(.pretendard(.regular, size: 15))
-                    .foregroundStyle(selected ? Color.gray900 : Color.gray600)
+                    .foregroundStyle(checked ? Color.gray900 : Color.gray600)
                 Spacer()
             }
             .contentShape(Rectangle())
@@ -981,7 +986,7 @@ struct ReceiptEditView: View {
             category: selectedCategory.rawValue,
             subCategory: sub,
             memo: memo.trimmingCharacters(in: .whitespaces),
-            requiresPhysicalReceipt: physicalReceipt ?? false
+            requiresPhysicalReceipt: physicalReceipt
         )
         let imagesToUpload = newImages
         let remaining = existingFiles.map(\.fileId)
