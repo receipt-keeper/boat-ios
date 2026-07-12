@@ -43,7 +43,7 @@ struct NoTokenSheet: View {
             Spacer().frame(height: .spacing8)
             if canRecharge {
                 (Text("receipt.token.subtitle_prefix")
-                    + Text("receipt.token.subtitle_emphasis").underline()
+                    + Text("receipt.token.subtitle_emphasis")
                     + Text("receipt.token.subtitle_suffix"))
                     .font(.pretendard(.bold, size: 18))
                     .foregroundStyle(Color.brandPrimary)
@@ -104,7 +104,7 @@ struct NoTokenSheet: View {
             HStack(alignment: .top, spacing: .spacing4) {
                 Text("•")
                 (Text("receipt.token.notice.body_prefix")
-                    + Text("receipt.token.notice.body_emphasis").foregroundColor(Color.brandPrimary).underline()
+                    + Text("receipt.token.notice.body_emphasis").foregroundColor(Color.brandPrimary)
                     + Text("receipt.token.notice.body_suffix"))
             }
             .font(.pretendard(.regular, size: 13))

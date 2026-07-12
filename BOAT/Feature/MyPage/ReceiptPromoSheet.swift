@@ -67,7 +67,6 @@ struct ReceiptPromoSheet: View {
             Text("mypage.promo.event_title")
                 .font(.pretendard(.bold, size: 15))
                 .foregroundStyle(Color.brandPrimary)
-                .underline()
 
             VStack(alignment: .leading, spacing: .spacing8) {
                 bullet(prefix: "mypage.promo.bullet1_prefix", emphasis: "mypage.promo.emphasis_free5", suffix: "mypage.promo.bullet1_suffix")
@@ -80,7 +79,7 @@ struct ReceiptPromoSheet: View {
         .background(Color.gray50, in: RoundedRectangle(cornerRadius: .roundedLg))
     }
 
-    /// 밑줄 강조 구간(무료 분석 5회 / 추가 5회)만 브랜드 컬러 + 밑줄을 적용한 불릿 텍스트.
+    /// 강조 구간(무료 분석 5회 / 추가 5회)만 브랜드 컬러를 적용한 불릿 텍스트.
     private func bullet(prefix: LocalizedStringKey, emphasis: LocalizedStringKey, suffix: LocalizedStringKey) -> some View {
         HStack(alignment: .top, spacing: .spacing8) {
             Circle()
@@ -88,7 +87,7 @@ struct ReceiptPromoSheet: View {
                 .frame(width: 4, height: 4)
                 .padding(.top, 8)
             (Text(prefix)
-                + Text(emphasis).foregroundColor(Color.brandPrimary).fontWeight(.bold).underline()
+                + Text(emphasis).foregroundColor(Color.brandPrimary).fontWeight(.bold)
                 + Text(suffix))
                 .font(.pretendard(.regular, size: 14))
                 .foregroundStyle(Color.gray700)
