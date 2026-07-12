@@ -30,6 +30,7 @@ struct ReceiptManualInputView: View {
     private let originalSubcategory: String?
 
     private static let maxPhotos = 5
+    private static let productNameLimit = 50
     private static let warrantyOptions: [LocalizedStringKey] = [
         "manual.warranty_6m", "manual.warranty_1y", "manual.warranty_2y", "manual.warranty_3y", "manual.warranty_custom",
     ]
@@ -97,7 +98,7 @@ struct ReceiptManualInputView: View {
 
         guard let ocr = ocrResult else { return }
 
-        _productName = State(initialValue: ocr.itemName ?? "")
+        _productName = State(initialValue: String((ocr.itemName ?? "").prefix(Self.productNameLimit)))
         _brand = State(initialValue: ocr.brandName ?? "")
         _serial = State(initialValue: ocr.serialNumber ?? "")
 
@@ -491,7 +492,10 @@ struct ReceiptManualInputView: View {
                 Spacer().frame(height: .spacing16)
 
                 BoatInputField(
-                    text: $productName,
+                    text: Binding(
+                        get: { productName },
+                        set: { productName = String($0.prefix(Self.productNameLimit)) }
+                    ),
                     label: "manual.product_name",
                     required: true,
                     placeholder: "manual.product_name_hint"
