@@ -59,7 +59,7 @@ final class ReceiptListViewModel {
                 tab: tab, sort: sort, filter: filter, q: q, cursor: nil
             )
             guard token == generation else { return } // 더 최신 요청이 들어왔으면 폐기
-            receipts = data.receipts
+            receipts = applySort(data.receipts)
             // 대분류 필터는 클라이언트에서 걸러내므로(ReceiptRepository 참고), 서버 totalCount는
             // 필터 무관 전체 건수라 그대로 쓸 수 없다 — 전체 탭만 서버 값을, 나머지는 로드된
             // 필터링 결과 개수를 카운트로 노출한다(스크롤할수록 정확해짐).
@@ -116,6 +116,14 @@ final class ReceiptListViewModel {
         await loadMore()
     }
 
+    /// "가나다 순"(.default)은 서버가 지원하지 않는 정렬이라 클라이언트에서 제품명 기준으로
+    /// 재정렬한다. 그 외 정렬은 서버가 내려준 순서를 그대로 유지한다.
+    /// (누적 로드된 범위 안에서만 정렬되므로, 페이지를 더 불러올수록 순서가 다시 계산된다.)
+    private func applySort(_ items: [Receipt]) -> [Receipt] {
+        guard sort == .default else { return items }
+        return items.sorted { $0.itemName.localizedStandardCompare($1.itemName) == .orderedAscending }
+    }
+
     private func loadMore() async {
         guard hasNext, !isLoading, !isLoadingMore, let cursor = nextCursor else { return }
 
@@ -127,7 +135,7 @@ final class ReceiptListViewModel {
                 tab: tab, sort: sort, filter: filter, q: q, cursor: cursor
             )
             guard token == generation else { return }
-            receipts.append(contentsOf: data.receipts)
+            receipts = applySort(receipts + data.receipts)
             totalCount = filter == .all ? data.pagination.totalCount : receipts.count
             nextCursor = data.pagination.nextCursor
             hasNext = data.pagination.hasNext
