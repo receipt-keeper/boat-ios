@@ -21,16 +21,25 @@ final class APIClient {
 
     static let shared = APIClient()
 
+    /// 요청 타임아웃(초). 기존엔 설정이 없어 iOS 기본값(60초)을 그대로 썼는데, 그동안 응답이
+    /// 없으면 로딩 화면이 그만큼 오래 떠 있는 것처럼 보였다 — 명시적으로 짧게 잡아
+    /// 실패를 빨리 던지고 화면(버튼 활성화 등)이 원래 상태로 곧바로 돌아가게 한다.
+    private static let requestTimeout: TimeInterval = 15
+
     /// 토큰 불필요 엔드포인트(로그인/리프레시/로그아웃)용 — 인터셉터 없음
     private let publicSession: Session
     /// 인증 엔드포인트용 — Bearer 주입 + 401 자동 갱신
     private let authSession: Session
 
     private init() {
-        let publicSession = Session()
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = Self.requestTimeout
+        configuration.timeoutIntervalForResource = Self.requestTimeout
+
+        let publicSession = Session(configuration: configuration)
         self.publicSession = publicSession
         // refresh는 인터셉터 없는 publicSession으로 호출 (무한 재귀 방지)
-        self.authSession = Session(interceptor: AuthInterceptor(refreshSession: publicSession))
+        self.authSession = Session(configuration: configuration, interceptor: AuthInterceptor(refreshSession: publicSession))
     }
 
     /// data가 있는 응답용. 디코딩한 T를 반환합니다.
