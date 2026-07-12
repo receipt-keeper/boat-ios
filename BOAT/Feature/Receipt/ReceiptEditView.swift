@@ -236,10 +236,11 @@ struct ReceiptEditView: View {
             && !isSubmitting
     }
 
+    /// 숫자만 입력, 최대 9자리(999,999,999), 입력 중 천 단위 콤마 자동 표시.
     private var priceDisplayBinding: Binding<String> {
         Binding(
             get: { Int(price)?.formattedWithComma ?? "" },
-            set: { price = $0.filter(\.isNumber) }
+            set: { price = String($0.filter(\.isNumber).prefix(9)) }
         )
     }
 
