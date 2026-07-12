@@ -333,6 +333,7 @@ private struct ExpiringEmptyBanner: View {
     var onMore: () -> Void = {}
 
     private let mascotSize = CGSize(width: 88, height: 107)
+    private let mascotOffsetY: CGFloat = 8
     private let mascotTrailing: CGFloat = 32
 
     var body: some View {
@@ -395,6 +396,7 @@ private struct ExpiringEmptyBanner: View {
             .resizable()
             .scaledToFit()
             .frame(width: mascotSize.width, height: mascotSize.height)
+            .offset(y: mascotOffsetY)
             .padding(.trailing, mascotTrailing)
     }
 }

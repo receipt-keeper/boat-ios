@@ -669,7 +669,7 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "등록된 영수증이 안전하게\n관리되고 있습니다."
+            "value": "AS 만료 예정인 제품의\n영수증이 없습니다."
           }
         }
       }
