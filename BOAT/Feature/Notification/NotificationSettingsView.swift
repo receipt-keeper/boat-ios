@@ -114,6 +114,7 @@ struct NotificationSettingsView: View {
             do {
                 let result = try await NotificationSettingsRepository.shared.updateSettings(pushEnabled: enabled)
                 pushEnabled = result.pushEnabled
+                showConsentToast(enabled: result.pushEnabled)
             } catch {
                 pushEnabled = previous
                 toast.showError((error as? LocalizedError)?.errorDescription ?? "")
@@ -129,10 +130,20 @@ struct NotificationSettingsView: View {
             do {
                 let result = try await NotificationSettingsRepository.shared.updateSettings(marketingConsent: consent)
                 marketingConsent = result.marketingConsent
+                showConsentToast(enabled: result.marketingConsent)
             } catch {
                 marketingConsent = previous
                 toast.showError((error as? LocalizedError)?.errorDescription ?? "")
             }
+        }
+    }
+
+    /// 토글 on/off에 따라 동의 처리/철회 안내 토스트 노출.
+    private func showConsentToast(enabled: Bool) {
+        if enabled {
+            toast.show(String(localized: "notif.settings.consent_granted"), type: .info)
+        } else {
+            toast.show(String(localized: "notif.settings.consent_withdrawn"), type: .info)
         }
     }
 

@@ -26,6 +26,9 @@
         }
       }
     },
+    "%lld." : {
+
+    },
     "%lld/%lld" : {
       "localizations" : {
         "ko" : {
@@ -1082,6 +1085,7 @@
       }
     },
     "manual.min_image_hint" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
@@ -1342,6 +1346,16 @@
         }
       }
     },
+    "marketing_consent.title" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마케팅 정보 수신동의"
+          }
+        }
+      }
+    },
     "mypage.analysis_remaining_count %lld" : {
       "localizations" : {
         "ko" : {
@@ -1492,22 +1506,22 @@
         }
       }
     },
-    "mypage.promo.emphasis_free5" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "무료 분석 5회"
-          }
-        }
-      }
-    },
     "mypage.promo.emphasis_extra5" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "추가 5회"
+          }
+        }
+      }
+    },
+    "mypage.promo.emphasis_free5" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "무료 분석 5회"
           }
         }
       }
@@ -1638,6 +1652,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "푸시 알림 동의"
+          }
+        }
+      }
+    },
+    "notif.settings.consent_granted" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수신 동의 처리되었습니다."
+          }
+        }
+      }
+    },
+    "notif.settings.consent_withdrawn" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수신 동의가 철회되었습니다."
           }
         }
       }
@@ -2018,6 +2052,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "설정 열기"
+          }
+        }
+      }
+    },
+    "privacy_policy.title" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개인정보 처리방침"
           }
         }
       }
@@ -2614,22 +2658,22 @@
         }
       }
     },
-    "receipt.token.notice.body_prefix" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이벤트로 제공되는 "
-          }
-        }
-      }
-    },
     "receipt.token.notice.body_emphasis" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "추가 5회"
+          }
+        }
+      }
+    },
+    "receipt.token.notice.body_prefix" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이벤트로 제공되는 "
           }
         }
       }
@@ -2664,16 +2708,6 @@
         }
       }
     },
-    "receipt.token.subtitle_prefix" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오픈 이벤트로 "
-          }
-        }
-      }
-    },
     "receipt.token.subtitle_emphasis" : {
       "localizations" : {
         "ko" : {
@@ -2684,22 +2718,32 @@
         }
       }
     },
-    "receipt.token.subtitle_suffix" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "를 추가로 드려요."
-          }
-        }
-      }
-    },
     "receipt.token.subtitle_none" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "영수증을 직접 입력하면 계속\n보증 기간을 관리할 수 있어요."
+          }
+        }
+      }
+    },
+    "receipt.token.subtitle_prefix" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오픈 이벤트로 "
+          }
+        }
+      }
+    },
+    "receipt.token.subtitle_suffix" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "를 추가로 드려요."
           }
         }
       }
@@ -2780,6 +2824,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "마이"
+          }
+        }
+      }
+    },
+    "terms_of_service.title" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서비스 이용약관"
           }
         }
       }
@@ -2880,36 +2934,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "보기"
-          }
-        }
-      }
-    },
-    "terms_of_service.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "서비스 이용약관"
-          }
-        }
-      }
-    },
-    "privacy_policy.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "개인정보 처리방침"
-          }
-        }
-      }
-    },
-    "marketing_consent.title" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "마케팅 정보 수신동의"
           }
         }
       }
