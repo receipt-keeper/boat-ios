@@ -203,12 +203,22 @@
         }
       }
     },
-    "detail.physical_no" : {
+    "detail.physical_kept" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "필요없음"
+            "value" : "보관"
+          }
+        }
+      }
+    },
+    "detail.physical_not_kept" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "미보관"
           }
         }
       }
@@ -1122,16 +1132,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "실물 영수증 보관 여부"
-          }
-        }
-      }
-    },
-    "manual.physical_yes" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "필요함"
           }
         }
       }

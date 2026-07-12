@@ -251,38 +251,19 @@ struct ReceiptDetailView: View {
             .padding(.top, .spacing8)
     }
 
-    // MARK: - 실물 영수증 보관 여부 (읽기 전용 라디오)
+    // MARK: - 실물 영수증 보관 여부
 
     private func physicalSection(_ r: Receipt) -> some View {
         let kept = r.requiresPhysicalReceipt == true
-        return VStack(alignment: .leading, spacing: .spacing16) {
-            HStack(spacing: 6) {
-                Text("manual.physical_section")
-                    .font(.pretendard(.bold, size: 18))
-                    .foregroundStyle(Color.gray900)
-                InfoTooltip(message: "manual.physical_help")
-            }
-            radioDisplay("manual.physical_yes", selected: kept)
-            radioDisplay("detail.physical_no", selected: !kept)
+        return VStack(alignment: .leading, spacing: .spacing8) {
+            Text("manual.physical_section")
+                .font(.pretendard(.bold, size: 18))
+                .foregroundStyle(Color.gray900)
+            Text(kept ? "detail.physical_kept" : "detail.physical_not_kept")
+                .font(.pretendard(.regular, size: 15))
+                .foregroundStyle(Color.brandPrimary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private func radioDisplay(_ label: LocalizedStringKey, selected: Bool) -> some View {
-        HStack(spacing: .spacing12) {
-            ZStack {
-                Circle()
-                    .stroke(selected ? Color.brandPrimary : Color.gray300, lineWidth: 1.5)
-                    .frame(width: 22, height: 22)
-                if selected {
-                    Circle().fill(Color.brandPrimary).frame(width: 12, height: 12)
-                }
-            }
-            Text(label)
-                .font(.pretendard(.regular, size: 15))
-                .foregroundStyle(selected ? Color.gray900 : Color.gray500)
-            Spacer()
-        }
     }
 
     // 시리얼 넘버 (라벨 + 도움말(?))
