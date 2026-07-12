@@ -248,6 +248,11 @@ struct ReceiptEditView: View {
         return purchaseDate.replacingOccurrences(of: ".", with: "-")
     }
 
+    /// "yyyy.MM.dd" → "yyyy-MM-dd" (서버 전송 포맷)
+    private var apiExpiresOn: String? {
+        expiresOnDisplay?.replacingOccurrences(of: ".", with: "-")
+    }
+
     /// 원본 대비 실제로 변경된 내용이 있는지 — 없으면 뒤로가기 시 이탈 확인 팝업을 생략한다.
     private var hasChanges: Bool {
         selectedCategory != originalCategory
@@ -987,6 +992,7 @@ struct ReceiptEditView: View {
             paymentDate: apiPaymentDate,
             totalAmount: Int(price),
             periodMonths: totalWarrantyMonths,
+            expiresOn: apiExpiresOn,
             category: selectedCategory.rawValue,
             subCategory: sub,
             memo: memo.trimmingCharacters(in: .whitespaces),

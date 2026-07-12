@@ -884,6 +884,11 @@ struct ReceiptManualInputView: View {
         return purchaseDate.replacingOccurrences(of: ".", with: "-")
     }
 
+    /// "yyyy.MM.dd" → "yyyy-MM-dd" (서버 전송 포맷)
+    private var apiExpiresOn: String? {
+        expiresOnDisplay?.replacingOccurrences(of: ".", with: "-")
+    }
+
     /// 카메라 실행 — 촬영 시점에 권한 확인/요청 (App Store 심사 가이드 준수).
     private func openCamera() {
         guard canAddMore else { return }
@@ -926,6 +931,7 @@ struct ReceiptManualInputView: View {
             paymentDate: apiPaymentDate,
             totalAmount: Int(price),
             periodMonths: totalWarrantyMonths,
+            expiresOn: apiExpiresOn,
             category: selectedCategory.rawValue,
             subCategory: sub,
             memo: memo.trimmingCharacters(in: .whitespaces),

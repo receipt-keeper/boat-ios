@@ -161,6 +161,7 @@ struct ReceiptCreateFields {
     var paymentDate: String?          // "yyyy-MM-dd"
     var totalAmount: Int?
     var periodMonths: Int?
+    var expiresOn: String?            // "yyyy-MM-dd"
     var category: String?
     var subCategory: String?
     var memo: String?
@@ -178,6 +179,7 @@ struct ReceiptCreateFields {
         if let paymentDate, !paymentDate.isEmpty         { body["payment_date"] = paymentDate }
         if let totalAmount                               { body["total_amount"] = totalAmount }
         if let periodMonths                              { body["period_months"] = periodMonths }
+        if let expiresOn, !expiresOn.isEmpty             { body["expires_on"] = expiresOn }
         if let category, !category.isEmpty               { body["category"] = category }
         if let subCategory, !subCategory.isEmpty         { body["sub_category"] = subCategory }
         if let memo, !memo.isEmpty                       { body["memo"] = memo }
@@ -195,6 +197,7 @@ struct ReceiptUpdateFields {
     var paymentDate: String?          // "yyyy-MM-dd"
     var totalAmount: Int?
     var periodMonths: Int?
+    var expiresOn: String?            // "yyyy-MM-dd"
     var category: String?
     var subCategory: String?
     var memo: String?
@@ -212,6 +215,7 @@ struct ReceiptUpdateFields {
         if let paymentDate, !paymentDate.isEmpty     { body["payment_date"] = paymentDate }
         if let totalAmount                           { body["total_amount"] = totalAmount }
         if let periodMonths                          { body["period_months"] = periodMonths }
+        if let expiresOn, !expiresOn.isEmpty         { body["expires_on"] = expiresOn }
         if let category, !category.isEmpty           { body["category"] = category }
         if let subCategory, !subCategory.isEmpty     { body["sub_category"] = subCategory }
         if let memo, !memo.isEmpty                   { body["memo"] = memo }
