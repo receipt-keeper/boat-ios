@@ -715,9 +715,14 @@ struct ReceiptEditView: View {
 
     private var imageSection: some View {
         VStack(alignment: .leading, spacing: .spacing12) {
-            Text("detail.original_receipt")
-                .font(.pretendard(.bold, size: 18))
-                .foregroundStyle(Color.gray900)
+            HStack(spacing: 0) {
+                Text("detail.original_receipt")
+                    .font(.pretendard(.bold, size: 18))
+                    .foregroundStyle(Color.gray900)
+                Text(" *")
+                    .font(.pretendard(.bold, size: 18))
+                    .foregroundStyle(Color.systemError)
+            }
 
             // "+" 추가 버튼은 항상 맨 왼쪽 고정. 그다음은 가장 최근에 추가한 신규 이미지부터,
             // 마지막으로 기존 첨부 순서로 배치한다.
@@ -733,12 +738,6 @@ struct ReceiptEditView: View {
                         existingFileThumbnail(file, index: index)
                     }
                 }
-            }
-
-            if totalFileCount < Self.minPhotos {
-                Text("manual.min_image_hint")
-                    .font(.pretendard(.medium, size: 13))
-                    .foregroundStyle(Color.systemError)
             }
         }
         .padding(.spacing16)
