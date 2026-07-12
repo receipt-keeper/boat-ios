@@ -19,6 +19,8 @@ struct BOATApp: App {
 
     init() {
         FirebaseApp.configure()
+        // 이 기기에서 최초 실행이면 Firebase Analytics에 app_install 이벤트 1회 기록.
+        InstallAnalytics.logInstallIfNeeded()
         // UIKit 레벨 tint — 시스템 권한 다이얼로그(Allow 버튼) 등 UIAlertController에 적용
         UIView.appearance().tintColor = UIColor(Color.brandPrimary)
         #if DEBUG

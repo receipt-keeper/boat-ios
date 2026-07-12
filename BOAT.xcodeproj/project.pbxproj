@@ -14,6 +14,7 @@
 		3CF2BD4B2FD701A70005AD74 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 3CF2BD4A2FD701A70005AD74 /* FirebaseAuth */; };
 		3CF2BD4D2FD701A70005AD74 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 3CF2BD4C2FD701A70005AD74 /* FirebaseCrashlytics */; };
 		3CF2BD4F2FD701A70005AD74 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 3CF2BD4E2FD701A70005AD74 /* FirebaseMessaging */; };
+		3CF2BD502FD701A70005AD74 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 3CF2BD512FD701A70005AD74 /* FirebaseAnalytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +48,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3CF2BD4F2FD701A70005AD74 /* FirebaseMessaging in Frameworks */,
+				3CF2BD502FD701A70005AD74 /* FirebaseAnalytics in Frameworks */,
 				3CF2BD412FD6FFB20005AD74 /* Alamofire in Frameworks */,
 				3CF2BD4B2FD701A70005AD74 /* FirebaseAuth in Frameworks */,
 				3CF2BD4D2FD701A70005AD74 /* FirebaseCrashlytics in Frameworks */,
@@ -111,6 +113,7 @@
 				3CF2BD4A2FD701A70005AD74 /* FirebaseAuth */,
 				3CF2BD4C2FD701A70005AD74 /* FirebaseCrashlytics */,
 				3CF2BD4E2FD701A70005AD74 /* FirebaseMessaging */,
+				3CF2BD512FD701A70005AD74 /* FirebaseAnalytics */,
 			);
 			productName = BOAT;
 			productReference = 3CF2BD2C2FD6F98B0005AD74 /* BOAT.app */;
@@ -334,9 +337,9 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -374,9 +377,9 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -492,6 +495,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3CF2BD492FD701A70005AD74 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		3CF2BD512FD701A70005AD74 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3CF2BD492FD701A70005AD74 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
