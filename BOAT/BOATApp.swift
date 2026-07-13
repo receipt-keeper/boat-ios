@@ -41,6 +41,10 @@ struct BOATApp: App {
                 .task {
                     await permissionManager.refreshAll()
                 }
+                // 광고 SDK 시작 전 UMP 동의(필요 시 폼 노출) → ATT 권한 순서로 확인.
+                .task {
+                    await ConsentManager.requestConsentAndStart()
+                }
                 // 포그라운드 복귀 시마다 권한 상태 재확인 (설정에서 바뀌었을 수 있음)
                 .onChange(of: scenePhase) { _, newPhase in
                     if newPhase == .active {
