@@ -548,6 +548,86 @@
         }
       }
     },
+    "feedback.counter %lld" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(%lld/100)"
+          }
+        }
+      }
+    },
+    "feedback.next" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음에"
+          }
+        }
+      }
+    },
+    "feedback.placeholder" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(선택) 서비스를 이용하며 느낀 점을 자유롭게 알려주세요."
+          }
+        }
+      }
+    },
+    "feedback.submit" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "의견 보내기"
+          }
+        }
+      }
+    },
+    "feedback.submit_error" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전송에 실패했습니다. 다시 시도해주세요."
+          }
+        }
+      }
+    },
+    "feedback.submit_success" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "소중한 의견 감사합니다!"
+          }
+        }
+      }
+    },
+    "feedback.subtitle" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영수증 등록 기능을 이용하며\n느끼신 소중한 의견을 남겨주세요."
+          }
+        }
+      }
+    },
+    "feedback.title" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "보트랩 서비스는 어떠셨나요?"
+          }
+        }
+      }
+    },
     "header.home_title" : {
       "localizations" : {
         "ko" : {

@@ -948,6 +948,8 @@ struct ReceiptManualInputView: View {
             do {
                 let receipt = try await ReceiptRepository.shared.createReceipt(images: imagesToUpload, fields: fields)
                 completedReceipt = receipt
+                // 영수증 등록 성공 시 피드백 시트 노출 트리거
+                FeedbackTrigger.shared.trigger()
             } catch {
                 toast.showError((error as? LocalizedError)?.errorDescription ?? String(localized: "receipt.register.fail"))
             }

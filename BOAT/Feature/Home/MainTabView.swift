@@ -27,6 +27,8 @@ struct MainTabView: View {
     // 목록 탭의 inner tab / 정렬 — 홈에서 이동 시 지정 가능
     @State private var listTab: ReceiptTab = .all
     @State private var listSort: ReceiptSort = .default
+    // 서비스 피드백 시트 제출 결과 토스트
+    @State private var toast = BoatToastState()
 
     var body: some View {
         content
@@ -115,6 +117,26 @@ struct MainTabView: View {
                 NotificationRouter.shared.pendingReceiptId = nil
                 NotificationRouter.shared.shouldOpenHome = false
             }
+            // 영수증 등록 성공 등 특정 액션 이후 서비스 만족도 피드백 시트 노출 시도.
+            .onChange(of: FeedbackTrigger.shared.triggerCount) { _, _ in
+                UserFeedbackStore.shared.tryShowFeedback()
+            }
+            .sheet(isPresented: feedbackSheetBinding) {
+                BoatFeedbackSheet(
+                    onDismiss: { UserFeedbackStore.shared.onFeedbackDismissed() },
+                    onNext: { UserFeedbackStore.shared.onFeedbackPostponed() },
+                    onSubmit: { rating, comment in
+                        if UserFeedbackStore.shared.submitFeedback(rating: rating, comment: comment) {
+                            toast.showSuccess(String(localized: "feedback.submit_success"))
+                        } else {
+                            toast.showError(String(localized: "feedback.submit_error"))
+                        }
+                    }
+                )
+                .presentationDragIndicator(.hidden)
+                .presentationBackground(Color.colorWhite)
+            }
+            .boatToastHost(toast)
     }
 
     private var pushReceiptBinding: Binding<IdentifiedID?> {
@@ -122,6 +144,15 @@ struct MainTabView: View {
             get: { NotificationRouter.shared.pendingReceiptId.map(IdentifiedID.init) },
             set: { newValue in
                 if newValue == nil { NotificationRouter.shared.pendingReceiptId = nil }
+            }
+        )
+    }
+
+    private var feedbackSheetBinding: Binding<Bool> {
+        Binding(
+            get: { UserFeedbackStore.shared.showFeedbackSheet },
+            set: { newValue in
+                if !newValue { UserFeedbackStore.shared.showFeedbackSheet = false }
             }
         )
     }
