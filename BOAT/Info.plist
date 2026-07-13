@@ -31,11 +31,9 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>영수증을 촬영해 보증 정보를 자동으로 등록하기 위해 카메라를 사용합니다.</string>
-	<!-- Google AdMob 앱 ID. 아래 값은 구글 공식 iOS 네이티브 광고 테스트 App ID다.
-	     AdMob 콘솔에서 iOS 앱을 별도로 등록해 실제 App ID를 발급받으면 교체해야 한다
-	     (Android 앱 ID를 그대로 재사용할 수 없음 — 플랫폼별로 별도 등록 필요). -->
+	<!-- Google AdMob 앱 ID (보트랩 iOS 실 앱 ID) -->
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>ca-app-pub-2156013754929909~6714703261</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>맞춤 광고 제공을 위해 다른 앱 및 웹사이트의 활동 데이터를 사용할 수 있도록 허용해 주세요.</string>
 	<key>SKAdNetworkItems</key>
