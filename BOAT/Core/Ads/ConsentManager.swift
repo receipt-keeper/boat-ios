@@ -49,7 +49,9 @@ enum ConsentManager {
 
     private static func loadAndPresentFormIfRequired() async {
         guard ConsentInformation.shared.formStatus == .available else { return }
-        guard let viewController = UIApplication.boatRootViewController else { return }
+        // 콜드 스타트 직후엔 키 윈도우/루트 뷰컨트롤러가 아직 안 잡혀있을 수 있어,
+        // 동의 폼을 조용히 건너뛰지 않도록 잠깐 재시도한다(GDPR 대상 사용자 동의 누락 방지).
+        guard let viewController = await waitForRootViewController() else { return }
 
         await withCheckedContinuation { continuation in
             ConsentForm.load { form, loadError in
@@ -80,4 +82,16 @@ enum ConsentManager {
         }
     }
 
+    // MARK: - Helper
+
+    /// 키 윈도우의 루트 뷰컨트롤러가 잡힐 때까지 짧게 재시도(최대 1초, 100ms 간격)한다.
+    private static func waitForRootViewController() async -> UIViewController? {
+        for _ in 0..<10 {
+            if let viewController = UIApplication.boatRootViewController {
+                return viewController
+            }
+            try? await Task.sleep(nanoseconds: 100_000_000)
+        }
+        return UIApplication.boatRootViewController
+    }
 }

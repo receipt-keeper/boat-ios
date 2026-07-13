@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- ATT(App Tracking Transparency)로 광고 개인화 추적 동의를 받으므로 true.
+	     App Store Connect의 "앱 개인정보 보호" 세부정보(Privacy Nutrition Label)와
+	     반드시 일치해야 하니, 실제 등록된 내용에 맞춰 NSPrivacyCollectedDataTypes를
+	     채워 넣어야 한다(현재는 비어있음 — 값을 넣지 않으면 자동 검사만 통과하고
+	     실제 데이터 수집 항목 선언은 누락된 상태). -->
+	<key>NSPrivacyTracking</key>
+	<true/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<!-- UserDefaults(FCMTokenStore/NotificationBadgeStore/DebugConfig/UserFeedbackStore/
+	     InstallAnalytics/UserStore 등)를 앱 자체 설정 저장 용도로만 사용 — 앱 그룹 공유 없음. -->
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
