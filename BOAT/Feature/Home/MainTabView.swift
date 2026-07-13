@@ -365,7 +365,7 @@ private struct HomeView: View {
             }
             .buttonStyle(.plain)
 
-            BoatBannerAdView()
+            BoatNativeAdBanner()
         }
         .padding(.horizontal, .spacing20)
         .padding(.top, .spacing16)
