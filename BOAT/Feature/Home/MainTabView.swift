@@ -138,6 +138,7 @@ struct MainTabView: View {
                         }
                     }
                 )
+                .presentationDetents([.height(560)])
                 .presentationDragIndicator(.hidden)
                 .presentationBackground(Color.colorWhite)
             }
