@@ -87,8 +87,13 @@ struct MainTabView: View {
                 )
             }
             // 어느 탭에서든 종 아이콘 → 알림 목록
+            // onBack은 상단바 뒤로가기뿐 아니라 상시 유도 알림 탭(홈으로 라우팅)에서도 호출되므로,
+            // 알림 목록 화면을 어떤 경로로 나가든 피드백 시트 노출을 시도한다(Android NotificationListActivity 동일).
             .fullScreenCover(isPresented: $showNotifications) {
-                NotificationListView(onBack: { showNotifications = false })
+                NotificationListView(onBack: {
+                    FeedbackTrigger.shared.trigger()
+                    showNotifications = false
+                })
             }
             // 어느 탭에서든 돋보기 → 검색
             .fullScreenCover(isPresented: $showSearch) {
