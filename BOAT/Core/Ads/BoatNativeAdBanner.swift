@@ -109,9 +109,16 @@ private struct NativeAdContainerView: UIViewRepresentable {
         adBadge.textAlignment = .center
         adBadge.translatesAutoresizingMaskIntoConstraints = false
 
+        // AdChoices(광고 선택 옵션) 아이콘 — Google이 명시적으로 요구하는 필수 표시 요소.
+        // 설정하지 않으면 SDK가 기본 위치(우상단)에 자체적으로 얹지만, 우리 커스텀 레이아웃의
+        // 다른 요소와 겹칠 수 있어 직접 자리를 잡아준다. nativeAd 설정보다 먼저 지정해야 한다.
+        let adChoicesView = AdChoicesView()
+        adChoicesView.translatesAutoresizingMaskIntoConstraints = false
+
         adView.addSubview(textStack)
         adView.addSubview(iconView)
         adView.addSubview(adBadge)
+        adView.addSubview(adChoicesView)
 
         NSLayoutConstraint.activate([
             textStack.leadingAnchor.constraint(equalTo: adView.leadingAnchor, constant: 24),
@@ -127,11 +134,17 @@ private struct NativeAdContainerView: UIViewRepresentable {
             adBadge.leadingAnchor.constraint(equalTo: adView.leadingAnchor, constant: 4),
             adBadge.widthAnchor.constraint(greaterThanOrEqualToConstant: 22),
             adBadge.heightAnchor.constraint(equalToConstant: 14),
+
+            adChoicesView.topAnchor.constraint(equalTo: adView.topAnchor, constant: 4),
+            adChoicesView.trailingAnchor.constraint(equalTo: adView.trailingAnchor, constant: -4),
+            adChoicesView.widthAnchor.constraint(equalToConstant: 20),
+            adChoicesView.heightAnchor.constraint(equalToConstant: 20),
         ])
 
         adView.headlineView = headlineLabel
         adView.bodyView = bodyLabel
         adView.iconView = iconView
+        adView.adChoicesView = adChoicesView
 
         return adView
     }
