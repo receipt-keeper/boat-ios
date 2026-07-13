@@ -3,8 +3,8 @@
 //  BOAT
 //
 //  기존 AccessoryBanner 디자인을 계승하는 구글 네이티브 광고 컴포넌트.
-//  Android BoatNativeAd.kt 대응 — 동일하게 헤드라인/본문/아이콘만 노출하고
-//  (미디어뷰·CTA 버튼 없음), 광고 로드 실패 시 기존 AccessoryBanner로 폴백한다.
+//  Android BoatNativeAd.kt 대응 — 헤드라인/본문 + 메인 이미지·동영상(MediaView)을 노출하고
+//  (CTA 버튼 없음), 광고 로드 실패 시 기존 AccessoryBanner로 폴백한다.
 //
 
 import GoogleMobileAds
@@ -66,8 +66,9 @@ private final class NativeAdBannerLoader: NSObject, NativeAdLoaderDelegate {
     }
 }
 
-/// UIKit NativeAdView를 감싸는 브릿지. Android populateNativeAdView와 동일하게
-/// headline/body/icon만 매핑한다(미디어뷰·CTA 버튼 없음).
+/// UIKit NativeAdView를 감싸는 브릿지. headline/body + 메인 이미지·동영상(MediaView)을 매핑한다
+/// (CTA 버튼 없음). 우측 시각 요소는 아이콘 전용 ImageView가 아니라 MediaView를 써야 한다 —
+/// AdMob Native Ad Validator가 "MediaView not used for main image or video asset"로 지적한 부분.
 private struct NativeAdContainerView: UIViewRepresentable {
     let nativeAd: NativeAd
 
@@ -96,9 +97,10 @@ private struct NativeAdContainerView: UIViewRepresentable {
         textStack.spacing = 4
         textStack.translatesAutoresizingMaskIntoConstraints = false
 
-        let iconView = UIImageView()
-        iconView.contentMode = .scaleAspectFit
-        iconView.translatesAutoresizingMaskIntoConstraints = false
+        let mediaView = MediaView()
+        mediaView.clipsToBounds = true
+        mediaView.layer.cornerRadius = 8
+        mediaView.translatesAutoresizingMaskIntoConstraints = false
 
         // 필수 표시 요소: "Ad" 뱃지 (Android 레이아웃과 동일한 반투명 검정 배경)
         let adBadge = UILabel()
@@ -116,19 +118,19 @@ private struct NativeAdContainerView: UIViewRepresentable {
         adChoicesView.translatesAutoresizingMaskIntoConstraints = false
 
         adView.addSubview(textStack)
-        adView.addSubview(iconView)
+        adView.addSubview(mediaView)
         adView.addSubview(adBadge)
         adView.addSubview(adChoicesView)
 
         NSLayoutConstraint.activate([
             textStack.leadingAnchor.constraint(equalTo: adView.leadingAnchor, constant: 24),
             textStack.centerYAnchor.constraint(equalTo: adView.centerYAnchor),
-            textStack.trailingAnchor.constraint(lessThanOrEqualTo: iconView.leadingAnchor, constant: -12),
+            textStack.trailingAnchor.constraint(lessThanOrEqualTo: mediaView.leadingAnchor, constant: -12),
 
-            iconView.trailingAnchor.constraint(equalTo: adView.trailingAnchor, constant: -24),
-            iconView.centerYAnchor.constraint(equalTo: adView.centerYAnchor),
-            iconView.widthAnchor.constraint(equalToConstant: 100),
-            iconView.heightAnchor.constraint(equalToConstant: 100),
+            mediaView.trailingAnchor.constraint(equalTo: adView.trailingAnchor, constant: -24),
+            mediaView.centerYAnchor.constraint(equalTo: adView.centerYAnchor),
+            mediaView.widthAnchor.constraint(equalToConstant: 100),
+            mediaView.heightAnchor.constraint(equalToConstant: 100),
 
             adBadge.topAnchor.constraint(equalTo: adView.topAnchor, constant: 4),
             adBadge.leadingAnchor.constraint(equalTo: adView.leadingAnchor, constant: 4),
@@ -143,7 +145,7 @@ private struct NativeAdContainerView: UIViewRepresentable {
 
         adView.headlineView = headlineLabel
         adView.bodyView = bodyLabel
-        adView.iconView = iconView
+        adView.mediaView = mediaView
         adView.adChoicesView = adChoicesView
 
         return adView
@@ -152,9 +154,7 @@ private struct NativeAdContainerView: UIViewRepresentable {
     func updateUIView(_ adView: NativeAdView, context: Context) {
         (adView.headlineView as? UILabel)?.text = nativeAd.headline
         (adView.bodyView as? UILabel)?.text = nativeAd.body
-        if let icon = nativeAd.icon {
-            (adView.iconView as? UIImageView)?.image = icon.image
-        }
+        (adView.mediaView as? MediaView)?.mediaContent = nativeAd.mediaContent
         adView.nativeAd = nativeAd
     }
 }
