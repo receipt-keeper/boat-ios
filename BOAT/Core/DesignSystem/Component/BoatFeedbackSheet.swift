@@ -12,6 +12,9 @@ struct BoatFeedbackSheet: View {
     let onDismiss: () -> Void
     let onNext: () -> Void
     let onSubmit: (Int, String) -> Void
+    /// 실측 콘텐츠 높이를 알려준다 — 별점 선택 시 의견 입력란이 펼쳐지며 커지는 실제 높이에
+    /// 맞춰 호출부(presentationDetents)가 시트 높이를 그때그때 갱신하도록 한다. 고정값 금지.
+    var onHeightChange: (CGFloat) -> Void = { _ in }
 
     @State private var rating = 0
     @State private var comment = ""
@@ -51,6 +54,14 @@ struct BoatFeedbackSheet: View {
                 .padding(.horizontal, .spacing24)
         }
         .padding(.bottom, .spacing24)
+        .background(
+            GeometryReader { proxy in
+                Color.clear
+                    .onChange(of: proxy.size.height, initial: true) { _, newHeight in
+                        onHeightChange(newHeight)
+                    }
+            }
+        )
     }
 
     private var closeButton: some View {

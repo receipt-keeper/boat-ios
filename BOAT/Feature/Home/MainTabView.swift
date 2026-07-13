@@ -29,6 +29,11 @@ struct MainTabView: View {
     @State private var listSort: ReceiptSort = .default
     // 서비스 피드백 시트 제출 결과 토스트
     @State private var toast = BoatToastState()
+    // 피드백 시트 실측 높이 — 별점 선택 전/후 콘텐츠 높이가 달라 고정값을 쓰지 않는다.
+    // 매번 노출될 때 접힌 상태 높이로 리셋해, 이전 세션에서 펼쳐졌던 높이가 다음 노출 때
+    // 잠깐 크게 보였다가 줄어드는 깜빡임을 방지한다.
+    @State private var feedbackSheetHeight: CGFloat = Self.feedbackCollapsedHeight
+    private static let feedbackCollapsedHeight: CGFloat = 330
 
     var body: some View {
         content
@@ -126,6 +131,11 @@ struct MainTabView: View {
             .onChange(of: FeedbackTrigger.shared.triggerCount) { _, _ in
                 UserFeedbackStore.shared.tryShowFeedback()
             }
+            // 매번 새로 뜰 때는 항상 접힌 상태 높이로 시작 — 이전 노출 때 별점을 찍어 늘어났던
+            // 높이가 다음 노출 시 그대로 남아있지 않도록 리셋한다.
+            .onChange(of: UserFeedbackStore.shared.showFeedbackSheet) { _, isShowing in
+                if isShowing { feedbackSheetHeight = Self.feedbackCollapsedHeight }
+            }
             .sheet(isPresented: feedbackSheetBinding) {
                 BoatFeedbackSheet(
                     onDismiss: { UserFeedbackStore.shared.onFeedbackDismissed() },
@@ -136,9 +146,10 @@ struct MainTabView: View {
                         } else {
                             toast.showError(String(localized: "feedback.submit_error"))
                         }
-                    }
+                    },
+                    onHeightChange: { feedbackSheetHeight = $0 }
                 )
-                .presentationDetents([.height(560)])
+                .presentationDetents([.height(feedbackSheetHeight)])
                 .presentationDragIndicator(.hidden)
                 .presentationBackground(Color.colorWhite)
             }
