@@ -2,8 +2,10 @@
 //  BoatBannerAdView.swift
 //  BOAT
 //
-//  구글 표준 배너 광고. 네이티브 광고 대신 배너 형식으로 전환 —
-//  구글이 완성된 광고 크리에이티브를 그려주므로 커스텀 레이아웃 없이 BannerView를 감싸기만 한다.
+//  구글 표준 배너 광고. 네이티브 광고 대신 배너 형식으로 전환.
+//  고정 크기(320x50) 배너는 카드 폭을 다 못 채워 기존 AccessoryBanner의 둥근 테두리 카드
+//  형태를 유지할 수 없었다 — 화면 폭에 맞춰 채워지는 적응형(Adaptive) 배너로 로드하고,
+//  기존과 동일한 둥근 모서리 + 연한 파란 배경 카드 안에 담아 형태를 그대로 유지한다.
 //  로드 실패 시 기존 AccessoryBanner로 폴백한다.
 //
 
@@ -15,23 +17,29 @@ struct BoatBannerAdView: View {
 
     @State private var loader = BannerAdLoader()
 
-    /// 표준 배너 크기(320x50) 고정.
-    private static let bannerSize = CGSize(width: 320, height: 50)
+    /// 기존 AccessoryBanner/네이티브 광고 카드와 동일한 카드 높이.
+    private static let cardHeight: CGFloat = 110
 
     var body: some View {
-        Group {
-            if loader.didLoad {
-                BannerContainerView(bannerView: loader.bannerView)
-                    .frame(width: Self.bannerSize.width, height: Self.bannerSize.height)
-                    .frame(maxWidth: .infinity)
-            } else if loader.didFail {
-                // 광고 로드 실패 시 기존 임시 배너로 폴백 (Android 동일)
-                AccessoryBanner()
-            } else {
-                Color.clear.frame(height: Self.bannerSize.height)
+        GeometryReader { geo in
+            Group {
+                if loader.didLoad {
+                    BannerContainerView(bannerView: loader.bannerView)
+                } else if loader.didFail {
+                    // 광고 로드 실패 시 기존 임시 배너로 폴백 (Android 동일)
+                    AccessoryBanner()
+                } else {
+                    Color.clear
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(hex: "#E9F4FF"))
+            .clipShape(RoundedRectangle(cornerRadius: .roundedXl))
+            .task {
+                loader.load(adUnitID: adUnitID, width: geo.size.width)
             }
         }
-        .task { loader.load(adUnitID: adUnitID) }
+        .frame(height: Self.cardHeight)
     }
 }
 
@@ -39,21 +47,23 @@ struct BoatBannerAdView: View {
 @MainActor
 @Observable
 private final class BannerAdLoader: NSObject, BannerViewDelegate {
-    let bannerView: BannerView
+    // 실제 폭은 load(adUnitID:width:)에서 확정되기 전까지 임시로 표준 배너 크기를 준다.
+    let bannerView = BannerView(adSize: AdSizeBanner)
     private(set) var didLoad = false
     private(set) var didFail = false
     private var hasStartedLoading = false
 
     override init() {
-        bannerView = BannerView(adSize: AdSizeBanner)
         super.init()
         bannerView.delegate = self
     }
 
-    func load(adUnitID: String) {
-        guard !hasStartedLoading else { return }
+    /// width에 맞춰 화면 폭을 채우는 적응형 배너 크기로 로드한다.
+    func load(adUnitID: String, width: CGFloat) {
+        guard !hasStartedLoading, width > 0 else { return }
         hasStartedLoading = true
 
+        bannerView.adSize = currentOrientationAnchoredAdaptiveBanner(width: width)
         bannerView.adUnitID = adUnitID
         bannerView.rootViewController = UIApplication.boatRootViewController
         bannerView.load(Request())
