@@ -19,12 +19,12 @@ struct BoatNativeAdBanner: View {
         Group {
             if let nativeAd = loader.nativeAd {
                 NativeAdContainerView(nativeAd: nativeAd)
-                    .frame(height: 110)
+                    .frame(height: 130)
             } else if loader.didFail {
                 // 광고 로드 실패 시 기존 임시 배너로 폴백 (Android 동일)
                 AccessoryBanner()
             } else {
-                Color.clear.frame(height: 110)
+                Color.clear.frame(height: 130)
             }
         }
         .task { loader.load(adUnitID: adUnitID) }
@@ -129,8 +129,8 @@ private struct NativeAdContainerView: UIViewRepresentable {
 
             mediaView.trailingAnchor.constraint(equalTo: adView.trailingAnchor, constant: -24),
             mediaView.centerYAnchor.constraint(equalTo: adView.centerYAnchor),
-            mediaView.widthAnchor.constraint(equalToConstant: 100),
-            mediaView.heightAnchor.constraint(equalToConstant: 100),
+            mediaView.widthAnchor.constraint(equalToConstant: 120),
+            mediaView.heightAnchor.constraint(equalToConstant: 120),
 
             adBadge.topAnchor.constraint(equalTo: adView.topAnchor, constant: 4),
             adBadge.leadingAnchor.constraint(equalTo: adView.leadingAnchor, constant: 4),
