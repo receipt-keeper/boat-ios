@@ -41,9 +41,9 @@ struct HomeGeneralView: View {
                 .padding(.horizontal, .spacing20)
             }
 
-            // ── 구글 네이티브 광고 (기존 가전제품 필수 아이템 배너 자리 대체) ──
+            // ── 구글 배너 광고 (기존 가전제품 필수 아이템 배너 자리 대체) ──
             Spacer().frame(height: .spacing20)
-            BoatNativeAdBanner()
+            BoatBannerAdView()
                 .padding(.horizontal, .spacing20)
 
             // ── 최근 등록된 영수증 ──

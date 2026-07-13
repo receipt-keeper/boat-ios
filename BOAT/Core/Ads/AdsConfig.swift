@@ -8,6 +8,6 @@
 import Foundation
 
 enum AdsConfig {
-    /// 네이티브 광고 단위 ID (보트랩_네이티브_배너, 네이티브 광고 고급형)
-    static let nativeAdUnitID = "ca-app-pub-2156013754929909/4511633211"
+    /// 배너 광고 단위 ID (보트랩_배너)
+    static let bannerAdUnitID = "ca-app-pub-2156013754929909/3457416311"
 }
