@@ -112,7 +112,7 @@ extension View {
 
         var body: some View {
             VStack(spacing: 16) {
-                Button("에러 토스트") { toast.showError("회원가입이 취소되었습니다.") }
+                Button("에러 토스트") { toast.showError("로그인이 취소되었습니다.") }
                 Button("인포 토스트") { toast.show("무료 횟수 3회가 충전되었습니다.") }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
