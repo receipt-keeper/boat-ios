@@ -1134,6 +1134,9 @@
         }
       }
     },
+    "manual.max_length_error \\(ReceiptTextLimits.serial)" : {
+
+    },
     "manual.max_length_error %lld" : {
       "localizations" : {
         "ko" : {
@@ -1696,6 +1699,16 @@
         }
       }
     },
+    "notif.brand" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "보트랩"
+          }
+        }
+      }
+    },
     "notif.fallback_title" : {
       "localizations" : {
         "ko" : {
@@ -1722,26 +1735,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "알림"
-          }
-        }
-      }
-    },
-    "notif.brand" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "보트랩"
-          }
-        }
-      }
-    },
-    "notif.persistent.footer" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "([Boatlab] 수신거부: 설정 내 알림 메뉴에서 변경 가능)"
           }
         }
       }
@@ -3065,6 +3058,9 @@
 
     },
     "분석 결과" : {
+
+    },
+    "최대 999,999,999원까지 입력 가능합니다." : {
 
     },
     "카메라를 사용할 수 없습니다." : {
