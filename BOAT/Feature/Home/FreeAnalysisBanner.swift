@@ -14,9 +14,7 @@ struct FreeAnalysisBanner: View {
 
     var body: some View {
         HStack(spacing: .spacing8) {
-            Image("icSparkle")
-                .resizable()
-                .scaledToFit()
+            GifImageView(name: "shiny_white")
                 .frame(width: 18, height: 18)
 
             Text("home.free_analysis")
