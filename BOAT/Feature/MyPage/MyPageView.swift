@@ -27,7 +27,7 @@ struct MyPageView: View {
     @State private var showTermsOfService = false
     @State private var toast = BoatToastState()
 
-    private let inquiryEmail = "team.swyp8.app@gmail.com"
+    private let inquiryFormURLString = "https://forms.gle/HKZgwcqCPsEqBYfo9"
 
     private var nameText: String {
         let name = store.current?.displayName.trimmingCharacters(in: .whitespaces)
@@ -67,7 +67,7 @@ struct MyPageView: View {
                 .padding(.horizontal, .spacing20)
 
             sectionLabel("mypage.section.help")
-            settingRow("mypage.inquiry") { sendInquiryMail() }
+            settingRow("mypage.inquiry") { openInquiryForm() }
             settingRow("mypage.terms") { showTermsOfService = true }
 
             Spacer()
@@ -231,12 +231,10 @@ struct MyPageView: View {
         .buttonStyle(.plain)
     }
 
-    // MARK: - 1:1 문의 메일
+    // MARK: - 1:1 문의 (구글 폼)
 
-    private func sendInquiryMail() {
-        let subject = String(localized: "mypage.inquiry_subject")
-        let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        guard let url = URL(string: "mailto:\(inquiryEmail)?subject=\(encodedSubject)") else { return }
+    private func openInquiryForm() {
+        guard let url = URL(string: inquiryFormURLString) else { return }
         openURL(url) { accepted in
             if !accepted {
                 toast.showError(String(localized: "mypage.inquiry_mail_failed"))

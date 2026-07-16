@@ -119,7 +119,7 @@ struct NotificationSettingsView: View {
             do {
                 let result = try await NotificationSettingsRepository.shared.updateSettings(pushEnabled: enabled)
                 pushEnabled = result.pushEnabled
-                showConsentToast(enabled: result.pushEnabled)
+                showPushConsentToast(enabled: result.pushEnabled)
             } catch {
                 pushEnabled = previous
                 toast.showError((error as? LocalizedError)?.errorDescription ?? "")
@@ -135,7 +135,7 @@ struct NotificationSettingsView: View {
             do {
                 let result = try await NotificationSettingsRepository.shared.updateSettings(marketingConsent: consent)
                 marketingConsent = result.marketingConsent
-                showConsentToast(enabled: result.marketingConsent)
+                showMarketingConsentToast(enabled: result.marketingConsent)
             } catch {
                 marketingConsent = previous
                 toast.showError((error as? LocalizedError)?.errorDescription ?? "")
@@ -143,12 +143,21 @@ struct NotificationSettingsView: View {
         }
     }
 
-    /// 토글 on/off에 따라 동의 처리/철회 안내 토스트 노출.
-    private func showConsentToast(enabled: Bool) {
+    /// 알림 수신 토글 on/off 안내 토스트 (off일 땐 다시 켜도록 유도하는 안내문구).
+    private func showPushConsentToast(enabled: Bool) {
         if enabled {
             toast.show(String(localized: "notif.settings.consent_granted"), type: .info)
         } else {
             toast.show(String(localized: "notif.settings.consent_withdrawn"), type: .info)
+        }
+    }
+
+    /// 마케팅 정보 수신 동의 토글 on/off 안내 토스트.
+    private func showMarketingConsentToast(enabled: Bool) {
+        if enabled {
+            toast.show(String(localized: "notif.settings.consent_granted"), type: .info)
+        } else {
+            toast.show(String(localized: "notif.settings.marketing_consent_withdrawn"), type: .info)
         }
     }
 
