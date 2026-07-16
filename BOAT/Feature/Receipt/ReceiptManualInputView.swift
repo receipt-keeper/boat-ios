@@ -30,9 +30,6 @@ struct ReceiptManualInputView: View {
     private let originalSubcategory: String?
 
     private static let maxPhotos = 5
-    private static let productNameLimit = 50
-    private static let brandLimit = 50
-    private static let serialLimit = 50
     private static let warrantyOptions: [LocalizedStringKey] = [
         "manual.warranty_6m", "manual.warranty_1y", "manual.warranty_2y", "manual.warranty_3y", "manual.warranty_custom",
     ]
@@ -100,9 +97,9 @@ struct ReceiptManualInputView: View {
 
         guard let ocr = ocrResult else { return }
 
-        _productName = State(initialValue: String((ocr.itemName ?? "").prefix(Self.productNameLimit)))
-        _brand = State(initialValue: String((ocr.brandName ?? "").prefix(Self.brandLimit)))
-        _serial = State(initialValue: String((ocr.serialNumber ?? "").prefix(Self.serialLimit)))
+        _productName = State(initialValue: String((ocr.itemName ?? "").prefix(ReceiptTextLimits.productName)))
+        _brand = State(initialValue: String((ocr.brandName ?? "").prefix(ReceiptTextLimits.brand)))
+        _serial = State(initialValue: String((ocr.serialNumber ?? "").prefix(ReceiptTextLimits.serial)))
 
         if let dateStr = ocr.paymentDate {
             let parts = dateStr.split(separator: "-").map(String.init)
@@ -138,6 +135,11 @@ struct ReceiptManualInputView: View {
 
     private var remainingSlots: Int { max(0, Self.maxPhotos - images.count) }
     private var canAddMore: Bool { images.count < Self.maxPhotos }
+    private var productNameTooLong: Bool { productName.count >= ReceiptTextLimits.productName }
+    private var memoTooLong: Bool { memo.count >= ReceiptTextLimits.memo }
+    private var brandTooLong: Bool { brand.count >= ReceiptTextLimits.brand }
+    private var serialTooLong: Bool { serial.count >= ReceiptTextLimits.serial }
+    private var priceLimitReached: Bool { price.count >= 9 }
 
     /// 소분류 칩 노출 순서 — OCR로 최초 설정된 소분류만 맨 앞에 고정(1회성). 이후 사용자가
     /// 다른 소분류를 직접 선택해도 배열 순서 자체는 바뀌지 않는다(선택 표시만 이동).
@@ -505,13 +507,11 @@ struct ReceiptManualInputView: View {
                 Spacer().frame(height: .spacing16)
 
                 BoatInputField(
-                    text: Binding(
-                        get: { productName },
-                        set: { productName = String($0.prefix(Self.productNameLimit)) }
-                    ),
+                    text: $productName,
                     label: "manual.product_name",
                     required: true,
-                    placeholder: "manual.product_name_hint"
+                    placeholder: "manual.product_name_hint",
+                    maxLength: ReceiptTextLimits.productName
                 )
 
                 Spacer().frame(height: .spacing16)
@@ -548,7 +548,13 @@ struct ReceiptManualInputView: View {
                 if selectedWarranty == 4 {
                     Spacer().frame(height: .spacing8)
                     HStack(spacing: .spacing8) {
-                        TextField("0", text: $customMonthsText)
+                        TextField(
+                            "0",
+                            text: Binding(
+                                get: { customMonthsText },
+                            set: { customMonthsText = String($0.filter(\.isNumber).prefix(ReceiptTextLimits.warrantyMonths)) }
+                            )
+                        )
                             .keyboardType(.numberPad)
                             .font(.pretendard(.regular, size: 15))
                             .foregroundStyle(Color.gray900)
@@ -612,15 +618,12 @@ struct ReceiptManualInputView: View {
                         .padding(.horizontal, 12)
                         .padding(.vertical, 14)
                 }
-                TextEditor(text: Binding(
-                    get: { memo },
-                    set: { memo = String($0.prefix(100)) }
-                ))
-                .font(.pretendard(.regular, size: 15))
-                .scrollContentBackground(.hidden)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 8)
-                .frame(height: 120)
+                BoatTextEditor(
+                    text: $memo,
+                    placeholder: "manual.memo_hint",
+                    maxLength: ReceiptTextLimits.memo,
+                    height: 120
+                )
             }
             .overlay(
                 RoundedRectangle(cornerRadius: .roundedLg)
@@ -635,48 +638,54 @@ struct ReceiptManualInputView: View {
     // MARK: - 실물 영수증 보관 여부 (체크박스)
 
     private var physicalCard: some View {
-        VStack(alignment: .leading, spacing: .spacing8) {
-            HStack(alignment: .center, spacing: .spacing12) {
-                Text("manual.physical_section")
-                    .font(.pretendard(.bold, size: 16))
-                    .foregroundStyle(Color.gray900)
-                Spacer()
-                physicalCheckbox
-            }
-            Text("manual.physical_help")
-                .font(.pretendard(.regular, size: 14))
-                .foregroundStyle(Color.gray600)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.spacing16)
-        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
-        .overlay(
-            RoundedRectangle(cornerRadius: .rounded2xl)
-                .stroke(Color.gray200, lineWidth: 1)
-        )
-    }
-
-    /// 기존 체크박스와 동일한 색상 체계(선택: brandPrimary / 비선택: gray300)를 그대로 적용.
-    private var physicalCheckbox: some View {
-        Button { physicalReceipt.toggle() } label: {
-            ZStack {
-                RoundedRectangle(cornerRadius: .roundedSm)
-                    .fill(physicalReceipt ? Color.brandPrimary : Color.colorWhite)
-                RoundedRectangle(cornerRadius: .roundedSm)
-                    .stroke(physicalReceipt ? Color.brandPrimary : Color.gray300, lineWidth: 1.5)
-                if physicalReceipt {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundStyle(Color.colorWhite)
+            // 💡 1. 제목(Title)과 설명(Description) 사이의 호흡을 확보합니다. (기존 .spacing8 -> 14)
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(alignment: .center, spacing: .spacing12) {
+                    Text("manual.physical_section")
+                        .font(.pretendard(.bold, size: 16))
+                        .foregroundStyle(Color.gray900)
+                    Spacer()
+                    physicalCheckbox
                 }
+                
+                Text("manual.physical_help")
+                    .font(.pretendard(.regular, size: 14))
+                    .foregroundStyle(Color.gray600)
+                    .lineSpacing(4) // 💡 2. 텍스트 줄간격을 살짝 넓혀 가독성을 높입니다.
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .frame(width: 24, height: 24)
-            .contentShape(Rectangle())
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(20) // 💡 3. 카드 내부의 넉넉한 여백 텐션 반영 (기존 .spacing16 -> 20)
+            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+            .overlay(
+                // 💡 4. 경계선이 잘리거나 흐릿해지지 않도록 strokeBorder 사용
+                RoundedRectangle(cornerRadius: .rounded2xl)
+                    .strokeBorder(Color.gray200, lineWidth: 1)
+            )
         }
-        .buttonStyle(.plain)
-    }
+
+        private var physicalCheckbox: some View {
+            Button { physicalReceipt.toggle() } label: {
+                ZStack {
+                    RoundedRectangle(cornerRadius: .roundedSm)
+                        .fill(physicalReceipt ? Color.brandPrimary : Color.colorWhite)
+                    
+                    // 💡 체크박스 테두리 역시 strokeBorder로 깔끔하게 처리 (lineWidth 1.5 -> 1 로 변경하여 스크린샷처럼 얇고 세련되게)
+                    RoundedRectangle(cornerRadius: .roundedSm)
+                        .strokeBorder(physicalReceipt ? Color.brandPrimary : Color.gray300, lineWidth: 1)
+                    
+                    if physicalReceipt {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 13, weight: .bold)) // 스크린샷의 굵고 선명한 체크마크
+                            .foregroundStyle(Color.colorWhite)
+                    }
+                }
+                .frame(width: 24, height: 24)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        }
 
     // MARK: - 보증 정보 카드 (접이식)
 
@@ -688,17 +697,19 @@ struct ReceiptManualInputView: View {
                 Spacer().frame(height: .spacing16)
                 VStack(alignment: .leading, spacing: .spacing16) {
                     BoatInputField(
-                        text: Binding(
-                            get: { brand },
-                            set: { brand = String($0.prefix(Self.brandLimit)) }
-                        ),
+                        text: $brand,
                         label: "manual.brand",
-                        placeholder: "manual.brand_hint"
+                        placeholder: "manual.brand_hint",
+                        isError: brandTooLong,
+                        errorText: LocalizedStringKey("manual.max_length_error \(ReceiptTextLimits.brand)"),
+                        maxLength: ReceiptTextLimits.brand
                     )
                     BoatInputField(
                         text: priceDisplayBinding,
                         label: "manual.price",
                         placeholder: "manual.price_hint",
+                        isError: priceLimitReached,
+                        errorText: "최대 999,999,999원까지 입력 가능합니다.",
                         keyboard: .numberPad
                     )
                     serialField
@@ -718,14 +729,11 @@ struct ReceiptManualInputView: View {
                 InfoTooltip(message: "manual.serial_help")
             }
             Spacer().frame(height: .spacing8)
-            TextField(
-                "",
-                text: Binding(
-                    get: { serial },
-                    set: { serial = String($0.prefix(Self.serialLimit)) }
-                ),
-                prompt: Text("manual.serial_hint").foregroundStyle(Color.gray400)
-            )
+                TextField(
+                    "",
+                    text: $serial.limited(to: ReceiptTextLimits.serial),
+                    prompt: Text("manual.serial_hint").foregroundStyle(Color.gray400)
+                )
                 .font(.pretendard(.regular, size: 15))
                 .foregroundStyle(Color.gray900)
                 .padding(.horizontal, .spacing16)
@@ -735,6 +743,12 @@ struct ReceiptManualInputView: View {
                     RoundedRectangle(cornerRadius: .roundedLg)
                         .stroke(Color.gray300, lineWidth: 1)
                 )
+            if serialTooLong {
+                Spacer().frame(height: 6)
+                Text("manual.max_length_error \\(ReceiptTextLimits.serial)")
+                    .font(.pretendard(.medium, size: 13))
+                    .foregroundStyle(Color.systemError)
+            }
         }
     }
 
@@ -846,19 +860,19 @@ struct ReceiptManualInputView: View {
     }
 
     private func warrantyChip(_ label: LocalizedStringKey, selected: Bool, onTap: @escaping () -> Void) -> some View {
-        Button(action: onTap) {
-            Text(label)
-                .font(.pretendard(selected ? .semibold : .medium, size: 13))
-                .foregroundStyle(selected ? Color.colorWhite : Color.gray700)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(selected ? Color.brandPrimary : Color.clear, in: Capsule())
-                .overlay(
-                    Capsule().stroke(selected ? Color.clear : Color.gray300, lineWidth: 1)
-                )
+            Button(action: onTap) {
+                Text(label)
+                    .font(.pretendard(selected ? .semibold : .medium, size: 13))
+                    .foregroundStyle(selected ? Color.colorWhite : Color.gray700)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(selected ? Color.brandPrimary : Color.clear, in: Capsule())
+                    .overlay(
+                        Capsule().strokeBorder(selected ? Color.clear : Color.gray300, lineWidth: 1)
+                    )
+            }
+            .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
-    }
 
     private func customUnitChip(_ label: String, selected: Bool, onTap: @escaping () -> Void) -> some View {
         Button(action: onTap) {

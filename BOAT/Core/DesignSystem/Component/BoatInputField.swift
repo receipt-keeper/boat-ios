@@ -8,6 +8,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct BoatInputField: View {
 
@@ -19,8 +20,9 @@ struct BoatInputField: View {
     var errorText: LocalizedStringKey? = nil
     var enabled: Bool = true
     var keyboard: UIKeyboardType = .default
+    var maxLength: Int? = nil
 
-    @FocusState private var focused: Bool
+    @State private var focused = false
 
     private var borderColor: Color {
         if isError { return .systemError }
@@ -44,19 +46,28 @@ struct BoatInputField: View {
                 Spacer().frame(height: .spacing8)
             }
 
-            TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(Color.gray400))
-                .font(.pretendard(.regular, size: 15))
-                .foregroundStyle(Color.gray900)
-                .keyboardType(keyboard)
-                .focused($focused)
-                .disabled(!enabled)
-                .padding(.horizontal, .spacing16)
-                .frame(height: 52)
-                .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
-                .overlay(
-                    RoundedRectangle(cornerRadius: .roundedLg)
-                        .stroke(borderColor, lineWidth: 1)
+            ZStack(alignment: .leading) {
+                if text.isEmpty {
+                    Text(placeholder)
+                        .font(.pretendard(.regular, size: 15))
+                        .foregroundStyle(Color.gray400)
+                        .padding(.horizontal, .spacing16)
+                }
+
+                LimitedTextField(
+                    text: $text,
+                    keyboardType: keyboard,
+                    maxLength: maxLength,
+                    isEnabled: enabled,
+                    isEditing: $focused
                 )
+            }
+            .frame(height: 52)
+            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
+            .overlay(
+                RoundedRectangle(cornerRadius: .roundedLg)
+                    .stroke(borderColor, lineWidth: 1)
+            )
 
             if isError, let errorText {
                 Spacer().frame(height: 6)
@@ -65,6 +76,113 @@ struct BoatInputField: View {
                     .foregroundStyle(Color.systemError)
             }
         }
+    }
+}
+
+private struct LimitedTextField: UIViewRepresentable {
+
+    @Binding var text: String
+    let keyboardType: UIKeyboardType
+    let maxLength: Int?
+    let isEnabled: Bool
+    @Binding var isEditing: Bool
+
+    func makeUIView(context: Context) -> PaddedTextField {
+        let textField = PaddedTextField()
+        textField.delegate = context.coordinator
+        textField.backgroundColor = .clear
+        textField.borderStyle = .none
+        textField.textColor = UIColor(Color.gray900)
+        textField.tintColor = UIColor(Color.brandPrimary)
+        textField.font = .init(name: Font.Pretendard.regular.rawValue, size: 15)
+        textField.keyboardType = keyboardType
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
+        textField.clearButtonMode = .never
+        textField.leftPadding = .spacing16
+        textField.rightPadding = .spacing16
+        textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        return textField
+    }
+
+    func updateUIView(_ uiView: PaddedTextField, context: Context) {
+        uiView.delegate = context.coordinator
+        uiView.isEnabled = isEnabled
+        uiView.keyboardType = keyboardType
+        uiView.textColor = UIColor(Color.gray900)
+        uiView.tintColor = UIColor(Color.brandPrimary)
+        uiView.font = .init(name: Font.Pretendard.regular.rawValue, size: 15)
+
+        if uiView.text != text {
+            uiView.text = text
+        }
+
+        if isEditing, !uiView.isFirstResponder {
+            uiView.becomeFirstResponder()
+        } else if !isEditing, uiView.isFirstResponder {
+            uiView.resignFirstResponder()
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    final class Coordinator: NSObject, UITextFieldDelegate {
+
+        private var parent: LimitedTextField
+
+        init(_ parent: LimitedTextField) {
+            self.parent = parent
+        }
+
+        func textFieldDidBeginEditing(_ textField: UITextField) {
+            parent.isEditing = true
+        }
+
+        func textFieldDidEndEditing(_ textField: UITextField) {
+            parent.isEditing = false
+        }
+
+        func textField(
+            _ textField: UITextField,
+            shouldChangeCharactersIn range: NSRange,
+            replacementString string: String
+        ) -> Bool {
+            guard let currentText = textField.text,
+                  let swiftRange = Range(range, in: currentText) else {
+                return true
+            }
+
+            let proposedText = currentText.replacingCharacters(in: swiftRange, with: string)
+            guard let maxLength = parent.maxLength, proposedText.count > maxLength else {
+                parent.text = proposedText
+                return true
+            }
+
+            let limitedText = String(proposedText.prefix(maxLength))
+            textField.text = limitedText
+            parent.text = limitedText
+            return false
+        }
+    }
+}
+
+private final class PaddedTextField: UITextField {
+
+    var leftPadding: CGFloat = 0
+    var rightPadding: CGFloat = 0
+
+    override func textRect(forBounds bounds: CGRect) -> CGRect {
+        bounds.inset(by: UIEdgeInsets(top: 0, left: leftPadding, bottom: 0, right: rightPadding))
+    }
+
+    override func editingRect(forBounds bounds: CGRect) -> CGRect {
+        bounds.inset(by: UIEdgeInsets(top: 0, left: leftPadding, bottom: 0, right: rightPadding))
+    }
+
+    override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+        bounds.inset(by: UIEdgeInsets(top: 0, left: leftPadding, bottom: 0, right: rightPadding))
     }
 }
 
