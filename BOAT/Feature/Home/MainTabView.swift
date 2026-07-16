@@ -204,7 +204,8 @@ struct MainTabView: View {
             MyPageView(
                 viewModel: viewModel,
                 onSearch: { showSearch = true },
-                onNotification: { showNotifications = true }
+                onNotification: { showNotifications = true },
+                onGoHome: { selection = .home }
             )
         }
     }
@@ -251,6 +252,7 @@ private struct HomeView: View {
     @State private var expiringWarranties: [ExpiringWarranty] = []
     @State private var expiringTotalCount = 0
     @State private var recentReceipts: [RecentReceipt] = []
+    @State private var toast = BoatToastState()
     // 카드(만료 예정/최근 등록) 탭 → 영수증 상세
     @State private var detailReceiptId: IdentifiedID?
 
@@ -306,6 +308,7 @@ private struct HomeView: View {
             .ignoresSafeArea(edges: .top)
         }
         .background(Color.colorWhite)
+        .boatToastHost(toast)
         .task {
             // 첫 홈 진입 시에만 전체 로딩 오버레이를 덮는다.
             await loadHomeData()
@@ -332,14 +335,25 @@ private struct HomeView: View {
         }
         // 만료 예정/최근 등록 카드 탭 → 영수증 상세
         .fullScreenCover(item: $detailReceiptId) { rid in
-            ReceiptDetailView(receiptId: rid.id, onBack: { detailReceiptId = nil })
+            ReceiptDetailView(
+                receiptId: rid.id,
+                onBack: { detailReceiptId = nil },
+                onDeleted: {
+                    detailReceiptId = nil
+                    toast.show(String(localized: "detail.deleted_toast"), type: .info)
+                }
+            )
         }
     }
 
     /// AS 만료 예정 / 최근 등록 데이터 병렬 조회. 진입 시(.task)와 ReceiptChangeBus 변경 시 모두 재사용.
     private func loadHomeData() async {
-        async let credits: Void = { try? await CreditRepository.shared.fetchCredits() }()
-        async let user: Void = { try? await UserRepository.shared.refreshUser() }()
+        async let credits: Void = {
+            _ = try? await CreditRepository.shared.fetchCredits()
+        }()
+        async let user: Void = {
+            _ = try? await UserRepository.shared.refreshUser()
+        }()
         // AS 만료 예정: 만료 임박순(가까운 순서) / 최근 등록: 등록일 내림차순
         async let expiring = try? await ReceiptRepository.shared.fetchReceipts(tab: .expiring, sort: .expiring, filter: .all)
         async let recent = try? await ReceiptRepository.shared.fetchReceipts(tab: .all, sort: .recent, filter: .all)
@@ -388,5 +402,3 @@ private struct ReceiptRegisterCard: View {
             )
     }
 }
-
-

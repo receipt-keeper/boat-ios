@@ -23,6 +23,7 @@ struct SearchView: View {
     @State private var viewModel = ReceiptListViewModel()
     @State private var isDebouncing = false
     @State private var searchTask: Task<Void, Never>?
+    @State private var toast = BoatToastState()
 
     private static let debounce: Duration = .milliseconds(350)
 
@@ -71,11 +72,13 @@ struct SearchView: View {
                 // 검색 화면 자체를 닫은 뒤 (갱신된) 목록 탭으로 이동시킨다.
                 onDeleted: {
                     detailReceipt = nil
+                    toast.show(String(localized: "detail.deleted_toast"), type: .info)
                     onBack()
                     onDeleted()
                 }
             )
         }
+        .boatToastHost(toast)
     }
 
     // MARK: - 콘텐츠 분기
@@ -153,9 +156,9 @@ struct SearchView: View {
             ScrollView {
                 LazyVStack(spacing: .spacing12) {
                     ForEach(viewModel.receipts) { receipt in
-                        ReceiptCard(receipt: receipt, showKebab: false) {
+                        ReceiptCard(receipt: receipt, showKebab: false, onTap: {
                             detailReceipt = receipt
-                        }
+                        })
                         .task { await viewModel.loadMoreIfNeeded(currentItem: receipt) }
                     }
 

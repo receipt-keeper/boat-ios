@@ -40,6 +40,11 @@ struct NotificationSettingsView: View {
                 onChange: setMarketingConsent
             )
 
+            Text("notif.settings.footnote")
+                .font(.pretendard(.regular, size: 13))
+                .foregroundStyle(Color.gray400)
+                .padding(.horizontal, .spacing20)
+
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

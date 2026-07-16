@@ -18,6 +18,7 @@ struct NotificationListView: View {
     @State private var viewModel = NotificationListViewModel()
     @State private var detailReceipt: IdentifiedID?
     @State private var showRegister = false
+    @State private var toast = BoatToastState()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -53,7 +54,14 @@ struct NotificationListView: View {
         .task { NotificationBadgeStore.shared.markSeen() }
         // 알림 → 영수증 상세
         .fullScreenCover(item: $detailReceipt) { rid in
-            ReceiptDetailView(receiptId: rid.id, onBack: { detailReceipt = nil })
+            ReceiptDetailView(
+                receiptId: rid.id,
+                onBack: { detailReceipt = nil },
+                onDeleted: {
+                    detailReceipt = nil
+                    toast.show(String(localized: "detail.deleted_toast"), type: .info)
+                }
+            )
         }
         // 알림 → 영수증 등록 (registration_prompt)
         .fullScreenCover(isPresented: $showRegister) {
@@ -62,6 +70,7 @@ struct NotificationListView: View {
                 onComplete: { showRegister = false }
             )
         }
+        .boatToastHost(toast)
     }
 
     // MARK: - 탭 라우팅 (Android route() 대응)
@@ -177,7 +186,7 @@ private struct ReceiptNotificationCard: View {
 }
 
 /// 상시 유도 알림(마케팅/등록·미사용·분석 리마인더) 전용 카드.
-/// 상단 "보트랩" + 날짜 → 타이틀 → 본문 → 고정 수신거부 안내문 순 배치.
+/// 상단 "보트랩" + 날짜 → 타이틀 → 본문 순 배치.
 /// 이미지 에셋은 텍스트 블록 첫 줄에 상단 정렬한다.
 private struct PersistentNotificationCard: View {
     let item: AppNotification
@@ -202,10 +211,6 @@ private struct PersistentNotificationCard: View {
                 Text(item.message)
                     .font(.pretendard(.regular, size: 14))
                     .foregroundStyle(Color.gray600)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text("notif.persistent.footer")
-                    .font(.pretendard(.regular, size: 13))
-                    .foregroundStyle(Color.gray400)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

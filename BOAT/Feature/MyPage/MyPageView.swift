@@ -13,6 +13,8 @@ struct MyPageView: View {
     let viewModel: AuthViewModel
     var onSearch: () -> Void = {}
     var onNotification: () -> Void = {}
+    /// 등록 완료 후 메인 탭을 홈으로 전환할 때 사용한다.
+    var onGoHome: () -> Void = {}
     private let store = UserStore.shared
 
     @Environment(\.openURL) private var openURL
@@ -85,7 +87,10 @@ struct MyPageView: View {
         .fullScreenCover(isPresented: $showReceiptRegister) {
             ReceiptRegisterView(
                 onBack: { showReceiptRegister = false },
-                onComplete: { showReceiptRegister = false }
+                onComplete: {
+                    showReceiptRegister = false
+                    onGoHome()
+                }
             )
         }
         .sheet(isPresented: $showPromoSheet) {
@@ -160,9 +165,7 @@ struct MyPageView: View {
 
     private var analysisBanner: some View {
         HStack(spacing: .spacing8) {
-            Image("icSparkle")
-                .resizable()
-                .scaledToFit()
+            GifImageView(name: "shiny_white")
                 .frame(width: 18, height: 18)
 
             (
