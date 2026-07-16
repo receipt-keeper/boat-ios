@@ -11,8 +11,8 @@
 import Foundation
 
 enum APIError: LocalizedError {
-    /// 4xx — 서버가 준 사용자 노출 문구(data.message) + 필드별 에러 목록(data.errors, 있으면).
-    case server(statusCode: Int, message: String, fieldErrors: [APIErrorData.FieldError] = [])
+    /// 4xx — 서버가 준 비즈니스 코드(data.code) + 사용자 노출 문구(data.message) + 필드별 에러 목록(data.errors, 있으면).
+    case server(statusCode: Int, code: String? = nil, message: String, fieldErrors: [APIErrorData.FieldError] = [])
     /// 5xx 또는 네트워크 연결 실패
     case network
     /// 파싱 불가 등 그 외
@@ -20,7 +20,7 @@ enum APIError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .server(_, let message, _):
+        case .server(_, _, let message, _):
             return message
         case .network:
             return String(localized: "error.api.network")

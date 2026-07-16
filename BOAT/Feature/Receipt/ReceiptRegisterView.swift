@@ -20,6 +20,7 @@ struct ReceiptRegisterView: View {
     var onComplete: () -> Void = {}
 
     @Environment(PermissionManager.self) private var permissions
+    @Environment(\.scenePhase) private var scenePhase
 
     /// 최대 등록 가능 장수 (Android MAX_PHOTOS와 동일)
     private static let maxPhotos = 5
@@ -135,7 +136,12 @@ struct ReceiptRegisterView: View {
                 showGalleryPicker = true
             }
         }
-        .task { await checkUsage() }
+        .task { await refreshAnalysisState() }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                Task { await refreshAnalysisState() }
+            }
+        }
         .alert("카메라를 사용할 수 없습니다.", isPresented: $cameraUnavailable) {
             Button("common.confirm", role: .cancel) {}
         }
@@ -276,9 +282,7 @@ struct ReceiptRegisterView: View {
 
     private var analysisCountPill: some View {
         HStack(spacing: .spacing4) {
-            Image("icSparkle")
-                .resizable()
-                .scaledToFit()
+            GifImageView(name: "shiny_white")
                 .frame(width: 16, height: 16)
             Text("receipt.register.analysis_count \(remainingTokens)")
                 .font(.pretendard(.semibold, size: 14))
@@ -555,7 +559,7 @@ struct ReceiptRegisterView: View {
     // MARK: - 분석 시작 버튼
 
     private var analyzeButton: some View {
-        let enabled = !images.isEmpty && !isAnalyzing
+        let enabled = !images.isEmpty && !isAnalyzing && !isUsageLoading
         return Button {
             analyze()
         } label: {
@@ -635,6 +639,23 @@ struct ReceiptRegisterView: View {
         isUsageLoading = false
     }
 
+    /// 진입/복귀 시 사용 가능 여부와 크레딧을 다시 맞춘다.
+    /// 홈 화면의 캐시만 믿지 않고 등록 화면 자체에서 최신 상태를 확보한다.
+    private func refreshAnalysisState() async {
+        isUsageLoading = true
+        async let credits: Void = {
+            _ = try? await CreditRepository.shared.fetchCredits()
+        }()
+        async let usage: Void = checkUsage()
+        _ = await (credits, usage)
+
+        if !serverCanAnalyze || remainingTokens == 0 {
+            pendingPromo = try? await PromotionRepository.shared.fetchOcrRecharge()
+        } else {
+            pendingPromo = nil
+        }
+    }
+
     /// 토큰 소진 시트 노출 전 프로모션 상태를 미리 조회 — redeemable일 때만 충전 버튼을 보여준다.
     /// 무료 토큰 소진 직후엔 서버에서 충전 이벤트가 redeemable로 반영되기까지 약간의 지연이 있을 수 있어,
     /// 첫 조회가 redeemable이 아니면 잠깐 기다렸다가 한 번 더 조회한다(그래도 아니면 "모두 소진"으로 확정).
@@ -680,7 +701,7 @@ struct ReceiptRegisterView: View {
             case .unavailable, .expired, .exhausted, .unknown:
                 toast.show(String(localized: "receipt.recharge.unavailable"), type: .info)
             }
-        } catch let APIError.server(statusCode, _, _) where statusCode == 409 {
+        } catch let APIError.server(statusCode, _, _, _) where statusCode == 409 {
             // 이미 이번 달 수령함(경합/직접 호출) — 안내 후 상태만 재확인
             toast.show(String(localized: "receipt.recharge.already"), type: .info)
             await checkUsage()
@@ -716,9 +737,14 @@ struct ReceiptRegisterView: View {
                 ocrResult = result
                 showManualInput = true
             } catch {
-                // 서버가 errors[].fileIndex로 특정 이미지를 지목했으면 그 이미지들만 표시하고,
-                // 그 외(네트워크 오류 등 파일 단위로 특정 안 되는 실패)는 전체에 표시(폴백).
-                if let apiError = error as? APIError, case .server(_, _, let fieldErrors) = apiError {
+                if let apiError = error as? APIError,
+                   case .server(_, let code, let message, let fieldErrors) = apiError {
+                    // UNSUPPORTED_RECEIPT: Sheet 없이 서버 메시지를 Toast로만 표시
+                    if code == "UNSUPPORTED_RECEIPT" {
+                        toast.showError(message)
+                        return
+                    }
+                    // 그 외 4xx: 파일별 실패 오버레이 + 실패 Sheet
                     let indices = fieldErrors.compactMap(\.fileIndex)
                     failedImageIndices = indices.isEmpty ? Set(images.indices) : Set(indices)
                 } else {

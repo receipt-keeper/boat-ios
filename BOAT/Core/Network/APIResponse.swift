@@ -25,6 +25,7 @@ struct EmptyData: Decodable {}
 /// 실패 응답의 data 페이로드. 사용자 노출 문구는 message에서 꺼냅니다.
 struct APIErrorData: Decodable {
     let timestamp: String?
+    let code: String?
     let message: String?
     let path: String?
     let errors: [FieldError]?
