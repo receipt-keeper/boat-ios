@@ -548,13 +548,13 @@ struct ReceiptManualInputView: View {
                 if selectedWarranty == 4 {
                     Spacer().frame(height: .spacing8)
                     HStack(spacing: .spacing8) {
-                        TextField(
-                            "0",
-                            text: Binding(
-                                get: { customMonthsText },
-                            set: { customMonthsText = String($0.filter(\.isNumber).prefix(ReceiptTextLimits.warrantyMonths)) }
-                            )
-                        )
+                        TextField("0", text: $customMonthsText)
+                            // 매 keystroke마다 새 Binding(get:set:)을 만들면 IME 조합 중인 글자가
+                            // 분리/중복될 수 있어, 평범한 바인딩 + onChange 보정으로 대체한다.
+                            .onChange(of: customMonthsText) { _, newValue in
+                                let filtered = String(newValue.filter(\.isNumber).prefix(ReceiptTextLimits.warrantyMonths))
+                                if filtered != newValue { customMonthsText = filtered }
+                            }
                             .keyboardType(.numberPad)
                             .font(.pretendard(.regular, size: 15))
                             .foregroundStyle(Color.gray900)
@@ -731,7 +731,7 @@ struct ReceiptManualInputView: View {
             Spacer().frame(height: .spacing8)
                 TextField(
                     "",
-                    text: $serial.limited(to: ReceiptTextLimits.serial),
+                    text: $serial,
                     prompt: Text("manual.serial_hint").foregroundStyle(Color.gray400)
                 )
                 .font(.pretendard(.regular, size: 15))
@@ -743,6 +743,13 @@ struct ReceiptManualInputView: View {
                     RoundedRectangle(cornerRadius: .roundedLg)
                         .stroke(Color.gray300, lineWidth: 1)
                 )
+                // 매 keystroke마다 새 Binding(get:set:)을 만들면 IME 조합 중인 글자가
+                // 분리/중복될 수 있어, 평범한 바인딩 + onChange 보정으로 대체한다.
+                .onChange(of: serial) { _, newValue in
+                    if newValue.count > ReceiptTextLimits.serial {
+                        serial = String(newValue.prefix(ReceiptTextLimits.serial))
+                    }
+                }
             if serialTooLong {
                 Spacer().frame(height: 6)
                 Text("manual.max_length_error \\(ReceiptTextLimits.serial)")

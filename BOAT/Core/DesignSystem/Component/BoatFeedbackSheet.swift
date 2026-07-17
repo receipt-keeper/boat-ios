@@ -105,10 +105,7 @@ struct BoatFeedbackSheet: View {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 14)
             }
-            TextEditor(text: Binding(
-                get: { comment },
-                set: { comment = String($0.prefix(Self.commentLimit)) }
-            ))
+            TextEditor(text: $comment)
             .font(.pretendard(.regular, size: 15))
             .foregroundStyle(Color.gray900)
             .scrollContentBackground(.hidden)
@@ -116,6 +113,14 @@ struct BoatFeedbackSheet: View {
             .padding(.vertical, 8)
             .padding(.bottom, 20) // 우하단 글자 수 카운터와 겹치지 않도록
             .frame(height: 160)
+            // 매 keystroke마다 새 Binding(get:set:)을 만들어 전달하면 SwiftUI가 매번 다른
+            // 바인딩으로 인식해 한글 등 IME 조합 중인 글자가 분리/중복되는 문제가 있었다.
+            // 평범한 $comment 바인딩을 쓰고, 길이 초과 시에만 onChange에서 잘라낸다.
+            .onChange(of: comment) { _, newValue in
+                if newValue.count > Self.commentLimit {
+                    comment = String(newValue.prefix(Self.commentLimit))
+                }
+            }
 
             Text("feedback.counter \(comment.count)")
                 .font(.pretendard(.regular, size: 12))
