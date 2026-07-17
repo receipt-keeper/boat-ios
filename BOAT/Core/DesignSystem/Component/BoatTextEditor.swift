@@ -62,7 +62,9 @@ private struct LimitedTextView: UIViewRepresentable {
         uiView.tintColor = UIColor(Color.brandPrimary)
         uiView.font = .init(name: Font.Pretendard.regular.rawValue, size: 15)
 
-        if uiView.text != text {
+        // 편집 중(첫 응답자)일 땐 uiView.text를 다시 덮어쓰지 않는다 — BoatInputField와 동일한 이유로,
+        // 한글 등 빠른 IME 입력 중 stale binding 값으로 되돌려쓰면 글자가 중복/유실될 수 있다.
+        if !uiView.isFirstResponder, uiView.text != text {
             uiView.text = text
         }
     }

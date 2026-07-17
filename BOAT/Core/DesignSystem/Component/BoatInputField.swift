@@ -113,7 +113,11 @@ private struct LimitedTextField: UIViewRepresentable {
         uiView.tintColor = UIColor(Color.brandPrimary)
         uiView.font = .init(name: Font.Pretendard.regular.rawValue, size: 15)
 
-        if uiView.text != text {
+        // 편집 중(첫 응답자)일 땐 uiView.text를 다시 덮어쓰지 않는다. 한글처럼 여러 keystroke가
+        // 빠르게 이어지는 IME 입력 중에 델리게이트→Binding→SwiftUI 재렌더 왕복이 한 박자 늦게
+        // 돌아오면, 여기서 최신 입력을 아직 반영 못한 stale text로 되돌려써서 글자가 중복/유실
+        // 되는 문제가 있었다. 편집 중이 아닐 때만(프로그램적 초기화 등) 동기화한다.
+        if !uiView.isFirstResponder, uiView.text != text {
             uiView.text = text
         }
 
