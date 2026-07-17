@@ -2309,6 +2309,16 @@
         }
       }
     },
+    "receipt.edit.no_changes" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "변경된 내용이 없습니다."
+          }
+        }
+      }
+    },
     "receipt.empty" : {
       "localizations" : {
         "ko" : {

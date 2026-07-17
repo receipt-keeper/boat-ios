@@ -226,6 +226,7 @@ struct ReceiptEditView: View {
             && !purchaseDate.isEmpty
             && totalWarrantyMonths != nil
             && totalFileCount >= Self.minPhotos
+            && hasChanges
             && !isSubmitting
     }
 
@@ -1014,6 +1015,10 @@ struct ReceiptEditView: View {
         }
         guard totalFileCount >= Self.minPhotos else {
             toast.showError(String(localized: "manual.image_required"))
+            return
+        }
+        guard hasChanges else {
+            toast.showError(String(localized: "receipt.edit.no_changes"))
             return
         }
         guard canSubmit else { return }
