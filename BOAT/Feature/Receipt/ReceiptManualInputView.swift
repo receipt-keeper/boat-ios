@@ -934,8 +934,21 @@ struct ReceiptManualInputView: View {
 
     private func submit() {
         guard !isSubmitting else { return }
+        // 비활성 버튼 탭 시 화면 최상단부터 순서대로 누락 항목을 확인해 안내한다.
         guard !images.isEmpty else {
             toast.showError(String(localized: "manual.image_required"))
+            return
+        }
+        guard !productName.trimmingCharacters(in: .whitespaces).isEmpty else {
+            toast.showError(String(localized: "manual.product_name_required"))
+            return
+        }
+        guard !purchaseDate.isEmpty else {
+            toast.showError(String(localized: "manual.purchase_date_required"))
+            return
+        }
+        guard totalWarrantyMonths != nil else {
+            toast.showError(String(localized: "manual.warranty_required"))
             return
         }
         guard canSubmit else { return }

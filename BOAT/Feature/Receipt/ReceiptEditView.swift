@@ -999,6 +999,19 @@ struct ReceiptEditView: View {
     /// 영수증 수정: 신규 이미지 업로드 → 유지할 기존 fileId와 합쳐 PATCH → 상세로 복귀.
     private func submit() {
         guard !isSubmitting else { return }
+        // 비활성 버튼 탭 시 화면 최상단부터 순서대로 누락 항목을 확인해 안내한다.
+        guard !productName.trimmingCharacters(in: .whitespaces).isEmpty else {
+            toast.showError(String(localized: "manual.product_name_required"))
+            return
+        }
+        guard !purchaseDate.isEmpty else {
+            toast.showError(String(localized: "manual.purchase_date_required"))
+            return
+        }
+        guard totalWarrantyMonths != nil else {
+            toast.showError(String(localized: "manual.warranty_required"))
+            return
+        }
         guard totalFileCount >= Self.minPhotos else {
             toast.showError(String(localized: "manual.image_required"))
             return

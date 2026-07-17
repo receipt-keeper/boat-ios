@@ -1259,6 +1259,16 @@
         }
       }
     },
+    "manual.product_name_required" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "제품명을 입력해주세요."
+          }
+        }
+      }
+    },
     "manual.product_section" : {
       "localizations" : {
         "ko" : {
@@ -1285,6 +1295,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "구매일을 입력하세요."
+          }
+        }
+      }
+    },
+    "manual.purchase_date_required" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구매일을 선택해주세요."
           }
         }
       }
@@ -1415,6 +1435,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "AS 만료기간을 입력해 주세요."
+          }
+        }
+      }
+    },
+    "manual.warranty_required" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "무상 AS 만료기간을 선택해주세요."
           }
         }
       }
