@@ -46,7 +46,9 @@ struct AppNotification: Identifiable, Hashable {
     /// 단, 상시 유도 알림(마케팅/등록·미사용·분석 리마인더)은 특정 영수증과 무관하므로
     /// 항상 대분류 "기타" 기본 이미지로 고정한다.
     var imageName: String {
-        guard !NotificationRouter.shouldRouteHome(messageType: messageType, kind: kind) else {
+        let isPersistent = NotificationRouter.shouldRouteReceiptRegister(kind: kind)
+            || NotificationRouter.shouldRouteHome(messageType: messageType)
+        guard !isPersistent else {
             return DeviceCategory.other.imageName
         }
         return DeviceImage.assetName(category: nil, subCategory: subCategory)

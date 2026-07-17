@@ -127,6 +127,16 @@ struct MainTabView: View {
                 NotificationRouter.shared.pendingReceiptId = nil
                 NotificationRouter.shared.shouldOpenHome = false
             }
+            // 상시 유도 알림(푸시 탭 또는 인앱 알림 목록 탭) → 영수증 업로드 화면으로 이동.
+            // FAB 등록과 동일한 fullScreenCover(showRegisterFromFab)를 재사용한다.
+            .onChange(of: NotificationRouter.shared.shouldOpenReceiptRegister) { _, shouldOpen in
+                guard shouldOpen else { return }
+                showSearch = false
+                showNotifications = false
+                showRegisterFromFab = true
+                NotificationRouter.shared.pendingReceiptId = nil
+                NotificationRouter.shared.shouldOpenReceiptRegister = false
+            }
             // 영수증 등록 성공 등 특정 액션 이후 서비스 만족도 피드백 시트 노출 시도.
             .onChange(of: FeedbackTrigger.shared.triggerCount) { _, _ in
                 UserFeedbackStore.shared.tryShowFeedback()

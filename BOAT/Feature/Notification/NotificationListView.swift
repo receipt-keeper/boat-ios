@@ -6,7 +6,8 @@
 //  GET /api/v1/notifications 로 읽음/미읽음 알림을 모두 불러와 카드형 리스트로 표시.
 //  이미 읽은 카드는 흐리게 표시(disabled 스타일)만 하고, 탭은 그대로 허용한다.
 //  카드 탭 → 읽음 처리(목록엔 남기고 흐리게 전환) 후 리소스로 라우팅
-//  (messageType=marketing → 홈 / receipt+resourceId → 상세 / kind=registration_prompt → 영수증 등록).
+//  (상시 유도 알림 kind → 영수증 업로드 / messageType=marketing → 홈 / receipt+resourceId → 상세
+//  / kind=registration_prompt → 영수증 등록).
 //
 
 import SwiftUI
@@ -77,9 +78,13 @@ struct NotificationListView: View {
 
     private func handleTap(_ item: AppNotification) {
         viewModel.markAsRead(item)
-        if NotificationRouter.shouldRouteHome(messageType: item.messageType, kind: item.kind) {
-            // 홈 탭으로 이동(마케팅 또는 상시 유도 알림) — 목록 자체를 닫고
-            // MainTabView가 NotificationRouter를 관찰해 전환.
+        if NotificationRouter.shouldRouteReceiptRegister(kind: item.kind) {
+            // 영수증 업로드 화면으로 이동(상시 유도 알림: 등록/미사용/분석 리마인더) — 목록 자체를
+            // 닫고 MainTabView가 NotificationRouter를 관찰해 전환.
+            NotificationRouter.shared.shouldOpenReceiptRegister = true
+            onBack()
+        } else if NotificationRouter.shouldRouteHome(messageType: item.messageType) {
+            // 홈 탭으로 이동(마케팅) — 목록 자체를 닫고 MainTabView가 NotificationRouter를 관찰해 전환.
             NotificationRouter.shared.shouldOpenHome = true
             onBack()
         } else if item.resourceType == "receipt", let id = item.resourceId, !id.isEmpty {
@@ -140,7 +145,8 @@ private struct NotificationCard: View {
     var body: some View {
         // 상시 유도 알림(마케팅/등록·미사용·분석 리마인더)은 특정 영수증과 무관한 공지형
         // 카드라 전용 레이아웃(고정 브랜드명/타이틀/본문/고정 안내문)을 쓴다.
-        if NotificationRouter.shouldRouteHome(messageType: item.messageType, kind: item.kind) {
+        if NotificationRouter.shouldRouteReceiptRegister(kind: item.kind)
+            || NotificationRouter.shouldRouteHome(messageType: item.messageType) {
             PersistentNotificationCard(item: item)
         } else {
             ReceiptNotificationCard(item: item)
@@ -211,6 +217,7 @@ private struct PersistentNotificationCard: View {
                 Text(item.message)
                     .font(.pretendard(.regular, size: 14))
                     .foregroundStyle(Color.gray600)
+                    .lineLimit(4)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
