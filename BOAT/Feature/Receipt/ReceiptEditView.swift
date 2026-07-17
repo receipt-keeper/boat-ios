@@ -470,8 +470,12 @@ struct ReceiptEditView: View {
                     .fill(selected ? Color.brandQuinary : Color.gray100)
                     .frame(width: 64, height: 52)
                     .overlay(
+                        // stroke()는 경계선을 중심으로 안팎에 절반씩 그려 프레임 밖으로 살짝
+                        // 삐져나오는데, 가로 스크롤 안에 있는 칩이라 그 삐져나온 바깥쪽 절반이
+                        // 스크롤뷰 레이아웃 경계에 잘려 위쪽 변 테두리가 흐릿하게 보였다.
+                        // strokeBorder()는 프레임 안쪽으로만 그려 잘릴 여지가 없다.
                         RoundedRectangle(cornerRadius: .roundedXl)
-                            .stroke(selected ? Color.brandPrimary : Color.clear, lineWidth: 1.5)
+                            .strokeBorder(selected ? Color.brandPrimary : Color.clear, lineWidth: 1.5)
                     )
                     .overlay {
                         Image(DeviceImage.assetName(category: selectedCategory.rawValue, subCategory: name))
