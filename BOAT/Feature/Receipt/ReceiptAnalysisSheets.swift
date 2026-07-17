@@ -13,7 +13,34 @@ import SwiftUI
 enum AnalysisSheet: Identifiable {
     case noToken
     case failed
+    case unsupportedReceipt
     var id: Int { hashValue }
+}
+
+// 영수증 문서 아이콘 + 빨간 X 배지 — 분석 실패/미지원 시트가 공유하는 아이콘.
+private struct ReceiptErrorIcon: View {
+    var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            Image(systemName: "doc.text.fill")
+                .font(.system(size: 28))
+                .foregroundStyle(Color.brandPrimary)
+                .frame(width: 32, height: 32)
+
+            ZStack {
+                Circle()
+                    .fill(Color.systemError)
+                    .frame(width: 16, height: 16)
+                    .overlay(
+                        Circle()
+                            .stroke(Color.colorWhite, lineWidth: 1.5)
+                    )
+                Image(systemName: "xmark")
+                    .font(.system(size: 7, weight: .bold))
+                    .foregroundStyle(Color.colorWhite)
+            }
+            .offset(x: 3, y: 3)
+        }
+    }
 }
 
 // MARK: - 토큰 소진 시트
@@ -128,7 +155,7 @@ struct AnalysisFailedSheet: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .top) {
-                failedIcon
+                ReceiptErrorIcon()
                 Spacer()
                 closeButton
             }
@@ -170,30 +197,6 @@ struct AnalysisFailedSheet: View {
         .buttonStyle(.plain)
     }
 
-    // 영수증 문서 아이콘 + 빨간 X 배지
-    private var failedIcon: some View {
-        ZStack(alignment: .bottomTrailing) {
-            Image(systemName: "doc.text.fill")
-                .font(.system(size: 28))
-                .foregroundStyle(Color.brandPrimary)
-                .frame(width: 32, height: 32)
-
-            ZStack {
-                Circle()
-                    .fill(Color.systemError)
-                    .frame(width: 16, height: 16)
-                    .overlay(
-                        Circle()
-                            .stroke(Color.colorWhite, lineWidth: 1.5)
-                    )
-                Image(systemName: "xmark")
-                    .font(.system(size: 7, weight: .bold))
-                    .foregroundStyle(Color.colorWhite)
-            }
-            .offset(x: 3, y: 3)
-        }
-    }
-
     // 촬영 유의사항 안내 박스
     private var noticeBox: some View {
         VStack(alignment: .leading, spacing: .spacing8) {
@@ -205,6 +208,88 @@ struct AnalysisFailedSheet: View {
                 noticeBullet("receipt.fail.notice.bullet1")
                 noticeBullet("receipt.fail.notice.bullet2")
                 noticeBullet("receipt.fail.notice.bullet3")
+            }
+        }
+        .padding(.spacing16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.gray50, in: RoundedRectangle(cornerRadius: .roundedLg))
+    }
+
+    private func noticeBullet(_ key: LocalizedStringKey) -> some View {
+        HStack(alignment: .top, spacing: .spacing4) {
+            Text("•")
+            Text(key)
+        }
+        .font(.pretendard(.regular, size: 13))
+        .foregroundStyle(Color.gray600)
+        .lineSpacing(3)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+// MARK: - 미지원 영수증 시트 (UNSUPPORTED_RECEIPT)
+
+/// 서버가 OCR 분석 응답으로 UNSUPPORTED_RECEIPT 코드를 내려줄 때 노출 — Toast 대신 시트로 안내.
+/// AnalysisFailedSheet와 동일한 구조(아이콘/닫기 버튼/안내 박스/CTA)를 재사용한다.
+struct UnsupportedReceiptSheet: View {
+    let onRetry: () -> Void
+    let onClose: () -> Void
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .top) {
+                ReceiptErrorIcon()
+                Spacer()
+                closeButton
+            }
+
+            Spacer().frame(height: .spacing16)
+            Text("receipt.unsupported.title")
+                .font(.pretendard(.bold, size: 20))
+                .foregroundStyle(Color.gray900)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Spacer().frame(height: .spacing8)
+            Text("receipt.unsupported.subtitle")
+                .font(.pretendard(.semibold, size: 14))
+                .foregroundStyle(Color.brandPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Spacer().frame(height: .spacing16)
+            noticeBox
+
+            Spacer().frame(height: .spacing24)
+            primaryButton("receipt.unsupported.retry", action: onRetry)
+        }
+        .padding(.horizontal, .spacing20)
+        .padding(.top, .spacing8)
+        .padding(.bottom, .spacing16)
+        .frame(maxWidth: .infinity)
+    }
+
+    private var closeButton: some View {
+        Button(action: onClose) {
+            Image(systemName: "xmark")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(Color.gray900)
+                .frame(width: 32, height: 32)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    // 현재 등록 가능한 영수증 안내 박스
+    private var noticeBox: some View {
+        VStack(alignment: .leading, spacing: .spacing8) {
+            Text("receipt.unsupported.notice.title")
+                .font(.pretendard(.semibold, size: 14))
+                .foregroundStyle(Color.gray900)
+
+            VStack(alignment: .leading, spacing: 4) {
+                noticeBullet("receipt.unsupported.notice.bullet1")
+                noticeBullet("receipt.unsupported.notice.bullet2")
+                noticeBullet("receipt.unsupported.notice.bullet3")
+                noticeBullet("receipt.unsupported.notice.bullet4")
             }
         }
         .padding(.spacing16)
@@ -268,5 +353,10 @@ private func outlinedButton(_ label: LocalizedStringKey, action: @escaping () ->
 
 #Preview("분석 실패") {
     AnalysisFailedSheet(onManualInput: {}, onRetry: {}, onClose: {})
+        .background(Color.colorWhite)
+}
+
+#Preview("미지원 영수증") {
+    UnsupportedReceiptSheet(onRetry: {}, onClose: {})
         .background(Color.colorWhite)
 }

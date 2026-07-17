@@ -2911,6 +2911,86 @@
         }
       }
     },
+    "receipt.unsupported.notice.bullet1" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IT 제품 (노트북, 휴대폰, 스마트워치, 카메라 등)"
+          }
+        }
+      }
+    },
+    "receipt.unsupported.notice.bullet2" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "주방가전 (전자레인지, 냉장고, 밥솥, 오븐, 정수기 등)"
+          }
+        }
+      }
+    },
+    "receipt.unsupported.notice.bullet3" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "세탁·청소 (세탁기, 건조기, 청소기, 로봇청소기 등)"
+          }
+        }
+      }
+    },
+    "receipt.unsupported.notice.bullet4" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "리빙·냉난방 (에어컨, 선풍기, 공기청정기, 가습기 등)"
+          }
+        }
+      }
+    },
+    "receipt.unsupported.notice.title" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "현재 등록 가능한 영수증"
+          }
+        }
+      }
+    },
+    "receipt.unsupported.retry" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영수증 다시 업로드하기"
+          }
+        }
+      }
+    },
+    "receipt.unsupported.subtitle" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "더 많은 제품 영수증을 지원할 예정이에요!"
+          }
+        }
+      }
+    },
+    "receipt.unsupported.title" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "현재는 전자제품 영수증만\n지원하고 있어요!"
+          }
+        }
+      }
+    },
     "search.empty.register" : {
       "localizations" : {
         "ko" : {

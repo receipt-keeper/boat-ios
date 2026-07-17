@@ -179,6 +179,12 @@ struct ReceiptRegisterView: View {
                         onClose: { activeSheet = nil }
                     )
                     .presentationDetents([.height(480)])
+                case .unsupportedReceipt:
+                    UnsupportedReceiptSheet(
+                        onRetry: { activeSheet = nil },
+                        onClose: { activeSheet = nil }
+                    )
+                    .presentationDetents([.height(540)])
                 }
             }
             .presentationDragIndicator(.hidden)
@@ -738,10 +744,10 @@ struct ReceiptRegisterView: View {
                 showManualInput = true
             } catch {
                 if let apiError = error as? APIError,
-                   case .server(_, let code, let message, let fieldErrors) = apiError {
-                    // UNSUPPORTED_RECEIPT: Sheet 없이 서버 메시지를 Toast로만 표시
+                   case .server(_, let code, _, let fieldErrors) = apiError {
+                    // UNSUPPORTED_RECEIPT: 전용 시트로 안내 (지원 카테고리 목록 노출)
                     if code == "UNSUPPORTED_RECEIPT" {
-                        toast.showError(message)
+                        activeSheet = .unsupportedReceipt
                         return
                     }
                     // 그 외 4xx: 파일별 실패 오버레이 + 실패 Sheet
