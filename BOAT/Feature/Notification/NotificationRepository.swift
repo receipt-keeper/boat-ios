@@ -32,4 +32,9 @@ final class NotificationRepository {
     func markRead(id: String) async {
         try? await APIClient.shared.requestVoid(NotificationTarget.markRead(id: id))
     }
+
+    /// DELETE /api/v1/notifications/{id} — 단건 삭제. 성공/실패를 호출부가 알아야 하므로 throws.
+    func delete(id: String) async throws {
+        try await APIClient.shared.requestVoid(NotificationTarget.delete(id: id))
+    }
 }

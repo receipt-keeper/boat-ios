@@ -32,4 +32,10 @@ final class NotificationListViewModel {
         notifications[index].isRead = true
         Task { await repository.markRead(id: item.id) }
     }
+
+    /// 케밥 → "삭제하기" — 삭제 API 호출 성공 후에만 목록을 다시 불러와 반영한다.
+    func delete(_ item: AppNotification) async throws {
+        try await repository.delete(id: item.id)
+        await load()
+    }
 }

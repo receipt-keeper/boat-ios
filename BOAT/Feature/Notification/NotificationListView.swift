@@ -20,6 +20,8 @@ struct NotificationListView: View {
     @State private var detailReceipt: IdentifiedID?
     @State private var showRegister = false
     @State private var toast = BoatToastState()
+    /// 케밥 → "삭제하기" 확인 다이얼로그 대상. nil이 아니면 다이얼로그 노출.
+    @State private var itemPendingDeletion: AppNotification?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -35,7 +37,7 @@ struct NotificationListView: View {
                 ScrollView {
                     LazyVStack(spacing: .spacing12) {
                         ForEach(viewModel.notifications) { item in
-                            NotificationCard(item: item)
+                            NotificationCard(item: item, onDeleteTap: { itemPendingDeletion = item })
                                 .contentShape(Rectangle())
                                 .onTapGesture { handleTap(item) }
                                 // 읽은 알림은 흐리게 표시만 하고, 탭해서 다시 리소스로 이동하는 건 그대로 허용.
@@ -72,6 +74,35 @@ struct NotificationListView: View {
             )
         }
         .boatToastHost(toast)
+        // 케밥 → "삭제하기" 확인 (디자인 가이드: 타이틀 없이 삭제/닫기 두 버튼만)
+        .confirmationDialog(
+            "",
+            isPresented: Binding(
+                get: { itemPendingDeletion != nil },
+                set: { if !$0 { itemPendingDeletion = nil } }
+            ),
+            titleVisibility: .hidden
+        ) {
+            Button("notif.delete.confirm", role: .destructive) {
+                guard let item = itemPendingDeletion else { return }
+                itemPendingDeletion = nil
+                Task { await deleteNotification(item) }
+            }
+            Button("notif.delete.cancel", role: .cancel) {
+                itemPendingDeletion = nil
+            }
+        }
+    }
+
+    // MARK: - 알림 삭제
+
+    /// 삭제 API 호출 성공 후에만 목록을 다시 불러와 반영한다.
+    private func deleteNotification(_ item: AppNotification) async {
+        do {
+            try await viewModel.delete(item)
+        } catch {
+            toast.showError(String(localized: "notif.delete.fail"))
+        }
     }
 
     // MARK: - 탭 라우팅 (Android route() 대응)
@@ -141,25 +172,23 @@ struct IdentifiedID: Identifiable {
 
 private struct NotificationCard: View {
     let item: AppNotification
+    let onDeleteTap: () -> Void
 
     var body: some View {
         // 상시 유도 알림(마케팅/등록·미사용·분석 리마인더)은 특정 영수증과 무관한 공지형
         // 카드라 전용 레이아웃(고정 브랜드명/타이틀/본문/고정 안내문)을 쓴다.
         if NotificationRouter.shouldRouteReceiptRegister(kind: item.kind)
             || NotificationRouter.shouldRouteHome(messageType: item.messageType) {
-            PersistentNotificationCard(item: item)
+            PersistentNotificationCard(item: item, onDeleteTap: onDeleteTap)
         } else {
-            ReceiptNotificationCard(item: item)
+            ReceiptNotificationCard(item: item, onDeleteTap: onDeleteTap)
         }
     }
 }
 
 /// 알림 카드 우측 상단 케밥(더보기) 버튼 — 두 카드 타입이 공유한다.
-/// 1단계: 자리와 모양만 배치. 삭제 메뉴 연결은 다음 단계에서 진행.
-private var kebabButton: some View {
-    Button {
-        // TODO: 알림 삭제 메뉴 연결 (다음 단계)
-    } label: {
+private func kebabButton(action: @escaping () -> Void) -> some View {
+    Button(action: action) {
         Image(systemName: "ellipsis")
             .font(.system(size: 16, weight: .semibold))
             .foregroundStyle(Color.gray500)
@@ -175,6 +204,7 @@ private var kebabButton: some View {
 /// 이미지 에셋은 텍스트 블록 첫 줄에 상단 정렬한다.
 private struct ReceiptNotificationCard: View {
     let item: AppNotification
+    let onDeleteTap: () -> Void
 
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
@@ -188,7 +218,7 @@ private struct ReceiptNotificationCard: View {
                     Text(item.displayTime)
                         .font(.pretendard(.regular, size: 14))
                         .foregroundStyle(Color.gray500)
-                    kebabButton
+                    kebabButton(action: onDeleteTap)
                 }
                 Text(item.title)
                     .font(.pretendard(.bold, size: 17))
@@ -213,6 +243,7 @@ private struct ReceiptNotificationCard: View {
 /// 이미지 에셋은 텍스트 블록 첫 줄에 상단 정렬한다.
 private struct PersistentNotificationCard: View {
     let item: AppNotification
+    let onDeleteTap: () -> Void
 
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
@@ -226,7 +257,7 @@ private struct PersistentNotificationCard: View {
                     Text(item.persistentDisplayDate)
                         .font(.pretendard(.regular, size: 14))
                         .foregroundStyle(Color.gray500)
-                    kebabButton
+                    kebabButton(action: onDeleteTap)
                 }
                 Text(item.title)
                     .font(.pretendard(.bold, size: 17))
