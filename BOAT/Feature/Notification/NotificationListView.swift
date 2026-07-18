@@ -154,6 +154,22 @@ private struct NotificationCard: View {
     }
 }
 
+/// 알림 카드 우측 상단 케밥(더보기) 버튼 — 두 카드 타입이 공유한다.
+/// 1단계: 자리와 모양만 배치. 삭제 메뉴 연결은 다음 단계에서 진행.
+private var kebabButton: some View {
+    Button {
+        // TODO: 알림 삭제 메뉴 연결 (다음 단계)
+    } label: {
+        Image(systemName: "ellipsis")
+            .font(.system(size: 16, weight: .semibold))
+            .foregroundStyle(Color.gray500)
+            .rotationEffect(.degrees(90))
+            .frame(width: 24, height: 24)
+            .contentShape(Rectangle())
+    }
+    .buttonStyle(.plain)
+}
+
 /// 특정 영수증에 연결된 일반 알림(만료 임박/AS 안내 등) 카드.
 /// 상단 "보트랩" + 상대 시간 → 타이틀 → 본문 순 배치(고정 안내문 없음).
 /// 이미지 에셋은 텍스트 블록 첫 줄에 상단 정렬한다.
@@ -172,6 +188,7 @@ private struct ReceiptNotificationCard: View {
                     Text(item.displayTime)
                         .font(.pretendard(.regular, size: 14))
                         .foregroundStyle(Color.gray500)
+                    kebabButton
                 }
                 Text(item.title)
                     .font(.pretendard(.bold, size: 17))
@@ -209,6 +226,7 @@ private struct PersistentNotificationCard: View {
                     Text(item.persistentDisplayDate)
                         .font(.pretendard(.regular, size: 14))
                         .foregroundStyle(Color.gray500)
+                    kebabButton
                 }
                 Text(item.title)
                     .font(.pretendard(.bold, size: 17))
