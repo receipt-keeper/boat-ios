@@ -468,7 +468,7 @@ struct ReceiptRegisterView: View {
     private var attachmentsHeader: some View {
         HStack {
             Text("receipt.register.attachments")
-                .font(.pretendard(.bold, size: 18))
+                .font(.pretendard(.bold, size: 16))
                 .foregroundStyle(Color.gray900)
             Spacer()
             Text("\(images.count)/\(Self.maxPhotos)")
