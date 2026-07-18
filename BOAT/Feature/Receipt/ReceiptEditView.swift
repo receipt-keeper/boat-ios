@@ -800,9 +800,11 @@ struct ReceiptEditView: View {
             }
             .frame(width: 100, height: 100)
             .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
+            // stroke()는 프레임 밖으로 절반 삐져나오는데, 가로 스크롤 안에서는 그 바깥쪽
+            // 절반이 잘려 테두리가 흐릿해 보인다. strokeBorder()는 안쪽으로만 그려 잘리지 않는다.
             .overlay(
                 RoundedRectangle(cornerRadius: .roundedLg)
-                    .stroke(Color.brandTertiary, lineWidth: 1)
+                    .strokeBorder(Color.brandTertiary, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
