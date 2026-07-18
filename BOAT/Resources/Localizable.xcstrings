@@ -1759,6 +1759,16 @@
         }
       }
     },
+    "notif.delete.success" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림이 삭제되었습니다."
+          }
+        }
+      }
+    },
     "notif.fallback_title" : {
       "localizations" : {
         "ko" : {

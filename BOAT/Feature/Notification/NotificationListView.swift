@@ -100,6 +100,7 @@ struct NotificationListView: View {
     private func deleteNotification(_ item: AppNotification) async {
         do {
             try await viewModel.delete(item)
+            toast.show(String(localized: "notif.delete.success"), type: .info)
         } catch {
             toast.showError(String(localized: "notif.delete.fail"))
         }
