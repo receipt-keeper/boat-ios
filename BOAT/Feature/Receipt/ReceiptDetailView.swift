@@ -97,7 +97,7 @@ struct ReceiptDetailView: View {
 
             VStack(spacing: .spacing8) {
                 VStack(spacing: 0) {
-                    actionRow("detail.menu_edit", color: .gray900) {
+                    actionRow("detail.menu_edit", color: .brandPrimary) {
                         showActionSheet = false
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                             showEditView = true
