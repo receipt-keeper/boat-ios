@@ -681,31 +681,34 @@ struct ReceiptEditView: View {
     // MARK: - 보증 정보
 
     private var warrantyInfoCard: some View {
-        VStack(alignment: .leading, spacing: .spacing16) {
+        VStack(alignment: .leading, spacing: .spacing12) {
+            // 디자인 가이드: 섹션 타이틀은 흰 박스 밖(페이지 배경)에 위치.
             Text("manual.warranty_section")
                 .font(.pretendard(.bold, size: 18))
                 .foregroundStyle(Color.gray900)
 
-            BoatInputField(
-                text: $brand,
-                label: "manual.brand",
-                placeholder: "manual.brand_hint",
-                isError: brandTooLong,
-                errorText: LocalizedStringKey("manual.max_length_error \(ReceiptTextLimits.brand)"),
-                maxLength: ReceiptTextLimits.brand
-            )
-            BoatInputField(
-                text: priceDisplayBinding,
-                label: "manual.price",
-                placeholder: "manual.price_hint",
-                isError: priceLimitReached,
-                errorText: "최대 999,999,999원까지 입력 가능합니다.",
-                keyboard: .numberPad
-            )
-            serialField
+            VStack(alignment: .leading, spacing: .spacing16) {
+                BoatInputField(
+                    text: $brand,
+                    label: "manual.brand",
+                    placeholder: "manual.brand_hint",
+                    isError: brandTooLong,
+                    errorText: LocalizedStringKey("manual.max_length_error \(ReceiptTextLimits.brand)"),
+                    maxLength: ReceiptTextLimits.brand
+                )
+                BoatInputField(
+                    text: priceDisplayBinding,
+                    label: "manual.price",
+                    placeholder: "manual.price_hint",
+                    isError: priceLimitReached,
+                    errorText: "최대 999,999,999원까지 입력 가능합니다.",
+                    keyboard: .numberPad
+                )
+                serialField
+            }
+            .padding(.spacing16)
+            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
         }
-        .padding(.spacing16)
-        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
     }
 
     private var serialField: some View {
@@ -759,6 +762,9 @@ struct ReceiptEditView: View {
                     .font(.pretendard(.bold, size: 18))
                     .foregroundStyle(Color.systemError)
             }
+            Text("detail.original_receipt_hint")
+                .font(.pretendard(.regular, size: 12))
+                .foregroundStyle(Color.gray500)
 
             // "+" 추가 버튼은 항상 맨 왼쪽 고정. 그다음은 가장 최근에 추가한 신규 이미지부터,
             // 마지막으로 기존 첨부 순서로 배치한다.

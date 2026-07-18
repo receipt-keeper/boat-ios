@@ -203,6 +203,16 @@
         }
       }
     },
+    "detail.original_receipt_hint" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "추후 영수증 내용 확인을 위해 이미지를 보관해 주세요."
+          }
+        }
+      }
+    },
     "detail.physical_kept" : {
       "localizations" : {
         "ko" : {
@@ -1172,7 +1182,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "기기 관련 특이사항을 입력하세요."
+            "value" : "제품 관련 특이사항을 입력하세요."
           }
         }
       }
@@ -1829,16 +1839,6 @@
         }
       }
     },
-    "notif.settings.marketing_consent_withdrawn" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "수신 동의가 철회되었습니다."
-          }
-        }
-      }
-    },
     "notif.settings.footnote" : {
       "localizations" : {
         "ko" : {
@@ -1855,6 +1855,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "마케팅 정보 수신 동의"
+          }
+        }
+      }
+    },
+    "notif.settings.marketing_consent_withdrawn" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수신 동의가 철회되었습니다."
           }
         }
       }
