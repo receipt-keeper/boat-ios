@@ -613,29 +613,32 @@ struct ReceiptManualInputView: View {
     }
 
     private var memoField: some View {
-        VStack(alignment: .trailing, spacing: 4) {
-            ZStack(alignment: .topLeading) {
-                if memo.isEmpty {
-                    Text("manual.memo_hint")
-                        .font(.pretendard(.regular, size: 15))
-                        .foregroundStyle(Color.gray400)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 14)
-                }
-                BoatTextEditor(
-                    text: $memo,
-                    placeholder: "manual.memo_hint",
-                    maxLength: ReceiptTextLimits.memo,
-                    height: 120
-                )
+        ZStack(alignment: .topLeading) {
+            if memo.isEmpty {
+                Text("manual.memo_hint")
+                    .font(.pretendard(.regular, size: 15))
+                    .foregroundStyle(Color.gray400)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 14)
             }
-            .overlay(
-                RoundedRectangle(cornerRadius: .roundedLg)
-                    .stroke(Color.gray300, lineWidth: 1)
+            BoatTextEditor(
+                text: $memo,
+                placeholder: "manual.memo_hint",
+                maxLength: ReceiptTextLimits.memo,
+                height: 120
             )
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: .roundedLg)
+                .stroke(Color.gray300, lineWidth: 1)
+        )
+        // 디자인 가이드: "최대 100자" 안내문구는 박스 밖이 아니라 박스 안 우측 하단에 표시.
+        .overlay(alignment: .bottomTrailing) {
             Text("manual.memo_counter")
                 .font(.pretendard(.regular, size: 12))
                 .foregroundStyle(Color.gray400)
+                .padding(.trailing, 12)
+                .padding(.bottom, 10)
         }
     }
 
@@ -873,12 +876,16 @@ struct ReceiptManualInputView: View {
     private func warrantyChip(_ label: LocalizedStringKey, selected: Bool, onTap: @escaping () -> Void) -> some View {
             Button(action: onTap) {
                 Text(label)
+                    // 💡 1. 폰트 사이즈는 디자인 가이드대로 12를 그대로 유지합니다.
                     .font(.pretendard(selected ? .semibold : .medium, size: 12))
                     .foregroundStyle(selected ? Color.colorWhite : Color.gray700)
-                    .padding(.horizontal, 8)
-                    .frame(minWidth: 29, minHeight: 18, maxHeight: 18)
+                    // 💡 2. 기존의 좁은 여백(8) 대신, 좌우 16의 넉넉한 여백을 주어 글자에 맞춰 자연스럽게 늘어나도록 합니다.
+                    .padding(.horizontal, 16)
+                    // 💡 3. 복잡한 min/max 조건을 지우고 가이드 스펙인 '높이 28'을 강제 고정합니다.
+                    .frame(height: 28)
                     .background(selected ? Color.brandPrimary : Color.clear, in: Capsule())
                     .overlay(
+                        // (이전에 수정했던 strokeBorder는 안전하게 잘 유지되어 있습니다!)
                         Capsule().strokeBorder(selected ? Color.clear : Color.gray300, lineWidth: 1)
                     )
             }
