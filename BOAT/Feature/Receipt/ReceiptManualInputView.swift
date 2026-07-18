@@ -400,7 +400,7 @@ struct ReceiptManualInputView: View {
     private var categoryCard: some View {
         VStack(alignment: .leading, spacing: .spacing16) {
             Text("manual.category")
-                .font(.pretendard(.bold, size: 18))
+                .font(.pretendard(.bold, size: 16))
                 .foregroundStyle(Color.gray900)
 
             // 대분류 드롭다운
@@ -793,11 +793,11 @@ struct ReceiptManualInputView: View {
     private func sectionTitle(_ key: LocalizedStringKey, required: Bool = false) -> some View {
         HStack(spacing: 0) {
             Text(key)
-                .font(.pretendard(.bold, size: 18))
+                .font(.pretendard(.bold, size: 16))
                 .foregroundStyle(Color.gray900)
             if required {
                 Text(" *")
-                    .font(.pretendard(.bold, size: 18))
+                    .font(.pretendard(.bold, size: 16))
                     .foregroundStyle(Color.systemError)
             }
         }
@@ -810,7 +810,7 @@ struct ReceiptManualInputView: View {
         } label: {
             HStack {
                 Text(key)
-                    .font(.pretendard(.bold, size: 18))
+                    .font(.pretendard(.bold, size: 16))
                     .foregroundStyle(Color.gray900)
                 Spacer()
                 Image(systemName: "chevron.down")

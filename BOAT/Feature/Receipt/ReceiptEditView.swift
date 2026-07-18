@@ -392,7 +392,7 @@ struct ReceiptEditView: View {
     private var categoryCard: some View {
         VStack(alignment: .leading, spacing: .spacing16) {
             Text("manual.category")
-                .font(.pretendard(.bold, size: 18))
+                .font(.pretendard(.bold, size: 16))
                 .foregroundStyle(Color.gray900)
 
             VStack(spacing: 0) {
@@ -684,7 +684,7 @@ struct ReceiptEditView: View {
         VStack(alignment: .leading, spacing: .spacing12) {
             // 디자인 가이드: 섹션 타이틀은 흰 박스 밖(페이지 배경)에 위치.
             Text("manual.warranty_section")
-                .font(.pretendard(.bold, size: 18))
+                .font(.pretendard(.bold, size: 16))
                 .foregroundStyle(Color.gray900)
 
             VStack(alignment: .leading, spacing: .spacing16) {
@@ -756,10 +756,10 @@ struct ReceiptEditView: View {
         VStack(alignment: .leading, spacing: .spacing12) {
             HStack(spacing: 0) {
                 Text("detail.original_receipt")
-                    .font(.pretendard(.bold, size: 18))
+                    .font(.pretendard(.bold, size: 16))
                     .foregroundStyle(Color.gray900)
                 Text(" *")
-                    .font(.pretendard(.bold, size: 18))
+                    .font(.pretendard(.bold, size: 16))
                     .foregroundStyle(Color.systemError)
             }
             Text("detail.original_receipt_hint")
