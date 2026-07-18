@@ -658,14 +658,15 @@ struct ReceiptManualInputView: View {
                 }
                 
                 Text("manual.physical_help")
-                    .font(.pretendard(.regular, size: 14))
-                    .foregroundStyle(Color.gray600)
+                    .font(.pretendard(.regular, size: 12))
+                    .foregroundStyle(Color.gray700)
                     .lineSpacing(4) // 💡 2. 텍스트 줄간격을 살짝 넓혀 가독성을 높입니다.
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(20) // 💡 3. 카드 내부의 넉넉한 여백 텐션 반영 (기존 .spacing16 -> 20)
+            .frame(height: 112)
             .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
             .overlay(
                 // 💡 4. 경계선이 잘리거나 흐릿해지지 않도록 strokeBorder 사용
