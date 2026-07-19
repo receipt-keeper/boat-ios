@@ -193,8 +193,7 @@ struct ReceiptDetailView: View {
             sectionBand
             physicalSection(r)
                 .padding(.horizontal, .spacing20)
-                .padding(.top, .spacing24)
-                .padding(.bottom, .spacing8)
+                .padding(.vertical, .spacing20)
 
             // 보증 정보
             sectionBand
@@ -317,10 +316,11 @@ struct ReceiptDetailView: View {
             Text("detail.memo")
                 .font(.pretendard(.regular, size: 13))
                 .foregroundStyle(Color.gray500)
-            Text(memo)
-                .font(.pretendard(.regular, size: 15))
-                .foregroundStyle(Color.gray800)
-                .frame(maxWidth: .infinity, minHeight: 120, alignment: .topLeading)
+            Text(memo.isEmpty ? String(localized: "detail.memo_empty") : memo)
+                .font(.pretendard(.regular, size: 14))
+                .foregroundStyle(memo.isEmpty ? Color.gray400 : Color.gray900)
+                .lineSpacing(4)
+                .frame(maxWidth: .infinity, minHeight: 64, alignment: .topLeading)
                 .padding(.spacing16)
                 .background(Color.gray50, in: RoundedRectangle(cornerRadius: .roundedLg))
         }
