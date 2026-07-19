@@ -28,16 +28,19 @@ struct ReceiptPromoSheet: View {
 
             Spacer().frame(height: .spacing8)
 
-            GifImageView(name: "shiny_white")
-                .frame(width: 32, height: 32)
-
-            Spacer().frame(height: .spacing16)
-
             Text("mypage.promo.title")
                 .font(.pretendard(.bold, size: 24))
                 .foregroundStyle(Color.gray900)
                 .lineSpacing(6)
                 .fixedSize(horizontal: false, vertical: true)
+
+            Spacer().frame(height: .spacing16)
+
+            Image("bobo_mypage")
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: .infinity)
+                .frame(height: 150)
 
             Spacer().frame(height: .spacing20)
 
