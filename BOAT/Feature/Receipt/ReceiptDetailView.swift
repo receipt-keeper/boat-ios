@@ -187,13 +187,15 @@ struct ReceiptDetailView: View {
             }
             .padding(.horizontal, .spacing20)
 
-            Spacer().frame(height: .spacing24)
+            Spacer().frame(height: 18)
 
             // 실물 영수증 보관 여부 (저장값 라디오 표시)
             sectionBand
             physicalSection(r)
                 .padding(.horizontal, .spacing20)
-                .padding(.vertical, .spacing20)
+                .padding(.top, .spacing20)
+
+            Spacer().frame(height: 18)
 
             // 보증 정보
             sectionBand
@@ -254,13 +256,16 @@ struct ReceiptDetailView: View {
 
     private func physicalSection(_ r: Receipt) -> some View {
         let kept = r.requiresPhysicalReceipt == true
-        return VStack(alignment: .leading, spacing: .spacing8) {
+        return VStack(alignment: .leading, spacing: 0) {
             Text("manual.physical_section")
                 .font(.pretendard(.bold, size: 18))
                 .foregroundStyle(Color.gray900)
+            Spacer().frame(height: 12)
             Text(kept ? "detail.physical_kept" : "detail.physical_not_kept")
-                .font(.pretendard(.regular, size: 15))
+                .font(.pretendard(.medium, size: 15))
                 .foregroundStyle(Color.brandPrimary)
+            Spacer().frame(height: 6)
+            Rectangle().fill(Color.gray100).frame(height: 1)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -320,7 +325,7 @@ struct ReceiptDetailView: View {
                 .font(.pretendard(.regular, size: 14))
                 .foregroundStyle(Color.gray900)
                 .lineSpacing(4)
-                .frame(maxWidth: .infinity, minHeight: 64, alignment: .topLeading)
+                .frame(maxWidth: .infinity, minHeight: 132, alignment: .topLeading)
                 .padding(.spacing16)
                 .background(Color.gray50, in: RoundedRectangle(cornerRadius: .roundedLg))
         }
