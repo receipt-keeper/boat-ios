@@ -152,16 +152,6 @@
         }
       }
     },
-    "detail.memo_empty" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "등록된 메모가 없습니다."
-          }
-        }
-      }
-    },
     "detail.memo_placeholder" : {
       "extractionState" : "stale",
       "localizations" : {
