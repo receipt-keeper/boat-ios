@@ -271,6 +271,9 @@ private struct HomeView: View {
             // 헤더까지 포함해 전체 화면이 하나로 스크롤된다 (Top Bar는 고정되지 않음).
             ScrollView {
                 VStack(spacing: 0) {
+                    // 디자인 가이드 확인 결과 상태바 바로 아래 12pt 간격 필요 (기존엔 safe area 뒤 곧바로 헤더가 붙어 너무 가까움).
+                    Spacer().frame(height: 12)
+
                     BoatHeader(
                         showLogo: true,
                         showUnreadBadge: NotificationBadgeStore.shared.hasUnread,
