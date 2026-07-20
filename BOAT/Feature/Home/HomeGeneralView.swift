@@ -114,7 +114,7 @@ private struct ExpiringWarrantySection: View {
     // 몸통/손 레이어 공통 크기·오프셋 (반드시 두 레이어가 동일 값 공유)
     private let mascotSize = CGSize(width: 90, height: 127)
     private let mascotOffsetY: CGFloat = 8
-    private let mascotTrailing: CGFloat = 44
+    private let mascotTrailing: CGFloat = 60
 
     // 캐러셀 맨 끝 "N건 더보기" 카드 — 전체 건수가 노출된 카드 수보다 많을 때만.
     private static let moreCardID = "__more__"
