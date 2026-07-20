@@ -367,7 +367,7 @@ private struct ExpiringEmptyBanner: View {
                         Button(action: onMore) {
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 18, weight: .semibold))
-                                .foregroundStyle(Color.colorWhite)
+                                .foregroundStyle(Color.brandTertiary)
                                 .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
