@@ -80,7 +80,7 @@ struct HomeGeneralView: View {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 13, weight: .semibold))
             }
-            .foregroundStyle(Color.brandPrimary)
+            .foregroundStyle(Color.brandSecondary)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
             .background(Color.brandSenary, in: RoundedRectangle(cornerRadius: .roundedXl))
