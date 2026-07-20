@@ -131,16 +131,16 @@ private struct ExpiringWarrantySection: View {
             VStack(spacing: 0) {
                 header
 
-                Spacer().frame(height: 30) // 헤더-카드 간격 (손 태그가 카드 텍스트를 덜 가리도록)
+                Spacer().frame(height: 28) // 헤더-카드 간격 (손 태그가 카드 텍스트를 덜 가리도록)
 
                 carousel
 
-                Spacer().frame(height: 14)
+                Spacer().frame(height: 12)
                 CarouselIndicator(count: pageCount, activeIndex: activeIndex)
                     .frame(maxWidth: .infinity)
             }
-            .padding(.top, .spacing24)
-            .padding(.bottom, .spacing20)
+            .padding(.top, 32)
+            .padding(.bottom, 12)
             .frame(maxWidth: .infinity)
 
             // 3) 손 + 보증 태그 — 맨 위 (몸통과 완전히 동일한 크기·위치)
@@ -184,14 +184,16 @@ private struct ExpiringWarrantySection: View {
             .padding(.trailing, 96) // 캐릭터 영역 침범 방지
 
             Button(action: onMore) {
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(Color.colorWhite)
+                Image("chevron_right")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .padding(.trailing, 10) // 카드 패딩 12pt + 추가 10pt = 우측 끝에서 22pt
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, .spacing20)
+        .padding(.horizontal, 12)
     }
 
     private var carousel: some View {
@@ -273,8 +275,8 @@ private struct ExpiringWarrantyCard: View {
                 }
             }
         }
-        .padding(.spacing16)
-        .frame(minHeight: 197)
+        .padding(.horizontal, 20)
+        .padding(.vertical, .spacing16)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
     }
 
