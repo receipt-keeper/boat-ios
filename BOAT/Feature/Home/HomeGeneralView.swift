@@ -365,9 +365,10 @@ private struct ExpiringEmptyBanner: View {
                         .padding(.trailing, 100) // 캐릭터 영역 침범 방지
 
                         Button(action: onMore) {
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 18, weight: .semibold))
-                                .foregroundStyle(Color.brandTertiary)
+                            Image("chevron_right")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
                                 .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
