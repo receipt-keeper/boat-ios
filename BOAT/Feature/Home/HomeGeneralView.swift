@@ -47,20 +47,23 @@ struct HomeGeneralView: View {
                 .padding(.horizontal, .spacing20)
 
             // ── 최근 등록된 영수증 ──
-            Spacer().frame(height: .spacing24)
+            Spacer().frame(height: 16)
             Text("home.recent_title")
                 .font(.pretendard(.bold, size: 18))
                 .foregroundStyle(Color.gray900)
                 .padding(.horizontal, .spacing20)
 
             Spacer().frame(height: .spacing12)
-            VStack(spacing: .spacing12) {
-                ForEach(recent) { item in
+            VStack(spacing: 0) {
+                ForEach(Array(recent.enumerated()), id: \.element.id) { index, item in
                     RecentReceiptItem(item: item)
                         .contentShape(Rectangle())
                         .onTapGesture { onRecentTap(item) }
+                    if index != recent.count - 1 {
+                        Spacer().frame(height: .spacing12)
+                    }
                 }
-                Spacer().frame(height: .spacing4)
+                Spacer().frame(height: 16)
                 moreButton
             }
             .padding(.horizontal, .spacing20)
@@ -73,14 +76,14 @@ struct HomeGeneralView: View {
         Button(action: onRecentMore) {
             HStack(spacing: 2) {
                 Text("home.more")
-                    .font(.pretendard(.medium, size: 15))
+                    .font(.pretendard(.medium, size: 16))
                 Image(systemName: "chevron.right")
                     .font(.system(size: 13, weight: .semibold))
             }
             .foregroundStyle(Color.brandPrimary)
             .frame(maxWidth: .infinity)
-            .frame(height: 48)
-            .background(Color.badgeSafeBg, in: RoundedRectangle(cornerRadius: .roundedXl))
+            .frame(height: 52)
+            .background(Color.brandSenary, in: RoundedRectangle(cornerRadius: .roundedXl))
         }
         .buttonStyle(.plain)
     }
