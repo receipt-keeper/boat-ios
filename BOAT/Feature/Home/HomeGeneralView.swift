@@ -369,6 +369,7 @@ private struct ExpiringEmptyBanner: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 24, height: 24)
+                                .padding(.trailing, 10) // 카드 패딩 12pt + 추가 10pt = 우측 끝에서 22pt
                                 .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
@@ -376,21 +377,27 @@ private struct ExpiringEmptyBanner: View {
                 }
                 .frame(height: 84)
 
+                Spacer().frame(height: 28)
+
                 // 2) 안내 박스 — 몸통 위, 손 아래
                 Text("home.expiring_empty")
                     .font(.pretendard(.medium, size: 14))
                     .foregroundStyle(Color.colorWhite)
                     .multilineTextAlignment(.center)
+                    .lineLimit(1)
                     .frame(maxWidth: .infinity)
                     .frame(height: 112)
                     .padding(.horizontal, 14)
                     .background(Color.colorWhite.opacity(0.18), in: RoundedRectangle(cornerRadius: .roundedXl))
             }
-            .padding(.spacing20)
+            .padding(.top, 32)
+            .padding(.bottom, 16)
+            .padding(.horizontal, 12)
 
             // 3) 손 + 보증 만료 태그 — 맨 위
             mascot("img_crying_bobo_hand")
         }
+        .frame(height: 274)
         .background(heroGradient)
         .clipShape(RoundedRectangle(cornerRadius: .rounded2xl))
     }
