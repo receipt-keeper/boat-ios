@@ -49,7 +49,7 @@ struct HomeGeneralView: View {
             // ── 최근 등록된 영수증 ──
             Spacer().frame(height: 16)
             Text("home.recent_title")
-                .font(.pretendard(.bold, size: 18))
+                .font(.pretendard(.bold, size: 20))
                 .foregroundStyle(Color.gray900)
                 .padding(.horizontal, .spacing20)
 
@@ -474,14 +474,14 @@ private struct RecentReceiptItem: View {
                 }
                 HStack(spacing: 0) {
                     Text("home.label.purchase")
-                        .font(.pretendard(.regular, size: 14))
-                        .foregroundStyle(Color.gray500)
+                        .font(.pretendard(.medium, size: 14))
+                        .foregroundStyle(Color.gray600)
                     Text("  |  ")
-                        .font(.pretendard(.regular, size: 12))
-                        .foregroundStyle(Color.gray400)
+                        .font(.pretendard(.medium, size: 14))
+                        .foregroundStyle(Color.gray600)
                     Text(item.purchaseDate)
-                        .font(.pretendard(.regular, size: 14))
-                        .foregroundStyle(Color.gray500)
+                        .font(.pretendard(.medium, size: 14))
+                        .foregroundStyle(Color.gray600)
                 }
             }
         }
