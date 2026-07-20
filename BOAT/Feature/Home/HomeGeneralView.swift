@@ -485,8 +485,9 @@ private struct RecentReceiptItem: View {
                 }
             }
         }
-        .padding(.horizontal, .spacing16)
-        .padding(.vertical, 14)
+        .padding(.leading, .spacing16)
+        .padding(.trailing, 22)
+        .padding(.vertical, 16)
         .frame(maxWidth: .infinity)
         .background(Color(hex: "#F2F6FC"), in: RoundedRectangle(cornerRadius: .roundedXl))
     }
