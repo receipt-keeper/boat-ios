@@ -59,7 +59,7 @@ struct BoatHeader: View {
                     if showBadge {
                         Circle()
                             .fill(Color.systemError)
-                            .frame(width: 8, height: 8)
+                            .frame(width: 6, height: 6)
                     }
                 }
         }
