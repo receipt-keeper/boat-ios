@@ -305,7 +305,7 @@ struct ReceiptRegisterView: View {
         Button {
             openCamera()
         } label: {
-            outlinedCard(icon: "icCamera", label: "receipt.register.camera")
+            outlinedCard(icon: "icon_cam", label: "receipt.register.camera")
         }
         .buttonStyle(.plain)
     }
@@ -314,7 +314,7 @@ struct ReceiptRegisterView: View {
         Button {
             if canAddMore { showGalleryPicker = true } else { showMaxAlert = true }
         } label: {
-            outlinedCard(icon: "icon_picture", label: "receipt.register.gallery")
+            outlinedCard(icon: "icon_slot", label: "receipt.register.gallery")
         }
         .buttonStyle(.plain)
     }
@@ -322,11 +322,9 @@ struct ReceiptRegisterView: View {
     private func outlinedCard(icon: String, label: LocalizedStringKey) -> some View {
         VStack(spacing: .spacing12) {
             Image(icon)
-                .renderingMode(.template)
                 .resizable()
                 .scaledToFit()
-                .foregroundStyle(Color.brandPrimary)
-                .frame(width: 28, height: 28)
+                .frame(width: 42, height: 42)
             Text(label)
                 .font(.pretendard(.medium, size: 15))
                 .foregroundStyle(Color.brandPrimary)
