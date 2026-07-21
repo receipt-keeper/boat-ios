@@ -377,7 +377,7 @@ struct ReceiptListView: View {
 struct ReceiptCard: View {
     let receipt: Receipt
     var showKebab: Bool = true
-    var thumbnailSize: CGFloat = 64
+    var thumbnailSize: CGFloat = 50
     var onKebab: () -> Void = {}
     var onTap: () -> Void = {}
 
