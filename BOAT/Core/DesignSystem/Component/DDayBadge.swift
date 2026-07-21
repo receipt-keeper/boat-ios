@@ -25,7 +25,7 @@ struct DDayBadge: View {
     var body: some View {
         let style = Self.style(for: dDay)
         style.text
-            .font(.pretendard(.medium, size: 13))
+            .font(.pretendard(.medium, size: 14))
             .foregroundStyle(style.fg)
             .lineLimit(1)
             .fixedSize()

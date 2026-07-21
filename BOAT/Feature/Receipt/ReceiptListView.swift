@@ -377,6 +377,7 @@ struct ReceiptListView: View {
 struct ReceiptCard: View {
     let receipt: Receipt
     var showKebab: Bool = true
+    var thumbnailSize: CGFloat = 64
     var onKebab: () -> Void = {}
     var onTap: () -> Void = {}
 
@@ -415,7 +416,7 @@ struct ReceiptCard: View {
     private var thumbnail: some View {
         RoundedRectangle(cornerRadius: .roundedLg)
             .fill(Color.gray100)
-            .frame(width: 64, height: 64)
+            .frame(width: thumbnailSize, height: thumbnailSize)
             .overlay { placeholderIcon }
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
     }
@@ -432,13 +433,13 @@ struct ReceiptCard: View {
     private var expiryRow: some View {
         HStack(spacing: 0) {
             Text("receipt.list.expiry_label")
-                .font(.pretendard(.regular, size: 14))
+                .font(.pretendard(.medium, size: 14))
                 .foregroundStyle(Color.gray500)
             Text("  |  ")
-                .font(.pretendard(.regular, size: 14))
+                .font(.pretendard(.medium, size: 14))
                 .foregroundStyle(Color.gray300)
             Text(receipt.formattedExpiresOn)
-                .font(.pretendard(.regular, size: 14))
+                .font(.pretendard(.medium, size: 14))
                 .foregroundStyle(Color.gray500)
                 .lineLimit(1)
         }

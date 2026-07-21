@@ -167,7 +167,7 @@ struct SearchView: View {
             ScrollView {
                 LazyVStack(spacing: .spacing12) {
                     ForEach(viewModel.receipts) { receipt in
-                        ReceiptCard(receipt: receipt, showKebab: false, onTap: {
+                        ReceiptCard(receipt: receipt, showKebab: false, thumbnailSize: 50, onTap: {
                             detailReceipt = receipt
                         })
                         .task { await viewModel.loadMoreIfNeeded(currentItem: receipt) }
