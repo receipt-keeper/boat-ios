@@ -279,7 +279,7 @@ struct ReceiptRegisterView: View {
     private var headerRow: some View {
         HStack(alignment: .center) {
             Text("receipt.add")
-                .font(.pretendard(.bold, size: 22))
+                .font(.pretendard(.bold, size: 20))
                 .foregroundStyle(Color.gray900)
             Spacer()
             analysisCountPill
@@ -291,7 +291,7 @@ struct ReceiptRegisterView: View {
             GifImageView(name: "shiny_white")
                 .frame(width: 16, height: 16)
             Text("receipt.register.analysis_count \(remainingTokens)")
-                .font(.pretendard(.semibold, size: 14))
+                .font(.pretendard(.semibold, size: 12))
                 .foregroundStyle(Color.brandPrimary)
         }
         .padding(.horizontal, .spacing12)
@@ -376,10 +376,7 @@ struct ReceiptRegisterView: View {
             .buttonStyle(.plain)
 
             if noticeExpanded {
-                Rectangle().fill(Color.gray200).frame(height: 1)
-                    .padding(.horizontal, .spacing16)
-
-                VStack(alignment: .leading, spacing: .spacing20) {
+                VStack(alignment: .leading, spacing: 14) {
                     noticeBullet(
                         iconAsset: "icon_images_upload",
                         pre: "receipt.notice.bullet1_pre",
@@ -407,7 +404,6 @@ struct ReceiptRegisterView: View {
             RoundedRectangle(cornerRadius: .roundedLg)
                 .stroke(Color.gray300, lineWidth: 1)
         )
-        .shadow(color: .black.opacity(noticeExpanded ? 0.08 : 0), radius: 12, y: 4)
     }
 
     private var noticeIcon: some View {
@@ -430,7 +426,7 @@ struct ReceiptRegisterView: View {
     ) -> some View {
         HStack(alignment: .top, spacing: .spacing12) {
             bulletIcon(iconAsset: iconAsset, systemIcon: systemIcon)
-                .frame(width: 22, height: 22)
+                .frame(width: 18, height: 18)
 
             (
                 (pre.map { Text($0) } ?? Text(""))
@@ -442,7 +438,7 @@ struct ReceiptRegisterView: View {
                     .foregroundStyle(Color.gray700)
             )
             .font(.pretendard(.regular, size: 14))
-            .lineSpacing(3)
+            .lineSpacing(4)
             .fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -494,8 +490,8 @@ struct ReceiptRegisterView: View {
             .resizable()
             .scaledToFill()
             .frame(width: 100, height: 100)
-            .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
-            .contentShape(RoundedRectangle(cornerRadius: .roundedLg))
+            .clipShape(RoundedRectangle(cornerRadius: .roundedXl))
+            .contentShape(RoundedRectangle(cornerRadius: .roundedXl))
             .onTapGesture {
                 viewerIndex = index
                 showViewer = true
@@ -542,7 +538,7 @@ struct ReceiptRegisterView: View {
     private var failOverlay: some View {
         ZStack {
             Color.black.opacity(0.5)
-                .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
+                .clipShape(RoundedRectangle(cornerRadius: .roundedXl))
 
             VStack(spacing: .spacing4) {
                 ZStack {
@@ -571,7 +567,7 @@ struct ReceiptRegisterView: View {
         } label: {
             Text("receipt.register.analyze")
                 .font(.pretendard(.medium, size: 16))
-                .foregroundStyle(enabled ? Color.colorWhite : Color.gray500)
+                .foregroundStyle(enabled ? Color.colorWhite : Color.gray400)
                 .frame(maxWidth: .infinity)
                 .frame(height: 58)
                 .background(
