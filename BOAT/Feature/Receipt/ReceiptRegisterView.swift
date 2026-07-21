@@ -314,7 +314,7 @@ struct ReceiptRegisterView: View {
         Button {
             if canAddMore { showGalleryPicker = true } else { showMaxAlert = true }
         } label: {
-            outlinedCard(icon: "icImage", label: "receipt.register.gallery")
+            outlinedCard(icon: "icon_picture", label: "receipt.register.gallery")
         }
         .buttonStyle(.plain)
     }
@@ -326,7 +326,7 @@ struct ReceiptRegisterView: View {
                 .resizable()
                 .scaledToFit()
                 .foregroundStyle(Color.brandPrimary)
-                .frame(width: 32, height: 32)
+                .frame(width: 28, height: 28)
             Text(label)
                 .font(.pretendard(.medium, size: 15))
                 .foregroundStyle(Color.brandPrimary)
@@ -384,13 +384,13 @@ struct ReceiptRegisterView: View {
                         post: "receipt.notice.bullet1_post"
                     )
                     noticeBullet(
-                        systemIcon: "square.and.arrow.up",
+                        iconAsset: "icon_download",
                         pre: "receipt.notice.bullet2_pre",
                         highlight: "receipt.notice.bullet2_highlight",
                         post: "receipt.notice.bullet2_post"
                     )
                     noticeBullet(
-                        systemIcon: "folder",
+                        iconAsset: "icon_folder",
                         pre: nil,
                         highlight: "receipt.notice.bullet3_highlight",
                         post: "receipt.notice.bullet3_post"
@@ -418,15 +418,18 @@ struct ReceiptRegisterView: View {
     }
 
     private func noticeBullet(
-        iconAsset: String? = nil,
-        systemIcon: String? = nil,
+        iconAsset: String,
         pre: LocalizedStringKey?,
         highlight: LocalizedStringKey,
         post: LocalizedStringKey
     ) -> some View {
         HStack(alignment: .top, spacing: .spacing12) {
-            bulletIcon(iconAsset: iconAsset, systemIcon: systemIcon)
-                .frame(width: 18, height: 18)
+            Image(iconAsset)
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
+                .foregroundStyle(Color.gray600)
+                .frame(width: 28, height: 28)
 
             (
                 (pre.map { Text($0) } ?? Text(""))
@@ -440,22 +443,6 @@ struct ReceiptRegisterView: View {
             .font(.pretendard(.regular, size: 14))
             .lineSpacing(4)
             .fixedSize(horizontal: false, vertical: true)
-        }
-    }
-
-    @ViewBuilder
-    private func bulletIcon(iconAsset: String?, systemIcon: String?) -> some View {
-        if let iconAsset {
-            Image(iconAsset)
-                .renderingMode(.template)
-                .resizable()
-                .scaledToFit()
-                .foregroundStyle(Color.brandSecondary)
-        } else if let systemIcon {
-            Image(systemName: systemIcon)
-                .resizable()
-                .scaledToFit()
-                .foregroundStyle(Color.brandSecondary)
         }
     }
 
