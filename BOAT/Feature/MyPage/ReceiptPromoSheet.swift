@@ -50,11 +50,11 @@ struct ReceiptPromoSheet: View {
 
             Button(action: onRegister) {
                 Text("mypage.promo.register")
-                    .font(.pretendard(.semibold, size: 16))
+                    .font(.pretendard(.medium, size: 16))
                     .foregroundStyle(Color.colorWhite)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 56)
-                    .background(Color.brandPrimary, in: RoundedRectangle(cornerRadius: .roundedXl))
+                    .frame(height: 58)
+                    .background(Color.brandPrimary, in: RoundedRectangle(cornerRadius: .roundedLg))
             }
             .buttonStyle(.plain)
 

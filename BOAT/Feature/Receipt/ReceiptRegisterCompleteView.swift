@@ -72,13 +72,13 @@ struct ReceiptRegisterCompleteView: View {
     private var homeButton: some View {
         Button(action: onGoHome) {
             Text("receipt.complete.go_home")
-                .font(.pretendard(.semibold, size: 16))
+                .font(.pretendard(.medium, size: 16))
                 .foregroundStyle(Color.brandPrimary)
                 .frame(maxWidth: .infinity)
-                .frame(height: 56)
-                .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedXl))
+                .frame(height: 58)
+                .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
                 .overlay(
-                    RoundedRectangle(cornerRadius: .roundedXl)
+                    RoundedRectangle(cornerRadius: .roundedLg)
                         .stroke(Color.brandTertiary, lineWidth: 1)
                 )
         }
@@ -90,11 +90,11 @@ struct ReceiptRegisterCompleteView: View {
             showDetail = true
         } label: {
             Text("receipt.complete.view")
-                .font(.pretendard(.semibold, size: 16))
+                .font(.pretendard(.medium, size: 16))
                 .foregroundStyle(Color.colorWhite)
                 .frame(maxWidth: .infinity)
-                .frame(height: 56)
-                .background(Color.brandPrimary, in: RoundedRectangle(cornerRadius: .roundedXl))
+                .frame(height: 58)
+                .background(Color.brandPrimary, in: RoundedRectangle(cornerRadius: .roundedLg))
         }
         .buttonStyle(.plain)
     }

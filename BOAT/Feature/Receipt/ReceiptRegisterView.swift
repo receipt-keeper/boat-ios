@@ -570,13 +570,13 @@ struct ReceiptRegisterView: View {
             analyze()
         } label: {
             Text("receipt.register.analyze")
-                .font(.pretendard(.semibold, size: 16))
+                .font(.pretendard(.medium, size: 16))
                 .foregroundStyle(enabled ? Color.colorWhite : Color.gray500)
                 .frame(maxWidth: .infinity)
-                .frame(height: 56)
+                .frame(height: 58)
                 .background(
                     enabled ? Color.brandPrimary : Color.gray200,
-                    in: RoundedRectangle(cornerRadius: .roundedXl)
+                    in: RoundedRectangle(cornerRadius: .roundedLg)
                 )
         }
         .buttonStyle(.plain)

@@ -314,11 +314,11 @@ struct UnsupportedReceiptSheet: View {
 private func primaryButton(_ label: LocalizedStringKey, action: @escaping () -> Void) -> some View {
     Button(action: action) {
         Text(label)
-            .font(.pretendard(.semibold, size: 16))
+            .font(.pretendard(.medium, size: 16))
             .foregroundStyle(Color.colorWhite)
             .frame(maxWidth: .infinity)
-            .frame(height: 56)
-            .background(Color.brandPrimary, in: RoundedRectangle(cornerRadius: .roundedXl))
+            .frame(height: 58)
+            .background(Color.brandPrimary, in: RoundedRectangle(cornerRadius: .roundedLg))
     }
     .buttonStyle(.plain)
 }
@@ -329,10 +329,10 @@ private func outlinedButton(_ label: LocalizedStringKey, action: @escaping () ->
             .font(.pretendard(.medium, size: 16))
             .foregroundStyle(Color.brandPrimary)
             .frame(maxWidth: .infinity)
-            .frame(height: 56)
-            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedXl))
+            .frame(height: 58)
+            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
             .overlay(
-                RoundedRectangle(cornerRadius: .roundedXl)
+                RoundedRectangle(cornerRadius: .roundedLg)
                     .stroke(Color.brandTertiary, lineWidth: 1)
             )
     }

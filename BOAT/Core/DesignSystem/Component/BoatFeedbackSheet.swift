@@ -139,13 +139,13 @@ struct BoatFeedbackSheet: View {
         HStack(spacing: .spacing12) {
             Button(action: onNext) {
                 Text("feedback.next")
-                    .font(.pretendard(.bold, size: 16))
+                    .font(.pretendard(.medium, size: 16))
                     .foregroundStyle(Color.brandPrimary)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 56)
-                    .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedXl))
+                    .frame(height: 58)
+                    .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
                     .overlay(
-                        RoundedRectangle(cornerRadius: .roundedXl)
+                        RoundedRectangle(cornerRadius: .roundedLg)
                             .stroke(Color.brandPrimary, lineWidth: 1)
                     )
             }
@@ -155,13 +155,13 @@ struct BoatFeedbackSheet: View {
                 onSubmit(rating, comment)
             } label: {
                 Text("feedback.submit")
-                    .font(.pretendard(.bold, size: 16))
+                    .font(.pretendard(.medium, size: 16))
                     .foregroundStyle(rating > 0 ? Color.colorWhite : Color.gray500)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 56)
+                    .frame(height: 58)
                     .background(
                         rating > 0 ? Color.brandPrimary : Color.gray200,
-                        in: RoundedRectangle(cornerRadius: .roundedXl)
+                        in: RoundedRectangle(cornerRadius: .roundedLg)
                     )
             }
             .buttonStyle(.plain)

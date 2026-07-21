@@ -191,13 +191,13 @@ struct TermsView: View {
             ))
         } label: {
             Text("terms.complete")
-                .font(.pretendard(.semibold, size: 16))
+                .font(.pretendard(.medium, size: 16))
                 .foregroundStyle(allRequired ? Color.colorWhite : Color.gray500)
                 .frame(maxWidth: .infinity)
-                .frame(height: 56)
+                .frame(height: 58)
                 .background(
                     allRequired ? Color.brandPrimary : Color.gray200,
-                    in: RoundedRectangle(cornerRadius: .roundedXl)
+                    in: RoundedRectangle(cornerRadius: .roundedLg)
                 )
         }
         .buttonStyle(.plain)
