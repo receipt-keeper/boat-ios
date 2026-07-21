@@ -212,11 +212,11 @@ struct SearchView: View {
 
             VStack(spacing: .spacing12) {
                 Text("search.empty.title")
-                    .font(.pretendard(.bold, size: 18))
+                    .font(.pretendard(.bold, size: 20))
                     .foregroundStyle(Color.gray900)
 
                 Text("search.empty.subtitle")
-                    .font(.pretendard(.regular, size: 14))
+                    .font(.pretendard(.medium, size: 16))
                     .foregroundStyle(Color.gray500)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
@@ -228,16 +228,15 @@ struct SearchView: View {
                 focused = false
                 showRegister = true
             } label: {
-                HStack(spacing: .spacing8) {
+                HStack(spacing: 4) {
                     Image(systemName: "plus")
-                        .font(.system(size: 13, weight: .bold))
+                        .font(.system(size: 25, weight: .medium))
                     Text("search.empty.register")
-                        .font(.pretendard(.semibold, size: 15))
+                        .font(.pretendard(.medium, size: 16))
                 }
                 .foregroundStyle(Color.colorWhite)
-                .padding(.horizontal, .spacing24)
-                .padding(.vertical, .spacing16)
-                .background(Color.brandPrimary, in: RoundedRectangle(cornerRadius: .roundedXl))
+                .frame(width: 210, height: 50)
+                .background(Color.brandPrimary, in: RoundedRectangle(cornerRadius: .roundedLg))
             }
             .buttonStyle(.plain)
 
