@@ -15,10 +15,14 @@ struct LoginView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            // 상단 여백:서브타이틀-버튼 사이 여백 비율 1:1.5 (Android weight(1f):weight(1.5f) 대응)
+            Spacer()
             Spacer()
 
             logoSection
 
+            Spacer()
+            Spacer()
             Spacer()
 
             googleButton
@@ -42,18 +46,24 @@ struct LoginView: View {
         }
     }
 
-    // MARK: - 로고 + 서브타이틀
+    // MARK: - 로고("Boat" 검정 + "Lab" 파랑 텍스트) + 서브타이틀
 
     private var logoSection: some View {
-        VStack(spacing: .spacing16) {
-            Image("app_logo_text")
-                .resizable()
-                .scaledToFit()
-                .frame(height: 56)
+        VStack(spacing: 12) {
+            HStack(spacing: 0) {
+                Text("Boat ")
+                    .font(.pretendard(.bold, size: 48))
+                    .foregroundStyle(Color.gray900)
+                Text("Lab")
+                    .font(.pretendard(.bold, size: 48))
+                    .foregroundStyle(Color.brandPrimary)
+            }
+            .frame(width: 210)
 
             Text("login.subtitle")
-                .font(.pretendard(.regular, size: 15))
-                .foregroundStyle(Color.gray500)
+                .font(.pretendard(.medium, size: 16))
+                .foregroundStyle(Color.gray700)
+                .multilineTextAlignment(.center)
         }
     }
 
@@ -71,14 +81,14 @@ struct LoginView: View {
                 }
                 Text("login.button.google")
                     .font(.pretendard(.medium, size: 15))
-                    .foregroundStyle(Color(hex: "#3C3C3C"))
+                    .foregroundStyle(Color.gray900)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 56)
             .padding(.horizontal, .spacing16)
-            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedXl))
+            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
             .overlay(
-                RoundedRectangle(cornerRadius: .roundedXl)
+                RoundedRectangle(cornerRadius: .roundedLg)
                     .stroke(Color.brandPrimary, lineWidth: 1)
             )
         }
@@ -106,7 +116,7 @@ struct LoginView: View {
             .frame(maxWidth: .infinity)
             .frame(height: 56)
             .padding(.horizontal, .spacing16)
-            .background(Color.black, in: RoundedRectangle(cornerRadius: .roundedXl))
+            .background(Color.black, in: RoundedRectangle(cornerRadius: .roundedLg))
         }
         .buttonStyle(.plain)
     }
