@@ -30,8 +30,8 @@ struct SearchView: View {
     var body: some View {
         VStack(spacing: 0) {
             topBar
-                // 상태바 영역까지 흰 배경으로 덮음
-                .background(Color.colorWhite.ignoresSafeArea(edges: .top))
+                // 본문과 동일한 배경 — 상태바 영역까지 이어지도록 확장
+                .background(Color.gray50.ignoresSafeArea(edges: .top))
 
             content
         }
@@ -131,7 +131,14 @@ struct SearchView: View {
             .submitLabel(.search)
             .onSubmit { focused = false }
 
-            if !query.isEmpty {
+            if query.isEmpty {
+                Image("icSearch")
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .foregroundStyle(Color.gray400)
+            } else {
                 Button { query = "" } label: {
                     Image("icon_close_search")
                         .resizable()
@@ -142,9 +149,13 @@ struct SearchView: View {
             }
         }
         .animation(.easeInOut(duration: 0.15), value: query.isEmpty)
-        .padding(.horizontal, .spacing12)
-        .frame(height: 40)
-        .background(Color.gray100, in: RoundedRectangle(cornerRadius: .roundedFull))
+        .padding(.horizontal, .spacing16)
+        .padding(.vertical, 8)
+        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
+        .overlay(
+            RoundedRectangle(cornerRadius: .roundedLg)
+                .stroke(Color.gray300, lineWidth: 1)
+        )
     }
 
     // MARK: - 검색 결과 (카운트 + 목록)
