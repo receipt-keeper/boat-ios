@@ -24,7 +24,7 @@ struct NotificationSettingsView: View {
     @State private var showNotifDenied = false
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             topBar
 
             Spacer().frame(height: .spacing8)
@@ -37,12 +37,14 @@ struct NotificationSettingsView: View {
             toggleRow(
                 label: "notif.settings.marketing",
                 isOn: marketingConsent,
-                onChange: setMarketingConsent
+                onChange: setMarketingConsent,
+                bottomPadding: 4
             )
 
             Text("notif.settings.footnote")
-                .font(.pretendard(.regular, size: 13))
-                .foregroundStyle(Color.gray400)
+                .font(.pretendard(.medium, size: 12))
+                .foregroundStyle(Color.gray500)
+                .lineSpacing(4)
                 .padding(.horizontal, .spacing20)
 
             Spacer()
@@ -190,7 +192,8 @@ struct NotificationSettingsView: View {
     private func toggleRow(
         label: LocalizedStringKey,
         isOn: Bool,
-        onChange: @escaping (Bool) -> Void
+        onChange: @escaping (Bool) -> Void,
+        bottomPadding: CGFloat = .spacing16
     ) -> some View {
         HStack {
             Text(label)
@@ -200,7 +203,8 @@ struct NotificationSettingsView: View {
             boatSwitch(isOn: isOn, onChange: onChange)
         }
         .padding(.horizontal, .spacing20)
-        .padding(.vertical, .spacing16)
+        .padding(.top, .spacing16)
+        .padding(.bottom, bottomPadding)
     }
 
     /// iOS/macOS 모두에서 동일하게 보이는 커스텀 스위치
