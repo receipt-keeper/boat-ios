@@ -468,8 +468,8 @@ struct ReceiptRegisterView: View {
                 .foregroundStyle(Color.gray900)
             Spacer()
             Text("\(images.count)/\(Self.maxPhotos)")
-                .font(.pretendard(.bold, size: 15))
-                .foregroundStyle(Color.brandPrimary)
+                .font(.pretendard(.medium, size: 14))
+                .foregroundStyle(Color.gray600)
         }
     }
 
