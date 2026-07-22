@@ -42,6 +42,8 @@ struct ReceiptRegisterView: View {
     // 진입 시 서버 이용 가능 여부 선제 조회
     @State private var isUsageLoading = true
     @State private var serverCanAnalyze = false
+    // /usage 조회 자체가 실패한 경우 — "소진"과 구분해서 네트워크 에러로 안내해야 한다.
+    @State private var usageCheckFailed = false
     @State private var toast = BoatToastState()
     // [TEST] 토큰 소진 시트의 무료 충전 버튼 — 중복 탭 방지
     @State private var isRecharging = false
@@ -620,7 +622,10 @@ struct ReceiptRegisterView: View {
         do {
             let usage = try await UsageRepository.shared.fetchUsage()
             serverCanAnalyze = usage.canAnalyze
+            usageCheckFailed = false
         } catch {
+            // 조회 실패를 "소진"과 동일하게 취급하지 않는다 — analyze()에서 별도로 안내한다.
+            usageCheckFailed = true
             serverCanAnalyze = false
         }
         isUsageLoading = false
@@ -706,13 +711,21 @@ struct ReceiptRegisterView: View {
             return
         }
 
-        // 2) 서버 canAnalyze + 로컬 토큰 AND 조건
+        // 2) /usage 조회 자체가 실패한 경우 — "소진"이 아니라 네트워크 오류로 안내하고,
+        // 다음 시도가 성공할 수 있도록 백그라운드에서 재조회한다.
+        guard !usageCheckFailed else {
+            toast.showError(String(localized: "receipt.register.network_error"))
+            Task { await refreshAnalysisState() }
+            return
+        }
+
+        // 3) 서버 canAnalyze + 로컬 토큰 AND 조건
         guard serverCanAnalyze && remainingTokens > 0 else {
             Task { await presentNoTokenSheet() }
             return
         }
 
-        // 3) OCR 분석 API 호출 → 성공 시 결과 화면, 실패 시 실패 시트
+        // 4) OCR 분석 API 호출 → 성공 시 결과 화면, 실패 시 실패 시트
         failedImageIndices.removeAll()
         Task {
             isAnalyzing = true
