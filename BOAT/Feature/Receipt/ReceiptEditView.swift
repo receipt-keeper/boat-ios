@@ -187,6 +187,19 @@ struct ReceiptEditView: View {
         }
     }
 
+    /// 원본 영수증의 보증 기간(총 개월 수) — [totalWarrantyMonths]와 동일한 계산이지만
+    /// original* 값 기준. 커스텀 기간은 저장 시 항상 개월 수 그대로였으므로 단위 변환 없이 그대로 비교.
+    private var originalTotalWarrantyMonths: Int? {
+        switch originalWarranty {
+        case 0: return 6
+        case 1: return 12
+        case 2: return 24
+        case 3: return 36
+        case 4: return Int(originalCustomMonthsText)
+        default: return nil
+        }
+    }
+
     private var warrantySummaryText: String? {
         switch selectedWarranty {
         case 0: return String(localized: "manual.warranty_6m")
@@ -255,9 +268,7 @@ struct ReceiptEditView: View {
             || selectedSubcategory != originalSubcategory
             || productName != originalProductName
             || purchaseDate != originalPurchaseDate
-            || selectedWarranty != originalWarranty
-            || customMonthsText != originalCustomMonthsText
-            || customIsYears
+            || totalWarrantyMonths != originalTotalWarrantyMonths
             || memo != originalMemo
             || physicalReceipt != originalPhysicalReceipt
             || brand != originalBrand
