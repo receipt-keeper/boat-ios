@@ -405,6 +405,7 @@ struct ReceiptEditView: View {
             Text("manual.category")
                 .font(.pretendard(.bold, size: 16))
                 .foregroundStyle(Color.gray900)
+                .lineSpacing(8)
 
             VStack(spacing: 0) {
                 Button {
@@ -522,8 +523,9 @@ struct ReceiptEditView: View {
             Spacer().frame(height: .spacing8)
             fieldBox(onTap: { showDatePicker = true }) {
                 Text(purchaseDate.isEmpty ? String(localized: "manual.purchase_date_hint") : purchaseDate)
-                    .font(.pretendard(.regular, size: 15))
+                    .font(.pretendard(.medium, size: 16))
                     .foregroundStyle(purchaseDate.isEmpty ? Color.gray400 : Color.gray900)
+                    .lineSpacing(8)
             }
 
             Spacer().frame(height: .spacing16)
@@ -554,7 +556,7 @@ struct ReceiptEditView: View {
                             if filtered != newValue { customMonthsText = filtered }
                         }
                         .keyboardType(.numberPad)
-                        .font(.pretendard(.regular, size: 15))
+                        .font(.pretendard(.medium, size: 16))
                         .foregroundStyle(Color.gray900)
                         .padding(.horizontal, .spacing12)
                         .frame(height: 44)
@@ -570,8 +572,9 @@ struct ReceiptEditView: View {
             } else if let warrantySummaryText {
                 Spacer().frame(height: .spacing8)
                 Text(warrantySummaryText)
-                    .font(.pretendard(.regular, size: 15))
+                    .font(.pretendard(.medium, size: 16))
                     .foregroundStyle(Color.gray900)
+                    .lineSpacing(8)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, .spacing16)
                     .frame(height: 52)
@@ -646,6 +649,7 @@ struct ReceiptEditView: View {
                     Text("manual.physical_section")
                         .font(.pretendard(.bold, size: 16))
                         .foregroundStyle(Color.gray900)
+                        .lineSpacing(8)
                     Spacer()
                     physicalCheckbox
                 }
@@ -698,6 +702,7 @@ struct ReceiptEditView: View {
             Text("manual.warranty_section")
                 .font(.pretendard(.bold, size: 16))
                 .foregroundStyle(Color.gray900)
+                .lineSpacing(8)
 
             VStack(alignment: .leading, spacing: .spacing16) {
                 BoatInputField(
@@ -770,9 +775,11 @@ struct ReceiptEditView: View {
                 Text("detail.original_receipt")
                     .font(.pretendard(.bold, size: 16))
                     .foregroundStyle(Color.gray900)
+                    .lineSpacing(8)
                 Text(" *")
                     .font(.pretendard(.bold, size: 16))
                     .foregroundStyle(Color.systemError)
+                    .lineSpacing(8)
             }
             Text("detail.original_receipt_hint")
                 .font(.pretendard(.regular, size: 12))

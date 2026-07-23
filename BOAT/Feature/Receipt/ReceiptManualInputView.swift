@@ -404,6 +404,7 @@ struct ReceiptManualInputView: View {
             Text("manual.category")
                 .font(.pretendard(.bold, size: 16))
                 .foregroundStyle(Color.gray900)
+                .lineSpacing(8)
 
             // 대분류 드롭다운
             VStack(spacing: 0) {
@@ -529,8 +530,9 @@ struct ReceiptManualInputView: View {
                             .font(.system(size: 16))
                             .foregroundStyle(Color.gray400)
                         Text(purchaseDate.isEmpty ? String(localized: "manual.purchase_date_hint") : purchaseDate)
-                            .font(.pretendard(.regular, size: 15))
+                            .font(.pretendard(.medium, size: 16))
                             .foregroundStyle(purchaseDate.isEmpty ? Color.gray400 : Color.gray900)
+                            .lineSpacing(8)
                     }
                 }
 
@@ -562,7 +564,7 @@ struct ReceiptManualInputView: View {
                                 if filtered != newValue { customMonthsText = filtered }
                             }
                             .keyboardType(.numberPad)
-                            .font(.pretendard(.regular, size: 15))
+                            .font(.pretendard(.medium, size: 16))
                             .foregroundStyle(Color.gray900)
                             .padding(.horizontal, .spacing12)
                             .frame(height: 44)
@@ -578,8 +580,9 @@ struct ReceiptManualInputView: View {
                 } else if let warrantySummaryText {
                     Spacer().frame(height: .spacing8)
                     Text(warrantySummaryText)
-                        .font(.pretendard(.regular, size: 15))
+                        .font(.pretendard(.medium, size: 16))
                         .foregroundStyle(Color.gray900)
+                        .lineSpacing(8)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, .spacing16)
                         .frame(height: 52)
@@ -653,6 +656,7 @@ struct ReceiptManualInputView: View {
                     Text("manual.physical_section")
                         .font(.pretendard(.bold, size: 16))
                         .foregroundStyle(Color.gray900)
+                        .lineSpacing(8)
                     Spacer()
                     physicalCheckbox
                 }
@@ -798,10 +802,12 @@ struct ReceiptManualInputView: View {
             Text(key)
                 .font(.pretendard(.bold, size: 16))
                 .foregroundStyle(Color.gray900)
+                .lineSpacing(8)
             if required {
                 Text(" *")
                     .font(.pretendard(.bold, size: 16))
                     .foregroundStyle(Color.systemError)
+                    .lineSpacing(8)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -815,6 +821,7 @@ struct ReceiptManualInputView: View {
                 Text(key)
                     .font(.pretendard(.bold, size: 16))
                     .foregroundStyle(Color.gray900)
+                    .lineSpacing(8)
                 Spacer()
                 Image(systemName: "chevron.down")
                     .font(.system(size: 14, weight: .semibold))

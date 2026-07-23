@@ -14,6 +14,7 @@ struct InfoTooltip: View {
 
     @State private var showTooltip = false
 
+    private static let iconSize: CGFloat = 16
     private static let bubbleWidth: CGFloat = 160
     private static let triangleSize = CGSize(width: 14, height: 7)
     private static let gap: CGFloat = 6
@@ -25,13 +26,17 @@ struct InfoTooltip: View {
             Image("info_question_icon")
                 .renderingMode(.template)
                 .resizable()
-                .frame(width: 16, height: 16)
+                .frame(width: Self.iconSize, height: Self.iconSize)
                 .foregroundStyle(Color.gray400)
         }
         .buttonStyle(.plain)
-        .overlay(alignment: .top) {
+        // alignment: .top의 기본 가로 중앙 정렬은 앵커(Button)의 "레이아웃상 실측 프레임" 기준이라
+        // 탭 영역 등으로 프레임이 아이콘(16pt) 시각적 크기와 어긋나면 화살표가 아이콘 중앙에서 벗어난다.
+        // → .topLeading + alignmentGuide로 아이콘의 실제 폭(iconSize) 기준 중앙을 직접 계산해 고정한다.
+        .overlay(alignment: .topLeading) {
             if showTooltip {
                 tooltipBubble
+                    .alignmentGuide(.leading) { d in d.width / 2 - Self.iconSize / 2 }
                     // 앵커(?) 바로 위, gap만큼 띄워서 배치 — 말풍선 자체 높이와 무관하게 항상 위로 붙는다.
                     .alignmentGuide(.top) { d in d[.bottom] + Self.gap }
             }

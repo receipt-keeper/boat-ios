@@ -201,8 +201,9 @@ struct ReceiptDetailView: View {
             sectionBand
             VStack(alignment: .leading, spacing: .spacing20) {
                 Text("detail.warranty_info")
-                    .font(.pretendard(.bold, size: 18))
+                    .font(.pretendard(.bold, size: 16))
                     .foregroundStyle(Color.gray900)
+                    .lineSpacing(8)
                 labeledValue("detail.brand", r.brandName ?? "-")
                 hairline
                 labeledValue("detail.price", priceText(r.totalAmount))
@@ -217,7 +218,7 @@ struct ReceiptDetailView: View {
             sectionBand
             VStack(alignment: .leading, spacing: 0) {
                 originalReceiptSection(r)
-                Spacer().frame(height: .spacing20)
+                Spacer().frame(height: .spacing40)
                 supportButton(r)
             }
             .padding(.horizontal, .spacing20)
@@ -227,21 +228,17 @@ struct ReceiptDetailView: View {
         }
     }
 
-    // 대표 이미지 히어로 카드 — 상→하 연한 블루 그라데이션 배경 + 테두리(Android 16:9 카드 대응)
+    // 대표 이미지 히어로 카드 — 상→하 연한 블루 그라데이션(하단은 투명으로 페이드아웃), 테두리 없음
     private func deviceImageBanner(_ r: Receipt) -> some View {
-        RoundedRectangle(cornerRadius: .rounded2xl)
+        RoundedRectangle(cornerRadius: .roundedXl)
             .fill(
                 LinearGradient(
-                    colors: [Color(hex: "#E5F0FF"), Color(hex: "#F6FAFF")],
+                    colors: [Color(hex: "#E0F2FF"), Color(hex: "#D4E7F4").opacity(0)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
             )
-            .aspectRatio(16.0 / 9.0, contentMode: .fit)
-            .overlay(
-                RoundedRectangle(cornerRadius: .rounded2xl)
-                    .stroke(Color.brandQuinary, lineWidth: 1)
-            )
+            .aspectRatio(350.0 / 173.0, contentMode: .fit)
             .overlay {
                 Image(r.deviceImageName)
                     .resizable()
@@ -258,12 +255,14 @@ struct ReceiptDetailView: View {
         let kept = r.requiresPhysicalReceipt == true
         return VStack(alignment: .leading, spacing: 0) {
             Text("manual.physical_section")
-                .font(.pretendard(.bold, size: 18))
+                .font(.pretendard(.bold, size: 16))
                 .foregroundStyle(Color.gray900)
+                .lineSpacing(8)
             Spacer().frame(height: 12)
             Text(kept ? "detail.physical_kept" : "detail.physical_not_kept")
-                .font(.pretendard(.medium, size: 15))
-                .foregroundStyle(Color.brandPrimary)
+                .font(.pretendard(.medium, size: 16))
+                .foregroundStyle(Color.brandSecondary)
+                .lineSpacing(8)
             Spacer().frame(height: 6)
             Rectangle().fill(Color.gray100).frame(height: 1)
         }
@@ -280,8 +279,9 @@ struct ReceiptDetailView: View {
                 InfoTooltip(message: "manual.serial_help")
             }
             Text(r.serialNumber ?? "-")
-                .font(.pretendard(.medium, size: 17))
+                .font(.pretendard(.medium, size: 16))
                 .foregroundStyle(Color.gray900)
+                .lineSpacing(8)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -293,8 +293,9 @@ struct ReceiptDetailView: View {
                 .font(.pretendard(.regular, size: 13))
                 .foregroundStyle(Color.gray500)
             Text(value)
-                .font(.pretendard(.medium, size: 17))
+                .font(.pretendard(.medium, size: 16))
                 .foregroundStyle(Color.gray900)
+                .lineSpacing(8)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -307,8 +308,9 @@ struct ReceiptDetailView: View {
                     .font(.pretendard(.regular, size: 13))
                     .foregroundStyle(Color.gray500)
                 Text(dotDate(r.expiresOn))
-                    .font(.pretendard(.medium, size: 17))
+                    .font(.pretendard(.medium, size: 16))
                     .foregroundStyle(Color.gray900)
+                    .lineSpacing(8)
             }
             Spacer()
             DDayBadge(dDay: r.warrantyDDay)
@@ -334,8 +336,9 @@ struct ReceiptDetailView: View {
     private func originalReceiptSection(_ r: Receipt) -> some View {
         VStack(alignment: .leading, spacing: .spacing12) {
             Text("detail.original_receipt")
-                .font(.pretendard(.bold, size: 18))
+                .font(.pretendard(.bold, size: 16))
                 .foregroundStyle(Color.gray900)
+                .lineSpacing(8)
 
             let files = r.receiptFiles ?? []
             if files.isEmpty {
@@ -398,18 +401,28 @@ struct ReceiptDetailView: View {
         return Button {
             if let url { openURL(url) }
         } label: {
-            HStack(spacing: .spacing8) {
+            HStack(spacing: .spacing16) {
                 Text("detail.support")
-                    .font(.pretendard(.semibold, size: 15))
+                    .font(.pretendard(.medium, size: 16))
                     .foregroundStyle(Color.brandPrimary)
+                    .lineSpacing(8)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 15, weight: .semibold))
+                Image("chevron_right")
+                    .resizable()
+                    .renderingMode(.template)
+                    .frame(width: 18, height: 18)
                     .foregroundStyle(Color.brandPrimary)
             }
-            .padding(.horizontal, .spacing16)
-            .padding(.vertical, 16)
-            .background(Color.brandSenary, in: RoundedRectangle(cornerRadius: .roundedXl))
+            .padding(.top, 18)
+            .padding(.trailing, 16)
+            .padding(.bottom, 18)
+            .padding(.leading, 24)
+            .frame(height: 60)
+            .background(Color.gray50, in: RoundedRectangle(cornerRadius: .roundedXl))
+            .overlay(
+                RoundedRectangle(cornerRadius: .roundedXl)
+                    .stroke(Color.brandTertiary, lineWidth: 1)
+            )
         }
         .buttonStyle(.plain)
         .disabled(url == nil)

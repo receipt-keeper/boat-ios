@@ -49,7 +49,7 @@ struct BoatInputField: View {
             ZStack(alignment: .leading) {
                 if text.isEmpty {
                     Text(placeholder)
-                        .font(.pretendard(.regular, size: 15))
+                        .font(.pretendard(.medium, size: 16))
                         .foregroundStyle(Color.gray400)
                         .padding(.horizontal, .spacing16)
                 }
@@ -94,7 +94,7 @@ private struct LimitedTextField: UIViewRepresentable {
         textField.borderStyle = .none
         textField.textColor = UIColor(Color.gray900)
         textField.tintColor = UIColor(Color.brandPrimary)
-        textField.font = .init(name: Font.Pretendard.regular.rawValue, size: 15)
+        textField.font = .init(name: Font.Pretendard.medium.rawValue, size: 16)
         textField.keyboardType = keyboardType
         textField.autocorrectionType = .no
         textField.autocapitalizationType = .none
@@ -111,7 +111,7 @@ private struct LimitedTextField: UIViewRepresentable {
         uiView.keyboardType = keyboardType
         uiView.textColor = UIColor(Color.gray900)
         uiView.tintColor = UIColor(Color.brandPrimary)
-        uiView.font = .init(name: Font.Pretendard.regular.rawValue, size: 15)
+        uiView.font = .init(name: Font.Pretendard.medium.rawValue, size: 16)
 
         // 편집 중(첫 응답자)일 땐 uiView.text를 다시 덮어쓰지 않는다. 한글처럼 여러 keystroke가
         // 빠르게 이어지는 IME 입력 중에 델리게이트→Binding→SwiftUI 재렌더 왕복이 한 박자 늦게
