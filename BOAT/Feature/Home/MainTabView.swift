@@ -81,7 +81,7 @@ struct MainTabView: View {
                     Task { await NotificationBadgeStore.shared.refresh() }
                 }
             }
-            // 알림 차단 상태면 앱 진입/복귀마다 권한 요청 또는 설정 유도
+            // 가입/로그인 후 앱을 완전히 껐다가 재실행했을 때만(콜드 스타트 1회) 권한 요청 또는 설정 유도
             .background(NotificationPermissionGate())
             // FAB 카메라/갤러리 → 영수증 등록 화면(진입 즉시 해당 소스 열림)
             .fullScreenCover(isPresented: $showRegisterFromFab) {

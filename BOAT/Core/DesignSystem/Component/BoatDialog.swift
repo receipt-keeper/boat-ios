@@ -85,6 +85,7 @@ private struct BoatDialogModifier: ViewModifier {
     let cancelText: LocalizedStringKey?
     let cancelColor: Color
     let onConfirm: () -> Void
+    let onCancel: (() -> Void)?
 
     func body(content: Content) -> some View {
         // fullScreenCover(투명 배경)로 띄워 항상 최상위에 표시한다. 단순 .overlay로 두면
@@ -101,7 +102,10 @@ private struct BoatDialogModifier: ViewModifier {
                     isPresented = false
                     onConfirm()
                 },
-                onCancel: { isPresented = false }
+                onCancel: {
+                    isPresented = false
+                    onCancel?()
+                }
             )
             .presentationBackground(.clear)
         }
@@ -118,7 +122,8 @@ extension View {
         confirmColor: Color = .brandPrimary,
         cancelText: LocalizedStringKey? = nil,
         cancelColor: Color = .gray600,
-        onConfirm: @escaping () -> Void
+        onConfirm: @escaping () -> Void,
+        onCancel: (() -> Void)? = nil
     ) -> some View {
         modifier(BoatDialogModifier(
             isPresented: isPresented,
@@ -128,7 +133,8 @@ extension View {
             confirmColor: confirmColor,
             cancelText: cancelText,
             cancelColor: cancelColor,
-            onConfirm: onConfirm
+            onConfirm: onConfirm,
+            onCancel: onCancel
         ))
     }
 }

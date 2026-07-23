@@ -41,7 +41,11 @@ class AuthViewModel {
 
     init() {
         // 이미 백엔드 토큰을 보유한 경우 바로 홈
-        route = KeychainManager.shared.accessToken != nil ? .home : .login
+        let hasExistingToken = KeychainManager.shared.accessToken != nil
+        route = hasExistingToken ? .home : .login
+        // 알림 권한 다이얼로그의 "재실행 시에만 노출" 판단 기준 — 이번 프로세스 시작 시점에
+        // 이미 로그인 토큰이 있었는지를 1회만 기록한다(이후 값 변경 없음).
+        AppLaunchState.wasLoggedInAtProcessStart = hasExistingToken
 
         // 네트워크 상태 실시간 감지
         pathMonitor.pathUpdateHandler = { [weak self] path in
