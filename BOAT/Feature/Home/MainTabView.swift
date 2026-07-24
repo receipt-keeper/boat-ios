@@ -88,7 +88,8 @@ struct MainTabView: View {
                 ReceiptRegisterView(
                     onBack: { showRegisterFromFab = false },
                     autoOpen: registerAutoOpen,
-                    onComplete: { showRegisterFromFab = false }
+                    // 어느 탭에서 FAB로 진입했든 "홈으로 가기"는 반드시 홈 탭으로 이동해야 한다.
+                    onComplete: { showRegisterFromFab = false; selection = .home }
                 )
             }
             // 어느 탭에서든 종 아이콘 → 알림 목록
