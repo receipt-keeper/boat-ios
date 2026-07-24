@@ -340,10 +340,12 @@ private struct CarouselIndicator: View {
 private struct ExpiringEmptyBanner: View {
     var onMore: () -> Void = {}
 
-    // 만료 예정 N건 배너와 동일한 캐릭터 크기·위치 사용
+    // 만료 예정 N건 배너와 동일한 캐릭터 크기 사용. 단, 이 배너는 헤더가 고정 높이가
+    // 아니라 짧아진 만큼 안내 박스가 위로 당겨져 캐릭터를 더 가리게 되므로, 그만큼
+    // 캐릭터를 위로 올려 디자인 가이드와 동일한 노출 비율을 맞춘다.
     private let mascotSize = CGSize(width: 116, height: 129)
-    private let mascotOffsetY: CGFloat = 16
-    private let mascotTrailing: CGFloat = 45
+    private let mascotOffsetY: CGFloat = -20
+    private let mascotTrailing: CGFloat = 30
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -351,7 +353,8 @@ private struct ExpiringEmptyBanner: View {
             mascot("img_crying_bobo")
 
             VStack(spacing: 0) {
-                // 상단 헤더 (수직 중앙 정렬, 높이 84)
+                // 상단 헤더 — 임박건 배너와 동일하게 고정 높이 없이 콘텐츠에 맞춰 자연스럽게 산정
+                // (상단32 + 헤더 + 마진28 + 박스147 + 하단16 = 274가 되도록 헤더는 자연 높이여야 한다).
                 ZStack {
                     HStack(alignment: .center, spacing: 0) {
                         VStack(alignment: .leading, spacing: 2) {
@@ -381,7 +384,6 @@ private struct ExpiringEmptyBanner: View {
                         .buttonStyle(.plain)
                     }
                 }
-                .frame(height: 84)
 
                 Spacer().frame(height: 28)
 
@@ -392,7 +394,7 @@ private struct ExpiringEmptyBanner: View {
                     .multilineTextAlignment(.center)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 112)
+                    .frame(height: 147) // Figma 스펙: 안내 박스 고정 147pt
                     .padding(.horizontal, 14)
                     .background(Color.colorWhite.opacity(0.18), in: RoundedRectangle(cornerRadius: .roundedXl))
             }
@@ -403,7 +405,8 @@ private struct ExpiringEmptyBanner: View {
             // 3) 손 + 보증 만료 태그 — 맨 위
             mascot("img_crying_bobo_hand")
         }
-        .frame(height: 274)
+        // 안내 박스(147pt) 등 실제 콘텐츠가 274보다 크면 잘리지 않도록 최소 높이로 적용한다.
+        .frame(minHeight: 274)
         .background(heroGradient)
         .clipShape(RoundedRectangle(cornerRadius: .rounded2xl))
     }
