@@ -17,29 +17,13 @@ enum AnalysisSheet: Identifiable {
     var id: Int { hashValue }
 }
 
-// 영수증 문서 아이콘 + 빨간 X 배지 — 분석 실패/미지원 시트가 공유하는 아이콘.
+// 영수증 오류 아이콘 — 분석 실패/미지원 시트가 공유하는 아이콘.
 private struct ReceiptErrorIcon: View {
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            Image(systemName: "doc.text.fill")
-                .font(.system(size: 28))
-                .foregroundStyle(Color.brandPrimary)
-                .frame(width: 32, height: 32)
-
-            ZStack {
-                Circle()
-                    .fill(Color.systemError)
-                    .frame(width: 16, height: 16)
-                    .overlay(
-                        Circle()
-                            .stroke(Color.colorWhite, lineWidth: 1.5)
-                    )
-                Image(systemName: "xmark")
-                    .font(.system(size: 7, weight: .bold))
-                    .foregroundStyle(Color.colorWhite)
-            }
-            .offset(x: 3, y: 3)
-        }
+        Image("img_receipt_error")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 52, height: 52)
     }
 }
 
@@ -79,11 +63,12 @@ struct NoTokenSheet: View {
                 Spacer().frame(height: .spacing24)
                 noticeBox
             } else {
+                // Figma "Body2 Medium": Pretendard Medium 14 / 행간 150% / 가운데 정렬 / Gray700
                 Text("receipt.token.subtitle_none")
-                    .font(.pretendard(.regular, size: 14))
-                    .foregroundStyle(Color.gray500)
+                    .font(.pretendard(.medium, size: 14))
+                    .foregroundStyle(Color.gray700)
                     .multilineTextAlignment(.center)
-                    .lineSpacing(4)
+                    .lineSpacing(7) // 14pt의 150% 행간(21pt) ≈ 폰트 기본 행간 + 7pt
             }
 
             Spacer().frame(height: .spacing24)
@@ -98,7 +83,8 @@ struct NoTokenSheet: View {
         .padding(.horizontal, .spacing20)
         .padding(.top, .spacing8)
         .padding(.bottom, .spacing16)
-        .frame(maxWidth: .infinity)
+        // presentationDetents 고정 높이를 콘텐츠가 다 못 채우면 위아래 여백이 붕 뜬다 — 상단 정렬로 채운다.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     private var closeButton: some View {
@@ -108,17 +94,19 @@ struct NoTokenSheet: View {
                 Image(systemName: "xmark")
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(Color.gray900)
-                    .frame(width: 32, height: 32)
+                    .frame(width: 24, height: 24)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
         }
+        // 상단 X 바 — 아이콘/본문과 명확히 구분되는 독립된 줄.
+        .frame(height: 32)
     }
 
     // 반짝이는 스파클 GIF
     private var noTokenIcon: some View {
         GifImageView(name: "shiny_white")
-            .frame(width: 32, height: 32)
+            .frame(width: 52, height: 52)
     }
 
     // 무료 분석 유효기간 안내 박스 (충전 가능 시에만 노출)
@@ -154,11 +142,15 @@ struct AnalysisFailedSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(alignment: .top) {
-                ReceiptErrorIcon()
+            // 상단 X 바 — 아이콘/본문과 명확히 구분되는 독립된 줄.
+            HStack {
                 Spacer()
                 closeButton
             }
+            .frame(height: 32)
+
+            Spacer().frame(height: .spacing8)
+            ReceiptErrorIcon()
 
             Spacer().frame(height: .spacing16)
             Text("receipt.fail.title")
@@ -183,7 +175,8 @@ struct AnalysisFailedSheet: View {
         .padding(.horizontal, .spacing20)
         .padding(.top, .spacing8)
         .padding(.bottom, .spacing16)
-        .frame(maxWidth: .infinity)
+        // presentationDetents 고정 높이를 콘텐츠가 다 못 채우면 위아래 여백이 붕 뜬다 — 상단 정렬로 채운다.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     private var closeButton: some View {
@@ -191,7 +184,7 @@ struct AnalysisFailedSheet: View {
             Image(systemName: "xmark")
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(Color.gray900)
-                .frame(width: 32, height: 32)
+                .frame(width: 24, height: 24)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -237,11 +230,15 @@ struct UnsupportedReceiptSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(alignment: .top) {
-                ReceiptErrorIcon()
+            // 상단 X 바 — 아이콘/본문과 명확히 구분되는 독립된 줄.
+            HStack {
                 Spacer()
                 closeButton
             }
+            .frame(height: 32)
+
+            Spacer().frame(height: .spacing8)
+            ReceiptErrorIcon()
 
             Spacer().frame(height: .spacing16)
             Text("receipt.unsupported.title")
@@ -264,7 +261,8 @@ struct UnsupportedReceiptSheet: View {
         .padding(.horizontal, .spacing20)
         .padding(.top, .spacing8)
         .padding(.bottom, .spacing16)
-        .frame(maxWidth: .infinity)
+        // presentationDetents 고정 높이를 콘텐츠가 다 못 채우면 위아래 여백이 붕 뜬다 — 상단 정렬로 채운다.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     private var closeButton: some View {
@@ -272,7 +270,7 @@ struct UnsupportedReceiptSheet: View {
             Image(systemName: "xmark")
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(Color.gray900)
-                .frame(width: 32, height: 32)
+                .frame(width: 24, height: 24)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

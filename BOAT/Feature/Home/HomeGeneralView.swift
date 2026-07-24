@@ -111,10 +111,11 @@ private struct ExpiringWarrantySection: View {
 
     // 다음 카드가 우측에 살짝 걸쳐 보이도록(peek) 산정 — Android(screenWidth - 88)와 동일.
     private var cardWidth: CGFloat { UIScreen.main.bounds.width - 88 }
-    // 몸통/손 레이어 공통 크기·오프셋 (반드시 두 레이어가 동일 값 공유)
-    private let mascotSize = CGSize(width: 90, height: 127)
-    private let mascotOffsetY: CGFloat = 8
-    private let mascotTrailing: CGFloat = 60
+    // 몸통/손 레이어 공통 크기·오프셋 (반드시 두 레이어가 동일 값 공유) — Figma 실측 스펙 반영
+    // (텍스트와의 겹침 방지를 위해 우측으로, 카드와는 더 겹치도록 아래로 살짝 조정)
+    private let mascotSize = CGSize(width: 116, height: 129)
+    private let mascotOffsetY: CGFloat = 16
+    private let mascotTrailing: CGFloat = 45
 
     // 캐러셀 맨 끝 "N건 더보기" 카드 — 전체 건수가 노출된 카드 수보다 많을 때만.
     private static let moreCardID = "__more__"
@@ -146,6 +147,9 @@ private struct ExpiringWarrantySection: View {
             // 3) 손 + 보증 태그 — 맨 위 (몸통과 완전히 동일한 크기·위치)
             mascot("img_happy_bobo_hand")
         }
+        // Figma 스펙: 카드 H 274px — 단, 실제 콘텐츠(브랜드/구매일 등)가 더 필요하면
+        // 잘리지 않도록 고정값이 아닌 최소 높이로 적용한다.
+        .frame(minHeight: 274)
         .background(heroGradient)
         .clipShape(RoundedRectangle(cornerRadius: .rounded2xl))
     }
@@ -193,7 +197,9 @@ private struct ExpiringWarrantySection: View {
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 12)
+        // Figma 스펙: 배너 좌우 패딩 12px — 헤더/카드 공통.
+        .padding(.leading, 12)
+        .padding(.trailing, 12)
     }
 
     private var carousel: some View {
@@ -213,7 +219,8 @@ private struct ExpiringWarrantySection: View {
             }
             .scrollTargetLayout()
         }
-        .contentMargins(.horizontal, .spacing20, for: .scrollContent)
+        // Figma 스펙: 배너 좌우 패딩 12px — 헤더/카드 공통.
+        .contentMargins(.horizontal, 12, for: .scrollContent)
         .scrollTargetBehavior(.viewAligned)
         .scrollPosition(id: $visibleID, anchor: .leading)
     }
@@ -268,7 +275,7 @@ private struct ExpiringWarrantyCard: View {
                         .lineLimit(1)
                     Spacer().frame(height: 8)
                     labelValue("home.label.brand", item.brand)
-                    Spacer().frame(height: 6)
+                    Spacer().frame(height: 0) // 브랜드-구매일은 하위 요소끼리라 더 가깝게
                     labelValue("home.label.purchase", item.purchaseDate)
                 }
             }
@@ -279,19 +286,17 @@ private struct ExpiringWarrantyCard: View {
     }
 
     private var thumbnail: some View {
-        RoundedRectangle(cornerRadius: .roundedXl)
-            .fill(Color.brandSenary)
-            .frame(width: 56, height: 56)
-            .overlay {
-                if let name = item.localImageName {
-                    Image(name).resizable().scaledToFit()
-                } else {
-                    Image(systemName: "photo")
-                        .font(.system(size: 20))
-                        .foregroundStyle(Color.gray400)
-                }
+        // 카테고리 기본 이미지 — 배경 효과 없이 원본 그대로 노출 (Figma 스펙: 84×84, 배경 없음)
+        Group {
+            if let name = item.localImageName {
+                Image(name).resizable().scaledToFit()
+            } else {
+                Image(systemName: "photo")
+                    .font(.system(size: 28))
+                    .foregroundStyle(Color.gray400)
             }
-            .clipShape(RoundedRectangle(cornerRadius: .roundedXl))
+        }
+        .frame(width: 84, height: 84)
     }
 
     private func labelValue(_ label: LocalizedStringKey, _ value: String) -> some View {
@@ -335,9 +340,10 @@ private struct CarouselIndicator: View {
 private struct ExpiringEmptyBanner: View {
     var onMore: () -> Void = {}
 
-    private let mascotSize = CGSize(width: 88, height: 107)
-    private let mascotOffsetY: CGFloat = 18.5
-    private let mascotTrailing: CGFloat = 44
+    // 만료 예정 N건 배너와 동일한 캐릭터 크기·위치 사용
+    private let mascotSize = CGSize(width: 116, height: 129)
+    private let mascotOffsetY: CGFloat = 16
+    private let mascotTrailing: CGFloat = 45
 
     var body: some View {
         ZStack(alignment: .topTrailing) {

@@ -8,7 +8,7 @@
 //  - 선택 하이라이트: 탭 폭 그대로(1/3) × 높이 50 스타디움, 배경 #CCE0FF @30%(ColorNavigationTabBg 대응)
 //  - 아이콘: 선택=fill 에셋(brandSecondary 베이크) / 미선택=outline 에셋(gray900 베이크)
 //  - 라벨: 선택 시 brandPrimary, 항상 Bold 10pt
-//  - Background Blur(.ultraThinMaterial) + 불투명 흰 보더 1pt + Drop Shadow(black 10%)
+//  - Background Blur(.ultraThinMaterial) + Drop Shadow(shadow_md3: Y3/blur15 + Y1/blur7)
 //  FAB(+)는 MainTabView에서 pill 우측에 별도 배치.
 //
 
@@ -44,7 +44,6 @@ struct BoatBottomBar: View {
                 .fill(.ultraThinMaterial)
                 .overlay(Capsule().fill(Color.colorWhite.opacity(0.12)))
         }
-        .overlay(Capsule().stroke(Color.colorWhite, lineWidth: 1))
         // 등록 메뉴 노출 시 pill도 함께 dim 처리 (탭하면 닫힘)
         .overlay {
             if dimmed {
@@ -54,7 +53,10 @@ struct BoatBottomBar: View {
             }
         }
         .clipShape(Capsule())
-        .shadow(color: .black.opacity(0.10), radius: 16, y: 6)
+        // shadow_md3 2겹 레이어(Y3/blur15 + Y1/blur7). SwiftUI shadow()는 같은 alpha라도
+        // Android Material elevation보다 훨씬 옅게 보여, 스펙(10%)보다 눈에 띄게 진하게 준다.
+        .shadow(color: .black.opacity(0.32), radius: 15, x: 0, y: 3)
+        .shadow(color: .black.opacity(0.28), radius: 7, x: 0, y: 1)
     }
 
     private func item(

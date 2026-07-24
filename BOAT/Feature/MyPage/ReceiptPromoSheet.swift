@@ -25,6 +25,8 @@ struct ReceiptPromoSheet: View {
                 }
                 .buttonStyle(.plain)
             }
+            // 상단 X 바 — 아이콘/본문과 명확히 구분되는 독립된 줄.
+            .frame(height: 32)
 
             Spacer().frame(height: .spacing8)
 
@@ -62,7 +64,9 @@ struct ReceiptPromoSheet: View {
         }
         .padding(.horizontal, .spacing20)
         .padding(.top, .spacing16)
-        .frame(maxWidth: .infinity)
+        // presentationDetents가 예약한 높이를 실제 콘텐츠가 다 못 채우면 시트 안에서
+        // 위아래로 붕 뜨는 여백이 생긴다 — 상단 정렬로 꽉 채워 그 문제를 없앤다.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     private var eventInfoBox: some View {

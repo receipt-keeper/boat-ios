@@ -454,9 +454,13 @@ struct ReceiptRegisterView: View {
                 .font(.pretendard(.bold, size: 16))
                 .foregroundStyle(Color.gray900)
             Spacer()
-            Text("\(images.count)/\(Self.maxPhotos)")
-                .font(.pretendard(.medium, size: 14))
-                .foregroundStyle(Color.gray600)
+            (
+                Text("\(images.count)")
+                    .foregroundStyle(Color.brandPrimary)
+                + Text("/\(Self.maxPhotos)")
+                    .foregroundStyle(Color.gray800)
+            )
+            .font(.pretendard(.medium, size: 14))
         }
     }
 

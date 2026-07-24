@@ -25,6 +25,7 @@ struct BoatFeedbackSheet: View {
         VStack(spacing: 0) {
             closeButton
 
+            Spacer().frame(height: .spacing8)
             Text("feedback.title")
                 .font(.pretendard(.bold, size: 20))
                 .foregroundStyle(Color.gray900)
@@ -71,11 +72,13 @@ struct BoatFeedbackSheet: View {
                 Image(systemName: "xmark")
                     .font(.system(size: 18, weight: .medium))
                     .foregroundStyle(Color.gray900)
-                    .frame(width: 32, height: 32)
+                    .frame(width: 24, height: 24)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
         }
+        // 상단 X 바 — 아이콘/본문과 명확히 구분되는 독립된 줄.
+        .frame(height: 32)
         .padding(.trailing, .spacing12)
         .padding(.top, .spacing8)
     }
