@@ -58,7 +58,7 @@ struct MainTabView: View {
                     fabButton
                 }
                 .padding(.horizontal, .spacing20)
-                .padding(.bottom, .spacing8)
+                .padding(.bottom, .spacing12)
             }
             // 등록 메뉴 카드 — FAB 위쪽, 오른쪽 변을 FAB 우측 변에 정렬
             .overlay(alignment: .bottomTrailing) {
@@ -68,7 +68,7 @@ struct MainTabView: View {
                         onGallery: { openRegisterFromFab(.gallery) }
                     )
                     .padding(.trailing, .spacing20) // FAB 우측 변과 동일(화면 외곽 20)
-                    .padding(.bottom, 82)   // FAB(하단 8 + 62) + 간격 12 위로
+                    .padding(.bottom, 86)   // FAB(하단 12 + 62) + 간격 12 위로
                 }
             }
             .animation(.easeInOut(duration: 0.2), value: showAddMenu)
@@ -238,9 +238,9 @@ struct MainTabView: View {
                         .overlay(Circle().fill(Color.colorWhite.opacity(0.12)))
                 }
                 .overlay(
-                    Circle().stroke(Color.colorWhite.opacity(0.7), lineWidth: 1)
+                    Circle().stroke(Color.colorWhite, lineWidth: 1)
                 )
-                .shadow(color: .black.opacity(0.12), radius: 16, y: 6)
+                .shadow(color: .black.opacity(0.10), radius: 16, y: 6)
         }
         .accessibilityLabel(Text(showAddMenu ? "detail.menu_close" : "receipt.add"))
     }
@@ -397,7 +397,7 @@ private struct HomeView: View {
         }
         .padding(.horizontal, .spacing20)
         .padding(.top, .spacing16)
-        .padding(.bottom, 92) // 플로팅 하단 바 높이만큼 여백
+        .padding(.bottom, 96) // 플로팅 하단 바 높이만큼 여백
     }
 }
 

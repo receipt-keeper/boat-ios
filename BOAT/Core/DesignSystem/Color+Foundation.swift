@@ -44,6 +44,12 @@ extension Color {
     static let badgeExpiredText   = Color(hex: "#BDBDBD")
 }
 
+// MARK: - Card
+
+extension Color {
+    static let cardBgMedium = Color(hex: "#69A8FF") // Card/Bg/Medium — "N건 더보기" 카드 배경
+}
+
 // MARK: - Grayscale
 
 extension Color {

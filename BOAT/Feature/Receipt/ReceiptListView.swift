@@ -365,7 +365,7 @@ struct ReceiptListView: View {
                 }
                 .padding(.horizontal, .spacing20)
                 .padding(.top, .spacing4)
-                .padding(.bottom, 92) // 플로팅 하단 바 높이만큼 여백
+                .padding(.bottom, 96) // 플로팅 하단 바 높이만큼 여백
             }
         }
     }

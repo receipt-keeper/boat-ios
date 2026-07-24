@@ -68,7 +68,7 @@ struct HomeGeneralView: View {
             }
             .padding(.horizontal, .spacing20)
 
-            Spacer().frame(height: 92) // 플로팅 하단 바 높이만큼 여백
+            Spacer().frame(height: 96) // 플로팅 하단 바 높이만큼 여백
         }
     }
 
@@ -221,21 +221,19 @@ private struct ExpiringWarrantySection: View {
     /// 캐러셀 맨 끝 슬림 카드 — 남은 만료 예정 건수를 안내하고 탭 시 목록으로 이동.
     private var moreCard: some View {
         Button(action: onMore) {
-            VStack(spacing: .spacing8) {
+            VStack(spacing: .spacing4) {
                 Text("home.expiring_more_count \(moreCount)")
-                    .font(.pretendard(.bold, size: 18))
+                    .font(.pretendard(.semibold, size: 14))
                     .foregroundStyle(Color.colorWhite)
-                HStack(spacing: 2) {
-                    Text("home.more")
-                        .font(.pretendard(.medium, size: 14))
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .semibold))
-                }
-                .foregroundStyle(Color.colorWhite.opacity(0.9))
+                Text("home.more")
+                    .font(.pretendard(.semibold, size: 14))
+                    .foregroundStyle(Color.colorWhite)
             }
-            .frame(width: 92)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 12)
+            .frame(width: 61)
             .frame(maxHeight: .infinity)
-            .background(Color.colorWhite.opacity(0.18), in: RoundedRectangle(cornerRadius: .rounded2xl))
+            .background(Color.cardBgMedium, in: RoundedRectangle(cornerRadius: .roundedXl))
         }
         .buttonStyle(.plain)
     }
