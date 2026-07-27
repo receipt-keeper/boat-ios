@@ -120,16 +120,23 @@ private struct ZoomableImagePage: View {
 /// - 확대 중에만 bounce를 켜서, 축소 상태의 좌우 스와이프는 상위 TabView의 페이징으로 넘어간다.
 /// - 더블탭: 탭한 지점을 중심으로 확대 / 확대 상태면 원복.
 /// - 싱글탭: [onSingleTap] (상단 바 토글). 더블탭이 실패한 뒤에만 인식된다.
-private struct ZoomableScrollView<Content: View>: UIViewRepresentable {
+///
+/// 콘텐츠를 제네릭이 아닌 AnyView로 담는 이유:
+/// 제네릭 struct 안에 중첩된 Coordinator(= UIHostingController<Content> 보유)를 두면
+/// Release 최적화(EarlyPerfInliner)에서 Coordinator.deinit을 인라이닝하다 Swift 6.3
+/// 컴파일러가 크래시한다(Debug/시뮬레이터는 해당 패스를 돌지 않아 통과). 타입을 고정해
+/// Coordinator를 비제네릭으로 만들면 이 경로를 타지 않는다. 페이지당 이미지 하나뿐이라
+/// AnyView로 인한 비용은 무시할 수준이다.
+private struct ZoomableScrollView: UIViewRepresentable {
 
-    private let content: Content
+    private let content: AnyView
     private let onSingleTap: () -> Void
 
     private static var maxZoom: CGFloat { 4 }
     private static var doubleTapZoom: CGFloat { 2.5 }
 
-    init(onSingleTap: @escaping () -> Void, @ViewBuilder content: () -> Content) {
-        self.content = content()
+    init<C: View>(onSingleTap: @escaping () -> Void, @ViewBuilder content: () -> C) {
+        self.content = AnyView(content())
         self.onSingleTap = onSingleTap
     }
 
@@ -190,11 +197,11 @@ private struct ZoomableScrollView<Content: View>: UIViewRepresentable {
 
     final class Coordinator: NSObject, UIScrollViewDelegate {
 
-        let hostingController: UIHostingController<Content>
+        let hostingController: UIHostingController<AnyView>
         var onSingleTap: () -> Void
         private let doubleTapZoom: CGFloat
 
-        init(rootView: Content, onSingleTap: @escaping () -> Void, doubleTapZoom: CGFloat) {
+        init(rootView: AnyView, onSingleTap: @escaping () -> Void, doubleTapZoom: CGFloat) {
             self.hostingController = UIHostingController(rootView: rootView)
             self.onSingleTap = onSingleTap
             self.doubleTapZoom = doubleTapZoom
