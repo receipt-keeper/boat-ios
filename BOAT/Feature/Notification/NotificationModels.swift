@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 // MARK: - 서버 응답
 
@@ -18,6 +19,8 @@ struct NotificationDto: Decodable {
     let notificationId: String
     let messageType: String?
     let kind: String?
+    /// 알림 분류 코드(warranty / product_management / benefit 등) — 카드 상단 라벨 표시에 사용
+    let category: String?
     let title: String?
     let message: String?
     let resourceType: String?
@@ -40,7 +43,20 @@ struct AppNotification: Identifiable, Hashable {
     let resourceId: String?
     let kind: String?
     let messageType: String?
+    /// 서버 분류 코드(warranty 등) — 카드 상단 라벨 표시용
+    let category: String?
     var isRead: Bool
+
+    /// 카드 상단 분류 라벨. 서버가 category를 안 주거나 아직 매핑하지 않은 코드면
+    /// 앱 이름("보트랩")으로 폴백한다.
+    var categoryLabel: LocalizedStringKey {
+        switch category?.lowercased() {
+        case "warranty":           return "notif.category.warranty"
+        case "product_management": return "notif.category.product_management"
+        case "benefit":            return "notif.category.benefit"
+        default:                   return "notif.brand"
+        }
+    }
 
     /// 목록 썸네일용 에셋 — subCategory 기반 기기 이미지. Android DeviceImage.resolve(null, subCategory) 대응(category 미사용).
     /// 단, 상시 유도 알림(마케팅/등록·미사용·분석 리마인더)은 특정 영수증과 무관하므로
@@ -102,6 +118,7 @@ extension NotificationDto {
             resourceId: resourceId,
             kind: kind,
             messageType: messageType,
+            category: category,
             isRead: readAt != nil
         )
     }

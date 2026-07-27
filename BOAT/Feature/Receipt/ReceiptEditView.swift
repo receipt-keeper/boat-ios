@@ -346,11 +346,11 @@ struct ReceiptEditView: View {
                 onClose: { showViewer = false }
             )
         }
-        .sheet(isPresented: $showDatePicker) {
+        // 스와이프 대신 스크림 탭이 "취소" 역할을 한다.
+        .boatBottomSheet(isPresented: $showDatePicker, onDismiss: { showDatePicker = false }) {
             PurchaseDatePickerSheet(
                 onSelect: { purchaseDate = $0; showDatePicker = false }
             )
-            .presentationDetents([.medium])
         }
         .alert("카메라를 사용할 수 없습니다.", isPresented: $cameraUnavailable) {
             Button("common.confirm", role: .cancel) {}
@@ -395,7 +395,8 @@ struct ReceiptEditView: View {
         }
         .frame(height: 56)
         .padding(.horizontal, .spacing20)
-        .background(Color.colorWhite)
+        // 회색 본문과 구분되도록 상단 바는 흰색 — 상태바 영역까지 이어지게 확장한다.
+        .background(Color.colorWhite.ignoresSafeArea(edges: .top))
     }
 
     // MARK: - 카테고리 카드
@@ -605,18 +606,12 @@ struct ReceiptEditView: View {
     private var memoField: some View {
         VStack(alignment: .leading, spacing: 4) {
             ZStack(alignment: .topLeading) {
-                if memo.isEmpty {
-                    Text("manual.memo_hint")
-                        .font(.pretendard(.regular, size: 15))
-                        .foregroundStyle(Color.gray400)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 14)
-                }
+                // placeholder는 BoatTextEditor가 직접 그린다(중복 렌더 제거).
                 BoatTextEditor(
                     text: $memo,
                     placeholder: "manual.memo_hint",
                     maxLength: ReceiptTextLimits.memo,
-                    height: 120
+                    height: 154
                 )
             }
             .overlay(
@@ -684,11 +679,11 @@ struct ReceiptEditView: View {
                     
                     if physicalReceipt {
                         Image(systemName: "checkmark")
-                            .font(.system(size: 13, weight: .bold)) // 스크린샷의 굵고 선명한 체크마크
+                            .font(.system(size: 11, weight: .bold)) // 스크린샷의 굵고 선명한 체크마크
                             .foregroundStyle(Color.colorWhite)
                     }
                 }
-                .frame(width: 24, height: 24)
+                .frame(width: 20, height: 20)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
@@ -817,7 +812,7 @@ struct ReceiptEditView: View {
                     .font(.pretendard(.medium, size: 13))
                     .foregroundStyle(Color.brandPrimary)
             }
-            .frame(width: 100, height: 100)
+            .frame(width: 144, height: 144)
             .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
             // stroke()는 프레임 밖으로 절반 삐져나오는데, 가로 스크롤 안에서는 그 바깥쪽
             // 절반이 잘려 테두리가 흐릿해 보인다. strokeBorder()는 안쪽으로만 그려 잘리지 않는다.
@@ -834,7 +829,7 @@ struct ReceiptEditView: View {
     private func existingFileThumbnail(_ file: ReceiptFile, index: Int) -> some View {
         RoundedRectangle(cornerRadius: .roundedLg)
             .fill(Color.gray100)
-            .frame(width: 100, height: 100)
+            .frame(width: 144, height: 144)
             .overlay { AuthenticatedImage(contentPath: file.contentPath) }
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
             .contentShape(RoundedRectangle(cornerRadius: .roundedLg))
@@ -864,7 +859,7 @@ struct ReceiptEditView: View {
         Image(uiImage: image)
             .resizable()
             .scaledToFill()
-            .frame(width: 100, height: 100)
+            .frame(width: 144, height: 144)
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
             .contentShape(RoundedRectangle(cornerRadius: .roundedLg))
             .onTapGesture {
@@ -946,9 +941,6 @@ struct ReceiptEditView: View {
 
     private func infoBox(text: String? = nil, textKey: LocalizedStringKey? = nil) -> some View {
         HStack(spacing: .spacing8) {
-            Image(systemName: "info.circle.fill")
-                .font(.system(size: 13))
-                .foregroundStyle(Color.brandPrimary)
             Group {
                 if let text { Text(text) } else if let textKey { Text(textKey) }
             }

@@ -407,9 +407,12 @@ struct ReceiptDetailView: View {
                     .foregroundStyle(Color.brandPrimary)
                     .lineSpacing(8)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                // 에셋 원본이 12×20(세로로 긴 형태)이라 scaledToFit 없이 정사각 프레임을 주면
+                // 가로로 늘어나 뭉개진다 — 비율을 유지한 채 18 높이에 맞춘다.
                 Image("chevron_right")
                     .resizable()
                     .renderingMode(.template)
+                    .scaledToFit()
                     .frame(width: 18, height: 18)
                     .foregroundStyle(Color.brandPrimary)
             }

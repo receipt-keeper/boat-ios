@@ -13,6 +13,9 @@
     "!" : {
 
     },
+    "/%lld" : {
+
+    },
     "%lld" : {
 
     },
@@ -29,16 +32,6 @@
     "%lld." : {
 
     },
-    "%lld/%lld" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld/%2$lld"
-          }
-        }
-      }
-    },
     "•" : {
 
     },
@@ -49,6 +42,9 @@
 
     },
     "0" : {
+
+    },
+    "Boat " : {
 
     },
     "common.cancel" : {
@@ -790,7 +786,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AS 만료 예정인 제품의\n영수증이 없습니다."
+            "value" : "AS 만료 예정인 제품의 영수증이 없습니다."
           }
         }
       }
@@ -937,6 +933,9 @@
           }
         }
       }
+    },
+    "Lab" : {
+
     },
     "login.button.apple" : {
       "localizations" : {
@@ -1203,7 +1202,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "제조사 정책에 따라 수리 시 실물 영수증이 필요할 수 있으니, 확인 후 보관 여부를 선택해 주세요."
+            "value" : "제조사 정책에 따라 수리 시 실물 영수증이\n필요할 수 있으니, 확인 후 보관 여부를 선택해 주세요."
           }
         }
       }
@@ -1739,6 +1738,36 @@
         }
       }
     },
+    "notif.category.benefit" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "혜택"
+          }
+        }
+      }
+    },
+    "notif.category.product_management" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "제품 관리"
+          }
+        }
+      }
+    },
+    "notif.category.warranty" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "보증"
+          }
+        }
+      }
+    },
     "notif.delete.cancel" : {
       "localizations" : {
         "ko" : {
@@ -2264,7 +2293,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "사진으로 찍기"
+            "value" : "카메라로 촬영하기"
           }
         }
       }
@@ -2464,7 +2493,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "영상/IT 제품"
+            "value" : "IT 제품"
           }
         }
       }
@@ -2474,7 +2503,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "주방가전"
+            "value" : "주방 가전"
           }
         }
       }
@@ -2504,7 +2533,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "기타"
+            "value" : "기타 제품"
           }
         }
       }
@@ -2545,6 +2574,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "AS 만료일"
+          }
+        }
+      }
+    },
+    "receipt.list.retry" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다시 시도"
           }
         }
       }

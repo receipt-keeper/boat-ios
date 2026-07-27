@@ -31,7 +31,7 @@ struct ReceiptPromoSheet: View {
             Spacer().frame(height: .spacing8)
 
             Text("mypage.promo.title")
-                .font(.pretendard(.bold, size: 24))
+                .font(.pretendard(.bold, size: 22))
                 .foregroundStyle(Color.gray900)
                 .lineSpacing(6)
                 .fixedSize(horizontal: false, vertical: true)
@@ -41,8 +41,8 @@ struct ReceiptPromoSheet: View {
             Image("bobo_mypage")
                 .resizable()
                 .scaledToFit()
+                .frame(width: 180, height: 180 * 126 / 204)
                 .frame(maxWidth: .infinity)
-                .frame(height: 150)
 
             Spacer().frame(height: .spacing20)
 
@@ -64,9 +64,8 @@ struct ReceiptPromoSheet: View {
         }
         .padding(.horizontal, .spacing20)
         .padding(.top, .spacing16)
-        // presentationDetents가 예약한 높이를 실제 콘텐츠가 다 못 채우면 시트 안에서
-        // 위아래로 붕 뜨는 여백이 생긴다 — 상단 정렬로 꽉 채워 그 문제를 없앤다.
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        // 높이는 콘텐츠에 맞춰 산정된다(BoatBottomSheetContainer가 하단에 붙여 그린다).
+        .frame(maxWidth: .infinity, alignment: .top)
     }
 
     private var eventInfoBox: some View {
@@ -83,7 +82,7 @@ struct ReceiptPromoSheet: View {
         }
         .padding(.spacing20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.gray50, in: RoundedRectangle(cornerRadius: .roundedLg))
+        .background(Color.gray50, in: RoundedRectangle(cornerRadius: .rounded2xl))
     }
 
     /// 강조 구간(무료 분석 5회 / 추가 5회)만 브랜드 컬러를 적용한 불릿 텍스트.

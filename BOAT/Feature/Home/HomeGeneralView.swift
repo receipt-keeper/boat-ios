@@ -185,6 +185,7 @@ private struct ExpiringWarrantySection: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading, 8) // 하단 내부 카드 좌측 패딩(20px)과 시각적으로 맞춤
             .padding(.trailing, 96) // 캐릭터 영역 침범 방지
 
             Button(action: onMore) {
@@ -249,70 +250,78 @@ private struct ExpiringWarrantySection: View {
 // MARK: - AS 만료 예정 가로형 카드 (흰 카드: D-day 뱃지 + 보증종료일 / 구분선 / 썸네일+정보)
 
 private struct ExpiringWarrantyCard: View {
-    let item: ExpiringWarranty
+        let item: ExpiringWarranty
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .center) {
-                DDayBadge(dDay: item.dDay)
-                Spacer(minLength: .spacing8)
-                Text("home.warranty_end \(item.expiryLabel)")
-                    .font(.pretendard(.bold, size: 14))
-                    .foregroundStyle(Color.brandPrimary)
-                    .lineLimit(1)
-            }
-
-            Spacer().frame(height: 14)
-            Rectangle().fill(Color.gray100).frame(height: 1)
-            Spacer().frame(height: 14)
-
-            HStack(spacing: 14) {
-                thumbnail
-                VStack(alignment: .leading, spacing: 0) {
-                    Text(item.productName)
-                        .font(.pretendard(.bold, size: 17))
-                        .foregroundStyle(Color.gray900)
+        var body: some View {
+            VStack(alignment: .leading, spacing: 0) {
+                // (상단 뱃지 및 만료일 코드는 기존 유지)
+                HStack(alignment: .center) {
+                    DDayBadge(dDay: item.dDay)
+                    Spacer(minLength: .spacing8)
+                    Text("home.warranty_end \(item.expiryLabel)")
+                        .font(.pretendard(.bold, size: 14))
+                        .foregroundStyle(Color.brandPrimary)
                         .lineLimit(1)
-                    Spacer().frame(height: 8)
-                    labelValue("home.label.brand", item.brand)
-                    Spacer().frame(height: 0) // 브랜드-구매일은 하위 요소끼리라 더 가깝게
-                    labelValue("home.label.purchase", item.purchaseDate)
+                }
+
+                Spacer().frame(height: 14)
+                Rectangle().fill(Color.gray100).frame(height: 1)
+                Spacer().frame(height: 14)
+
+                // 💡 1. 텍스트 블록이 썸네일과 수직 중앙(Center)을 이루도록 변경
+                HStack(alignment: .center, spacing: 14) {
+                    thumbnail
+                    
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(item.productName)
+                            .font(.pretendard(.bold, size: 20))
+                            .foregroundStyle(Color.gray900)
+                            .lineLimit(1)
+                            // 💡 2. 의미 없는 .lineSpacing을 지우고, 확실한 하단 여백(12pt) 부여
+                            .padding(.bottom, 12)
+                        
+                        labelValue("home.label.brand", item.brand)
+                            // 💡 3. 하위 요소끼리의 간격을 0이 아닌 6pt로 주어 숨통을 틔워줌
+                            .padding(.bottom, 6)
+                        
+                        labelValue("home.label.purchase", item.purchaseDate)
+                    }
                 }
             }
+            .padding(.horizontal, 20)
+            .padding(.vertical, .spacing16)
+            .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, .spacing16)
-        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
-    }
 
-    private var thumbnail: some View {
-        // 카테고리 기본 이미지 — 배경 효과 없이 원본 그대로 노출 (Figma 스펙: 84×84, 배경 없음)
-        Group {
-            if let name = item.localImageName {
-                Image(name).resizable().scaledToFit()
-            } else {
-                Image(systemName: "photo")
-                    .font(.system(size: 28))
-                    .foregroundStyle(Color.gray400)
+        private var thumbnail: some View {
+            Group {
+                if let name = item.localImageName {
+                    Image(name).resizable().scaledToFit()
+                } else {
+                    Image(systemName: "photo")
+                        .font(.system(size: 28))
+                        .foregroundStyle(Color.gray400)
+                }
+            }
+            .frame(width: 84, height: 84)
+        }
+
+        private func labelValue(_ label: LocalizedStringKey, _ value: String) -> some View {
+            HStack(spacing: 0) {
+                Text(label)
+                    .font(.pretendard(.medium, size: 16))
+                    .foregroundStyle(Color.gray500)
+                    .frame(width: 52, alignment: .leading)
+                    // 💡 4. 단일 줄(lineLimit: 1) 텍스트에서는 높이 계산만 꼬이게 만드는 lineSpacing 제거
+
+                Text(value)
+                    .font(.pretendard(.medium, size: 16))
+                    .foregroundStyle(Color.gray500)
+                    .lineLimit(1)
+                    // 💡 동일하게 lineSpacing 제거
             }
         }
-        .frame(width: 84, height: 84)
     }
-
-    private func labelValue(_ label: LocalizedStringKey, _ value: String) -> some View {
-        HStack(spacing: 0) {
-            Text(label)
-                .font(.pretendard(.regular, size: 14))
-                .foregroundStyle(Color.gray700)
-                .frame(width: 52, alignment: .leading)
-            Text(value)
-                .font(.pretendard(.regular, size: 14))
-                .foregroundStyle(Color.gray700)
-                .lineLimit(1)
-        }
-    }
-}
-
 // MARK: - 캐러셀 페이지 인디케이터 (현재 카드는 넓은 pill, 나머지는 작은 dot)
 
 private struct CarouselIndicator: View {
@@ -340,12 +349,11 @@ private struct CarouselIndicator: View {
 private struct ExpiringEmptyBanner: View {
     var onMore: () -> Void = {}
 
-    // 만료 예정 N건 배너와 동일한 캐릭터 크기 사용. 단, 이 배너는 헤더가 고정 높이가
-    // 아니라 짧아진 만큼 안내 박스가 위로 당겨져 캐릭터를 더 가리게 되므로, 그만큼
-    // 캐릭터를 위로 올려 디자인 가이드와 동일한 노출 비율을 맞춘다.
+    // 잘린 부분(하단)이 안내 박스 상단과 맞닿도록 하되, 너무 아래/오른쪽으로 치우쳐 보인다는
+    // 피드백에 따라 위로/왼쪽으로 조정.
     private let mascotSize = CGSize(width: 116, height: 129)
-    private let mascotOffsetY: CGFloat = -20
-    private let mascotTrailing: CGFloat = 30
+    private let mascotOffsetY: CGFloat = 4
+    private let mascotTrailing: CGFloat = 42
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -371,6 +379,7 @@ private struct ExpiringEmptyBanner: View {
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 8) // 하단 내부 카드 좌측 패딩(20px)과 시각적으로 맞춤
                         .padding(.trailing, 100) // 캐릭터 영역 침범 방지
 
                         Button(action: onMore) {
@@ -393,10 +402,11 @@ private struct ExpiringEmptyBanner: View {
                     .foregroundStyle(Color.colorWhite)
                     .multilineTextAlignment(.center)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.85) // 좁은 화면에서도 잘리지 않고 한 줄로 표시
                     .frame(maxWidth: .infinity)
                     .frame(height: 147) // Figma 스펙: 안내 박스 고정 147pt
-                    .padding(.horizontal, 14)
-                    .background(Color.colorWhite.opacity(0.18), in: RoundedRectangle(cornerRadius: .roundedXl))
+                    .padding(.horizontal, 8)
+                    .background(Color.cardBgStrongInner, in: RoundedRectangle(cornerRadius: .roundedXl))
             }
             .padding(.top, 32)
             .padding(.bottom, 16)
@@ -407,7 +417,7 @@ private struct ExpiringEmptyBanner: View {
         }
         // 안내 박스(147pt) 등 실제 콘텐츠가 274보다 크면 잘리지 않도록 최소 높이로 적용한다.
         .frame(minHeight: 274)
-        .background(heroGradient)
+        .background(Color.cardBgStrong)
         .clipShape(RoundedRectangle(cornerRadius: .rounded2xl))
     }
 

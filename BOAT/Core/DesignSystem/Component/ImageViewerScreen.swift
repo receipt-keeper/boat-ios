@@ -2,9 +2,14 @@
 //  ImageViewerScreen.swift
 //  BOAT
 //
-//  전체화면 이미지 뷰어 — 핀치 확대/축소(1~4배), 확대 중 팬, 더블탭 리셋, 좌우 스와이프 페이징,
+//  전체화면 이미지 뷰어 — 핀치 확대/축소(1~4배), 확대 중 팬, 더블탭 확대/원복, 좌우 스와이프 페이징,
 //  단일 탭으로 상단 바(닫기 + N/전체) 토글. Android ImageViewerScreen 대응.
 //  로컬(UIImage)/원격(ReceiptFile, 인증 필요) 이미지를 섞어서 표시할 수 있다.
+//
+//  확대/이동은 SwiftUI 제스처가 아니라 UIScrollView가 처리한다 — 사진 앱과 동일한 방식이다.
+//  SwiftUI MagnifyGesture/DragGesture로 scale·offset을 @State에 반영하면 손가락이 움직이는
+//  매 프레임마다 뷰 트리가 다시 계산되어 뚝뚝 끊긴다. UIScrollView는 확대·이동을 렌더 서버에서
+//  처리하므로 SwiftUI 업데이트 없이 부드럽게 동작하고, 감속·고무줄 효과도 기본으로 따라온다.
 //
 
 import SwiftUI
@@ -84,35 +89,15 @@ struct ImageViewerScreen: View {
     }
 }
 
-// MARK: - 핀치 줌 + 팬 + 더블탭 리셋 페이지
+// MARK: - 페이지 (확대/이동은 ZoomableScrollView가 담당)
 
 private struct ZoomableImagePage: View {
     let item: ImageViewerItem
     var onSingleTap: () -> Void = {}
 
-    @State private var scale: CGFloat = 1
-    @State private var lastScale: CGFloat = 1
-    @State private var offset: CGSize = .zero
-    @State private var lastOffset: CGSize = .zero
-
     var body: some View {
-        GeometryReader { geo in
+        ZoomableScrollView(onSingleTap: onSingleTap) {
             content
-                .frame(width: geo.size.width, height: geo.size.height)
-                // 확대/드래그 시마다 원본 이미지를 다시 그리지 않도록, 변형 전에 하나의 텍스처로
-                // 평탄화한다 (GPU 합성만 하면 되므로 팬 제스처 중 끊김이 사라진다).
-                .drawingGroup()
-                .scaleEffect(scale)
-                .offset(offset)
-                .contentShape(Rectangle())
-                .gesture(magnifyGesture)
-                // 확대 상태(scale > 1)일 때만 팬 제스처를 소비 — 그 외엔 TabView 스와이프가 우선하도록 비활성화.
-                // (마스크 값만 바뀔 뿐 제스처 객체 자체의 타입은 항상 동일해야 한다 — scale에 따라
-                // 서로 다른 타입의 제스처로 갈아 끼우면, 확대가 막 시작되는 scale=1 경계 순간에
-                // 인식기가 재구성되면서 핀치 시작 동작이 한 프레임 끊기는 문제가 있었다.)
-                .gesture(dragGesture(in: geo.size), including: scale > 1 ? .all : .subviews)
-                .onTapGesture(count: 2) { resetZoom() }
-                .onTapGesture(count: 1) { onSingleTap() }
         }
     }
 
@@ -127,43 +112,130 @@ private struct ZoomableImagePage: View {
             AuthenticatedImage(contentPath: file.contentPath, contentMode: .fit)
         }
     }
+}
 
-    private var magnifyGesture: some Gesture {
-        MagnifyGesture()
-            .onChanged { value in
-                scale = min(max(lastScale * value.magnification, 1), 4)
-            }
-            .onEnded { _ in
-                lastScale = scale
-                if scale <= 1 {
-                    withAnimation(.easeInOut(duration: 0.2)) { offset = .zero }
-                    lastOffset = .zero
-                }
-            }
+// MARK: - UIScrollView 기반 확대/이동 컨테이너
+
+/// 콘텐츠를 UIScrollView에 얹어 네이티브 핀치 확대·팬·감속을 그대로 사용한다.
+/// - 확대 중에만 bounce를 켜서, 축소 상태의 좌우 스와이프는 상위 TabView의 페이징으로 넘어간다.
+/// - 더블탭: 탭한 지점을 중심으로 확대 / 확대 상태면 원복.
+/// - 싱글탭: [onSingleTap] (상단 바 토글). 더블탭이 실패한 뒤에만 인식된다.
+private struct ZoomableScrollView<Content: View>: UIViewRepresentable {
+
+    private let content: Content
+    private let onSingleTap: () -> Void
+
+    private static var maxZoom: CGFloat { 4 }
+    private static var doubleTapZoom: CGFloat { 2.5 }
+
+    init(onSingleTap: @escaping () -> Void, @ViewBuilder content: () -> Content) {
+        self.content = content()
+        self.onSingleTap = onSingleTap
     }
 
-    private func dragGesture(in size: CGSize) -> some Gesture {
-        DragGesture()
-            .onChanged { value in
-                guard scale > 1 else { return }
-                let maxX = (size.width * (scale - 1)) / 2
-                let maxY = (size.height * (scale - 1)) / 2
-                let newX = lastOffset.width + value.translation.width
-                let newY = lastOffset.height + value.translation.height
-                offset = CGSize(
-                    width: min(max(newX, -maxX), maxX),
-                    height: min(max(newY, -maxY), maxY)
-                )
-            }
-            .onEnded { _ in lastOffset = offset }
+    func makeUIView(context: Context) -> UIScrollView {
+        let scrollView = UIScrollView()
+        scrollView.delegate = context.coordinator
+        scrollView.minimumZoomScale = 1
+        scrollView.maximumZoomScale = Self.maxZoom
+        scrollView.bouncesZoom = true
+        // 축소 상태에서는 bounce를 꺼야 좌우 스와이프가 TabView 페이징으로 전달된다.
+        scrollView.bounces = false
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.backgroundColor = .clear
+        scrollView.contentInsetAdjustmentBehavior = .never
+
+        let hosted = context.coordinator.hostingController.view!
+        hosted.translatesAutoresizingMaskIntoConstraints = false
+        hosted.backgroundColor = .clear
+        scrollView.addSubview(hosted)
+        NSLayoutConstraint.activate([
+            hosted.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            hosted.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            hosted.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            hosted.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            // 확대 전 콘텐츠는 항상 화면 크기와 동일 — 이래야 scaledToFit이 화면 기준으로 맞춰진다.
+            hosted.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+            hosted.heightAnchor.constraint(equalTo: scrollView.frameLayoutGuide.heightAnchor),
+        ])
+
+        let doubleTap = UITapGestureRecognizer(
+            target: context.coordinator,
+            action: #selector(Coordinator.handleDoubleTap(_:))
+        )
+        doubleTap.numberOfTapsRequired = 2
+        scrollView.addGestureRecognizer(doubleTap)
+
+        let singleTap = UITapGestureRecognizer(
+            target: context.coordinator,
+            action: #selector(Coordinator.handleSingleTap)
+        )
+        singleTap.numberOfTapsRequired = 1
+        singleTap.require(toFail: doubleTap)
+        scrollView.addGestureRecognizer(singleTap)
+
+        return scrollView
     }
 
-    private func resetZoom() {
-        withAnimation(.easeInOut(duration: 0.2)) {
-            scale = 1
-            offset = .zero
+    func updateUIView(_ scrollView: UIScrollView, context: Context) {
+        // 확대/이동 중에는 SwiftUI 업데이트가 발생하지 않으므로 여기서 프레임 단위 비용은 없다.
+        context.coordinator.hostingController.rootView = content
+        context.coordinator.onSingleTap = onSingleTap
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(rootView: content, onSingleTap: onSingleTap, doubleTapZoom: Self.doubleTapZoom)
+    }
+
+    final class Coordinator: NSObject, UIScrollViewDelegate {
+
+        let hostingController: UIHostingController<Content>
+        var onSingleTap: () -> Void
+        private let doubleTapZoom: CGFloat
+
+        init(rootView: Content, onSingleTap: @escaping () -> Void, doubleTapZoom: CGFloat) {
+            self.hostingController = UIHostingController(rootView: rootView)
+            self.onSingleTap = onSingleTap
+            self.doubleTapZoom = doubleTapZoom
+            super.init()
+            hostingController.view.backgroundColor = .clear
+            // 세이프에어리어만큼 콘텐츠가 밀리지 않도록 — 뷰어는 전체화면으로 꽉 채운다.
+            hostingController.safeAreaRegions = []
         }
-        lastScale = 1
-        lastOffset = .zero
+
+        func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+            hostingController.view
+        }
+
+        func scrollViewDidZoom(_ scrollView: UIScrollView) {
+            // 확대 상태에서만 고무줄 효과를 허용한다(축소 상태에선 TabView 페이징 우선).
+            scrollView.bounces = scrollView.zoomScale > scrollView.minimumZoomScale
+        }
+
+        @objc func handleSingleTap() {
+            onSingleTap()
+        }
+
+        @objc func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
+            guard let scrollView = gesture.view as? UIScrollView else { return }
+
+            if scrollView.zoomScale > scrollView.minimumZoomScale {
+                scrollView.setZoomScale(scrollView.minimumZoomScale, animated: true)
+                return
+            }
+
+            // 탭한 지점이 화면 중앙에 오도록 확대한다.
+            let point = gesture.location(in: hostingController.view)
+            let width = scrollView.bounds.width / doubleTapZoom
+            let height = scrollView.bounds.height / doubleTapZoom
+            let rect = CGRect(
+                x: point.x - width / 2,
+                y: point.y - height / 2,
+                width: width,
+                height: height
+            )
+            scrollView.zoom(to: rect, animated: true)
+        }
     }
 }

@@ -36,6 +36,7 @@ struct PurchaseDatePickerSheet: View {
 
             Spacer()
         }
-        .presentationBackground(Color.colorWhite)
+        // 배경·모서리는 BoatBottomSheetContainer가 그린다. 닫기(=취소)는 스크림 탭.
+        .padding(.bottom, .spacing8)
     }
 }

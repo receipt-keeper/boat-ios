@@ -272,11 +272,11 @@ struct ReceiptManualInputView: View {
                 onClose: { showViewer = false }
             )
         }
-        .sheet(isPresented: $showDatePicker) {
+        // 스와이프 대신 스크림 탭이 "취소" 역할을 한다.
+        .boatBottomSheet(isPresented: $showDatePicker, onDismiss: { showDatePicker = false }) {
             PurchaseDatePickerSheet(
                 onSelect: { purchaseDate = $0; showDatePicker = false }
             )
-            .presentationDetents([.medium])
         }
         .alert("카메라를 사용할 수 없습니다.", isPresented: $cameraUnavailable) {
             Button("common.confirm", role: .cancel) {}
@@ -323,6 +323,8 @@ struct ReceiptManualInputView: View {
         }
         .frame(height: 56)
         .padding(.horizontal, .spacing20)
+        // 회색 본문과 구분되도록 상단 바는 흰색 — 상태바 영역까지 이어지게 확장한다.
+        .background(Color.colorWhite.ignoresSafeArea(edges: .top))
     }
 
     // MARK: - 등록된 이미지 확인
@@ -356,7 +358,7 @@ struct ReceiptManualInputView: View {
                     .font(.pretendard(.medium, size: 13))
                     .foregroundStyle(Color.brandPrimary)
             }
-            .frame(width: 100, height: 100)
+            .frame(width: 144, height: 144)
             .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
             // stroke()는 프레임 밖으로 절반 삐져나오는데, 가로 스크롤 안에서는 그 바깥쪽
             // 절반이 잘려 테두리가 흐릿해 보인다. strokeBorder()는 안쪽으로만 그려 잘리지 않는다.
@@ -372,7 +374,7 @@ struct ReceiptManualInputView: View {
         Image(uiImage: image)
             .resizable()
             .scaledToFill()
-            .frame(width: 100, height: 100)
+            .frame(width: 144, height: 144)
             .clipShape(RoundedRectangle(cornerRadius: .roundedLg))
             .contentShape(RoundedRectangle(cornerRadius: .roundedLg))
             .onTapGesture {
@@ -442,7 +444,8 @@ struct ReceiptManualInputView: View {
 
             // 소분류 칩 — OCR로 최초 설정된 소분류만 맨 앞에 고정, 이후 선택 변경엔 순서 유지.
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: .spacing12) {
+                // 칩 간 여백 0 — 각 칩이 64 고정 폭 안에서 자체 여백을 갖는다(Android spacedBy(0.dp)).
+                HStack(spacing: 0) {
                     ForEach(displayedSubcategories, id: \.self) { name in
                         subcategoryChip(name)
                     }
@@ -478,28 +481,31 @@ struct ReceiptManualInputView: View {
             selectedSubcategory = selected ? nil : name
         } label: {
             VStack(spacing: 6) {
-                RoundedRectangle(cornerRadius: .roundedXl)
-                    .fill(selected ? Color.brandQuinary : Color.gray100)
-                    .frame(width: 64, height: 52)
+                RoundedRectangle(cornerRadius: .roundedLg)
+                    .fill(selected ? Color.brandQuinary : Color.gray50)
+                    .frame(width: 56, height: 56)
                     .overlay(
                         // stroke()는 경계선을 중심으로 안팎에 절반씩 그려 프레임 밖으로 살짝
                         // 삐져나오는데, 가로 스크롤 안에 있는 칩이라 그 삐져나온 바깥쪽 절반이
                         // 스크롤뷰 레이아웃 경계에 잘려 위쪽 변 테두리가 흐릿하게 보였다.
                         // strokeBorder()는 프레임 안쪽으로만 그려 잘릴 여지가 없다.
-                        RoundedRectangle(cornerRadius: .roundedXl)
+                        RoundedRectangle(cornerRadius: .roundedLg)
                             .strokeBorder(selected ? Color.brandPrimary : Color.clear, lineWidth: 1.5)
                     )
                     .overlay {
                         Image(DeviceImage.assetName(category: selectedCategory.rawValue, subCategory: name))
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 30, height: 30)
+                            .frame(width: 44, height: 44)
                     }
                 Text(name)
-                    .font(.pretendard(.regular, size: 11))
+                    .font(.pretendard(.regular, size: 13))
                     .foregroundStyle(selected ? Color.brandPrimary : Color.gray600)
                     .lineLimit(1)
+                    .multilineTextAlignment(.center)
             }
+            // 칩 1칸의 고정 폭 64 — 56 카드가 가운데 놓이고 좌우 4씩이 칩 사이 여백이 된다.
+            .frame(width: 64)
         }
         .buttonStyle(.plain)
     }
@@ -595,7 +601,7 @@ struct ReceiptManualInputView: View {
 
                 if let expiresOn = expiresOnDisplay {
                     Spacer().frame(height: .spacing8)
-                    infoBox(text: "무상 AS 만료일 \(expiresOn)", systemIcon: "info.circle.fill")
+                    infoBox(text: "무상 AS 만료일 \(expiresOn)")
                 } else if needsWarrantyHint {
                     Spacer().frame(height: .spacing8)
                     infoBox(textKey: "manual.warranty_hint")
@@ -619,18 +625,12 @@ struct ReceiptManualInputView: View {
 
     private var memoField: some View {
         ZStack(alignment: .topLeading) {
-            if memo.isEmpty {
-                Text("manual.memo_hint")
-                    .font(.pretendard(.regular, size: 15))
-                    .foregroundStyle(Color.gray400)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 14)
-            }
+            // placeholder는 BoatTextEditor가 직접 그린다(중복 렌더 제거).
             BoatTextEditor(
                 text: $memo,
                 placeholder: "manual.memo_hint",
                 maxLength: ReceiptTextLimits.memo,
-                height: 120
+                height: 154
             )
         }
         .overlay(
@@ -691,11 +691,11 @@ struct ReceiptManualInputView: View {
                     
                     if physicalReceipt {
                         Image(systemName: "checkmark")
-                            .font(.system(size: 13, weight: .bold)) // 스크린샷의 굵고 선명한 체크마크
+                            .font(.system(size: 11, weight: .bold)) // 스크린샷의 굵고 선명한 체크마크
                             .foregroundStyle(Color.colorWhite)
                     }
                 }
-                .frame(width: 24, height: 24)
+                .frame(width: 20, height: 20)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
@@ -864,13 +864,8 @@ struct ReceiptManualInputView: View {
         .buttonStyle(.plain)
     }
 
-    private func infoBox(text: String? = nil, textKey: LocalizedStringKey? = nil, systemIcon: String? = nil) -> some View {
+    private func infoBox(text: String? = nil, textKey: LocalizedStringKey? = nil) -> some View {
         HStack(spacing: .spacing8) {
-            if let systemIcon {
-                Image(systemName: systemIcon)
-                    .font(.system(size: 13))
-                    .foregroundStyle(Color.brandPrimary)
-            }
             Group {
                 if let text { Text(text) } else if let textKey { Text(textKey) }
             }

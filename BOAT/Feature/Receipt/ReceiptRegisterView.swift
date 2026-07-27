@@ -83,27 +83,28 @@ struct ReceiptRegisterView: View {
                             galleryCard
                         }
 
-                        Spacer().frame(height: .spacing12)
+                        Spacer().frame(height: .spacing16)
                         noticeSection
                             .zIndex(1) // 펼쳐졌을 때 아래 첨부내역 섹션 위로 덮이도록
 
-                        // 아직 첨부한 사진이 없으면 "영수증 첨부내역" 섹션 자체를 노출하지 않는다.
-                        if !images.isEmpty {
-                            Spacer().frame(height: .spacing24)
-                            attachmentsHeader
+                        // 사진이 없어도 "영수증 첨부내역" 섹션은 항상 노출한다(카운터는 0/5).
+                        Spacer().frame(height: .spacing24)
+                        attachmentsHeader
 
-                            Spacer().frame(height: .spacing12)
-                            thumbnailRow
-                        }
+                        Spacer().frame(height: .spacing12)
+                        thumbnailRow
+                            // 썸네일이 화면 좌우 끝까지 스크롤되어 나가도록 부모의 가로 여백을 상쇄한다.
+                            .padding(.horizontal, -.spacing20)
                     }
                     .padding(.horizontal, .spacing20)
                     .padding(.top, .spacing8)
-                    .padding(.bottom, .spacing16)
+                    .padding(.bottom, .spacing20)
                 }
 
                 analyzeButton
                     .padding(.horizontal, .spacing20)
-                    .padding(.bottom, .spacing12)
+                    .padding(.top, .spacing16)
+                    .padding(.bottom, .spacing16)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.colorWhite)
@@ -157,40 +158,32 @@ struct ReceiptRegisterView: View {
         .alert("receipt.register.max", isPresented: $showMaxAlert) {
             Button("common.confirm", role: .cancel) {}
         }
-        .sheet(item: $activeSheet) { sheet in
-            Group {
-                switch sheet {
-                case .noToken:
-                    let canRecharge = pendingPromo?.state == .redeemable
-                    NoTokenSheet(
-                        canRecharge: canRecharge,
-                        onRecharge: {
-                            activeSheet = nil
-                            Task { await recharge() }
-                        },
-                        onManualInput: { openManualInput() },
-                        onClose: { activeSheet = nil }
-                    )
-                    .presentationDetents([.height(canRecharge ? 480 : 340)])
-                case .failed:
-                    AnalysisFailedSheet(
-                        onManualInput: { openManualInput() },
-                        // 시트만 내리고 등록 화면(실패 오버레이 표시된 첨부 목록)에 그대로 머무른다.
-                        // 재분석은 사용자가 이미지를 교체한 뒤 직접 "분석 시작"을 눌러야 한다.
-                        onRetry: { activeSheet = nil },
-                        onClose: { activeSheet = nil }
-                    )
-                    .presentationDetents([.height(480)])
-                case .unsupportedReceipt:
-                    UnsupportedReceiptSheet(
-                        onRetry: { activeSheet = nil },
-                        onClose: { activeSheet = nil }
-                    )
-                    .presentationDetents([.height(540)])
-                }
+        .boatBottomSheet(item: $activeSheet, onDismiss: { activeSheet = nil }) { sheet in
+            switch sheet {
+            case .noToken:
+                NoTokenSheet(
+                    canRecharge: pendingPromo?.state == .redeemable,
+                    onRecharge: {
+                        activeSheet = nil
+                        Task { await recharge() }
+                    },
+                    onManualInput: { openManualInput() },
+                    onClose: { activeSheet = nil }
+                )
+            case .failed:
+                AnalysisFailedSheet(
+                    onManualInput: { openManualInput() },
+                    // 시트만 내리고 등록 화면(실패 오버레이 표시된 첨부 목록)에 그대로 머무른다.
+                    // 재분석은 사용자가 이미지를 교체한 뒤 직접 "분석 시작"을 눌러야 한다.
+                    onRetry: { activeSheet = nil },
+                    onClose: { activeSheet = nil }
+                )
+            case .unsupportedReceipt:
+                UnsupportedReceiptSheet(
+                    onRetry: { activeSheet = nil },
+                    onClose: { activeSheet = nil }
+                )
             }
-            .presentationDragIndicator(.hidden)
-            .presentationBackground(Color.colorWhite)
         }
         // 직접 입력 / OCR 성공 — 이미지 + 분석 결과(있으면 프리필) 전달
         .fullScreenCover(isPresented: $showManualInput) {
@@ -268,6 +261,7 @@ struct ReceiptRegisterView: View {
                 .renderingMode(.template)
                 .resizable()
                 .scaledToFit()
+                // 앱 전역 규칙: 상단바 검색/알림 아이콘은 24
                 .frame(width: 24, height: 24)
                 .foregroundStyle(Color.gray900)
                 .contentShape(Rectangle())
@@ -280,9 +274,11 @@ struct ReceiptRegisterView: View {
 
     private var headerRow: some View {
         HStack(alignment: .center) {
+            // H3 Bold — Pretendard 700 / 18 / 행간 140%(25.2) / Gray800
             Text("receipt.add")
-                .font(.pretendard(.bold, size: 20))
-                .foregroundStyle(Color.gray900)
+                .font(.pretendard(.bold, size: 18))
+                .foregroundStyle(Color.gray800)
+                .lineSpacing(7.2)
             Spacer()
             analysisCountPill
         }
@@ -293,7 +289,7 @@ struct ReceiptRegisterView: View {
             GifImageView(name: "shiny_white")
                 .frame(width: 16, height: 16)
             Text("receipt.register.analysis_count \(remainingTokens)")
-                .font(.pretendard(.semibold, size: 12))
+                .font(.pretendard(.medium, size: 14))
                 .foregroundStyle(Color.brandPrimary)
         }
         .padding(.horizontal, .spacing12)
@@ -322,7 +318,8 @@ struct ReceiptRegisterView: View {
     }
 
     private func outlinedCard(icon: String, label: LocalizedStringKey) -> some View {
-        VStack(spacing: .spacing12) {
+        // 아이콘-라벨 간격 0 (Android Arrangement.Center, spacedBy 없음)
+        VStack(spacing: 0) {
             Image(icon)
                 .resizable()
                 .scaledToFit()
@@ -332,7 +329,7 @@ struct ReceiptRegisterView: View {
                 .foregroundStyle(Color.brandPrimary)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 140)
+        .frame(height: 137)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedXl))
         .overlay(
             RoundedRectangle(cornerRadius: .roundedXl)
@@ -345,7 +342,7 @@ struct ReceiptRegisterView: View {
     /// 유의사항 헤더 행의 collapsed 높이. 펼침 여부와 무관하게 레이아웃(스크롤 흐름)에서는
     /// 항상 이 높이만 차지한다 — 펼쳐진 내용은 noticeCard가 overlay로 그 아래를 덮으며
     /// 표시되므로, 첨부내역 섹션이 아래로 밀려나지 않고 펼쳐진 카드 뒤에 가려지는 개념이 된다.
-    private let noticeCollapsedHeight: CGFloat = 52
+    private let noticeCollapsedHeight: CGFloat = 56
 
     private var noticeSection: some View {
         Color.clear
@@ -358,15 +355,17 @@ struct ReceiptRegisterView: View {
             Button {
                 withAnimation(.easeInOut(duration: 0.2)) { noticeExpanded.toggle() }
             } label: {
-                HStack(spacing: .spacing8) {
+                HStack(spacing: 10) {
                     noticeIcon
                     Text("receipt.notice.title")
-                        .font(.pretendard(.medium, size: 15))
+                        .font(.pretendard(.medium, size: 16))
                         .foregroundStyle(Color.gray900)
                     Spacer()
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Color.gray500)
+                    // 에셋 자체가 최종 색(#9E9E9E)을 담고 있어 template 틴트 없이 그대로 렌더링한다.
+                    Image("chevron_down")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 15, height: 7.5)
                         .rotationEffect(.degrees(noticeExpanded ? 180 : 0))
                 }
                 .padding(.horizontal, .spacing16)
@@ -378,19 +377,19 @@ struct ReceiptRegisterView: View {
             if noticeExpanded {
                 VStack(alignment: .leading, spacing: 14) {
                     noticeBullet(
-                        iconAsset: "icon_images_upload",
+                        iconAsset: "icon__images_upload",
                         pre: "receipt.notice.bullet1_pre",
                         highlight: "receipt.notice.bullet1_highlight",
                         post: "receipt.notice.bullet1_post"
                     )
                     noticeBullet(
-                        iconAsset: "icon_download",
+                        iconAsset: "icon_upload",
                         pre: "receipt.notice.bullet2_pre",
                         highlight: "receipt.notice.bullet2_highlight",
                         post: "receipt.notice.bullet2_post"
                     )
                     noticeBullet(
-                        iconAsset: "icon_folder",
+                        iconAsset: "icon_list",
                         pre: nil,
                         highlight: "receipt.notice.bullet3_highlight",
                         post: "receipt.notice.bullet3_post"
@@ -399,22 +398,20 @@ struct ReceiptRegisterView: View {
                 .padding(.spacing16)
             }
         }
-        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
+        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedXl))
         .overlay(
-            RoundedRectangle(cornerRadius: .roundedLg)
-                .stroke(Color.gray300, lineWidth: 1)
+            RoundedRectangle(cornerRadius: .roundedXl)
+                .stroke(Color.gray200, lineWidth: 1)
         )
     }
 
+    /// 유의사항 정보 배지 — icInfo 에셋에 원형 배경(brandPrimary 10%)과 글리프가 함께 들어있다.
+    /// 캔버스 32 대비 글리프가 18(56%)이라, 24로 렌더링하면 내부 아이콘이 정확히 13.5가 된다.
     private var noticeIcon: some View {
-        Circle()
-            .fill(Color.brandPrimary)
-            .frame(width: 20, height: 20)
-            .overlay {
-                Image(systemName: "info")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(Color.colorWhite)
-            }
+        Image("icInfo")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 24, height: 24)
     }
 
     private func noticeBullet(
@@ -423,12 +420,11 @@ struct ReceiptRegisterView: View {
         highlight: LocalizedStringKey,
         post: LocalizedStringKey
     ) -> some View {
-        HStack(alignment: .top, spacing: .spacing12) {
+        HStack(alignment: .center, spacing: 10) {
+            // 에셋 자체가 최종 색(#757575 = gray600)을 담고 있어 template 틴트 없이 그대로 렌더링한다.
             Image(iconAsset)
-                .renderingMode(.template)
                 .resizable()
                 .scaledToFit()
-                .foregroundStyle(Color.gray600)
                 .frame(width: 28, height: 28)
 
             (
@@ -441,7 +437,7 @@ struct ReceiptRegisterView: View {
                     .foregroundStyle(Color.gray700)
             )
             .font(.pretendard(.regular, size: 14))
-            .lineSpacing(4)
+            .lineSpacing(6) // lineHeight 20sp 대응 (14 + 6)
             .fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -450,9 +446,11 @@ struct ReceiptRegisterView: View {
 
     private var attachmentsHeader: some View {
         HStack {
+            // H3 Bold — Pretendard 700 / 18 / 행간 140%(25.2) / Gray800
             Text("receipt.register.attachments")
-                .font(.pretendard(.bold, size: 16))
-                .foregroundStyle(Color.gray900)
+                .font(.pretendard(.bold, size: 18))
+                .foregroundStyle(Color.gray800)
+                .lineSpacing(7.2)
             Spacer()
             (
                 Text("\(images.count)")
@@ -464,15 +462,18 @@ struct ReceiptRegisterView: View {
         }
     }
 
-    // images.isEmpty일 땐 호출부(body)에서 이 섹션 자체를 노출하지 않으므로 항상 채워진 상태.
+    /// 방금 등록한 사진이 항상 앞에 오도록 역순으로 노출한다(Android photos.reversed() 대응).
+    /// 인덱스는 원본 배열 기준을 유지해 삭제/실패 표시가 어긋나지 않게 한다.
     private var thumbnailRow: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: .spacing12) {
-                ForEach(Array(images.enumerated()), id: \.offset) { index, image in
+                ForEach(Array(images.enumerated()).reversed(), id: \.offset) { index, image in
                     thumbnail(image, index: index)
                 }
             }
         }
+        // 부모의 음수 패딩으로 상쇄된 좌우 여백을 스크롤 콘텐츠 내부에서 되돌린다.
+        .contentMargins(.horizontal, .spacing20, for: .scrollContent)
     }
 
     private func thumbnail(_ image: UIImage, index: Int) -> some View {
@@ -480,7 +481,7 @@ struct ReceiptRegisterView: View {
         return Image(uiImage: image)
             .resizable()
             .scaledToFill()
-            .frame(width: 100, height: 100)
+            .frame(width: 130, height: 130)
             .clipShape(RoundedRectangle(cornerRadius: .roundedXl))
             .contentShape(RoundedRectangle(cornerRadius: .roundedXl))
             .onTapGesture {
@@ -496,11 +497,14 @@ struct ReceiptRegisterView: View {
                 Button {
                     removeImage(at: index)
                 } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 11, weight: .bold))
+                    Image("icon_close")
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 14, height: 14)
                         .foregroundStyle(Color.colorWhite)
-                        .frame(width: 22, height: 22)
-                        .background(failed ? Color.systemError : Color.gray500.opacity(0.8), in: Circle())
+                        .frame(width: 24, height: 24)
+                        .background(Color.black.opacity(0.4), in: Circle())
                         // 시각적 크기는 그대로 두고 탭 영역만 사방 2pt씩 넓힌다.
                         .padding(-2)
                         .contentShape(Rectangle())
@@ -528,22 +532,27 @@ struct ReceiptRegisterView: View {
 
     private var failOverlay: some View {
         ZStack {
-            Color.black.opacity(0.5)
+            Color.black.opacity(0.65)
                 .clipShape(RoundedRectangle(cornerRadius: .roundedXl))
 
-            VStack(spacing: .spacing4) {
+            // 아이콘-텍스트 간격 0.5 (Android Arrangement.spacedBy(0.5.dp))
+            VStack(spacing: 0.5) {
+                // Android error.xml(원형 외곽선 + "!" 스트로크, #FE395B 1.75) 대응
                 ZStack {
                     Circle()
-                        .stroke(Color.systemError, lineWidth: 1.5)
-                        .frame(width: 24, height: 24)
+                        .stroke(Color.systemError, lineWidth: 1.75)
+                        .frame(width: 28, height: 28)
                     Text("!")
-                        .font(.system(size: 13, weight: .bold))
+                        .font(.system(size: 15, weight: .bold))
                         .foregroundStyle(Color.systemError)
                 }
+                .frame(width: 28, height: 28)
 
+                // caption3 Bold — Pretendard 700 / 10 / 행간 130%(13)
                 Text("다시 업로드해 주세요")
-                    .font(.pretendard(.medium, size: 9))
+                    .font(.pretendard(.bold, size: 10))
                     .foregroundStyle(Color.systemError)
+                    .lineSpacing(3)
                     .multilineTextAlignment(.center)
             }
         }

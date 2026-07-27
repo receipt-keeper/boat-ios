@@ -74,24 +74,55 @@ struct NotificationListView: View {
             )
         }
         .boatToastHost(toast)
-        // 케밥 → "삭제하기" 확인 (디자인 가이드: 타이틀 없이 삭제/닫기 두 버튼만)
-        .confirmationDialog(
-            "",
-            isPresented: Binding(
-                get: { itemPendingDeletion != nil },
-                set: { if !$0 { itemPendingDeletion = nil } }
-            ),
-            titleVisibility: .hidden
-        ) {
-            Button("notif.delete.confirm", role: .destructive) {
-                guard let item = itemPendingDeletion else { return }
-                itemPendingDeletion = nil
-                Task { await deleteNotification(item) }
-            }
-            Button("notif.delete.cancel", role: .cancel) {
-                itemPendingDeletion = nil
-            }
+        // 케밥 → "삭제하기 / 닫기" 하단 액션 시트 (Android NotificationDeleteActionSheet와 동일 형태).
+        // 시스템 confirmationDialog는 iOS 26에서 화면 중앙에 떠 있는 형태로 렌더링되어
+        // 디자인과 어긋나므로 직접 그린다. fullScreenCover라야 항상 최상위에 표시된다.
+        .fullScreenCover(item: $itemPendingDeletion) { item in
+            deleteActionSheet(for: item)
+                .presentationBackground(.clear)
         }
+    }
+
+    // MARK: - 삭제 액션 시트 (삭제하기 / 닫기)
+
+    private func deleteActionSheet(for item: AppNotification) -> some View {
+        ZStack(alignment: .bottom) {
+            Color.black.opacity(0.35)
+                .ignoresSafeArea()
+                .onTapGesture { itemPendingDeletion = nil }
+
+            VStack(spacing: .spacing8) {
+                actionSheetButton("notif.delete.confirm", color: .systemError) {
+                    itemPendingDeletion = nil
+                    // 시트가 닫히는 애니메이션과 겹치지 않도록 한 박자 뒤에 삭제를 시작한다.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                        Task { await deleteNotification(item) }
+                    }
+                }
+                actionSheetButton("notif.delete.cancel", color: .gray900) {
+                    itemPendingDeletion = nil
+                }
+            }
+            .padding(.horizontal, .spacing20)
+            .padding(.bottom, .spacing12)
+        }
+    }
+
+    private func actionSheetButton(
+        _ key: LocalizedStringKey,
+        color: Color,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Text(key)
+                .font(.pretendard(.medium, size: 17))
+                .foregroundStyle(color)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 18)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
     }
 
     // MARK: - 알림 삭제
@@ -201,7 +232,7 @@ private func kebabButton(action: @escaping () -> Void) -> some View {
 }
 
 /// 특정 영수증에 연결된 일반 알림(만료 임박/AS 안내 등) 카드.
-/// 상단 "보트랩" + 상대 시간 → 타이틀 → 본문 순 배치(고정 안내문 없음).
+/// 상단 분류 라벨(서버 category) + 상대 시간 → 타이틀 → 본문 순 배치(고정 안내문 없음).
 /// 이미지 에셋은 텍스트 블록 첫 줄에 상단 정렬한다.
 private struct ReceiptNotificationCard: View {
     let item: AppNotification
@@ -212,7 +243,7 @@ private struct ReceiptNotificationCard: View {
             NotificationThumbnail(imageName: item.imageName)
             VStack(alignment: .leading, spacing: 6) {
                 HStack(alignment: .center) {
-                    Text("notif.brand")
+                    Text(item.categoryLabel)
                         .font(.pretendard(.regular, size: 14))
                         .foregroundStyle(Color.gray500)
                     Spacer(minLength: .spacing8)
@@ -240,7 +271,7 @@ private struct ReceiptNotificationCard: View {
 }
 
 /// 상시 유도 알림(마케팅/등록·미사용·분석 리마인더) 전용 카드.
-/// 상단 "보트랩" + 날짜 → 타이틀 → 본문 순 배치.
+/// 상단 분류 라벨(서버 category) + 날짜 → 타이틀 → 본문 순 배치.
 /// 이미지 에셋은 텍스트 블록 첫 줄에 상단 정렬한다.
 private struct PersistentNotificationCard: View {
     let item: AppNotification
@@ -251,7 +282,7 @@ private struct PersistentNotificationCard: View {
             NotificationThumbnail(imageName: item.imageName)
             VStack(alignment: .leading, spacing: 6) {
                 HStack(alignment: .center) {
-                    Text("notif.brand")
+                    Text(item.categoryLabel)
                         .font(.pretendard(.regular, size: 14))
                         .foregroundStyle(Color.gray500)
                     Spacer(minLength: .spacing8)

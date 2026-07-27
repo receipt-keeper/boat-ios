@@ -29,25 +29,27 @@ extension Color {
 
 extension Color {
     // Safe (D-30 이상)
-    static let badgeSafeBg     = Color(hex: "#E9F2FF")
-    static let badgeSafeBorder = Color(hex: "#D2E4FF")
-    static let badgeSafeText   = Color(hex: "#0E70E3")
+    static let badgeSafeBg     = Color(hex: "#EFF6FF")
+    static let badgeSafeBorder = Color(hex: "#BFDBFE")
+    static let badgeSafeText   = Color(hex: "#3B82F6")
 
     // Warning (D-30 미만)
-    static let badgeWarningBg     = Color(hex: "#FFF1F1")
-    static let badgeWarningBorder = Color(hex: "#FFC5C5")
-    static let badgeWarningText   = Color(hex: "#FF3838")
+    static let badgeWarningBg     = Color(hex: "#FEF2F2")
+    static let badgeWarningBorder = Color(hex: "#FECACA")
+    static let badgeWarningText   = Color(hex: "#EF4444")
 
     // Expired (만료)
-    static let badgeExpiredBg     = Color(hex: "#EEEEEE")
-    static let badgeExpiredBorder = Color(hex: "#E0E0E0")
-    static let badgeExpiredText   = Color(hex: "#BDBDBD")
+    static let badgeExpiredBg     = Color(hex: "#F4F4F5")
+    static let badgeExpiredBorder = Color(hex: "#E4E4E7")
+    static let badgeExpiredText   = Color(hex: "#A1A1AA")
 }
 
 // MARK: - Card
 
 extension Color {
-    static let cardBgMedium = Color(hex: "#69A8FF") // Card/Bg/Medium — "N건 더보기" 카드 배경
+    static let cardBgStrong      = Color(hex: "#357AF6") // Card/Bg/Strong — 만료 예정 0건 배너 배경
+    static let cardBgStrongInner = Color(hex: "#4F8EFF") // Card/Bg/Strong/Inner — 그 위에 얹는 강조 내부 배너 배경
+    static let cardBgMedium      = Color(hex: "#69A8FF") // Card/Bg/Medium — "N건 더보기" 카드 배경
 }
 
 // MARK: - Grayscale

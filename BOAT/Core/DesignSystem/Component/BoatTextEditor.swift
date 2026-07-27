@@ -13,14 +13,16 @@ struct BoatTextEditor: View {
     @Binding var text: String
     var placeholder: LocalizedStringKey = ""
     var maxLength: Int? = nil
-    var height: CGFloat = 120
+    var height: CGFloat = 154
 
     var body: some View {
         ZStack(alignment: .topLeading) {
             if text.isEmpty {
+                // Body2 Medium — Pretendard 500 / 14 / 행간 150%(21) / #757575
                 Text(placeholder)
-                    .font(.pretendard(.regular, size: 15))
-                    .foregroundStyle(Color.gray400)
+                    .font(.pretendard(.medium, size: 14))
+                    .foregroundStyle(Color.gray600)
+                    .lineSpacing(7)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 14)
             }

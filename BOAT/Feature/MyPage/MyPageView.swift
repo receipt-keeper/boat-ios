@@ -50,12 +50,12 @@ struct MyPageView: View {
             profile
 
             analysisBanner
-                .padding(.horizontal, .spacing20)
+                .padding(.horizontal, .spacing24)
                 .padding(.bottom, .spacing20)
 
             // 섹션 구분 — 두꺼운 회색 배경 갭
             Rectangle()
-                .fill(Color.gray100)
+                .fill(Color.gray50)
                 .frame(height: .spacing8)
 
             sectionLabel("mypage.section.settings")
@@ -64,7 +64,7 @@ struct MyPageView: View {
             Rectangle()
                 .fill(Color.gray200)
                 .frame(height: 1)
-                .padding(.horizontal, .spacing20)
+                .padding(.horizontal, .spacing24)
 
             sectionLabel("mypage.section.help")
             settingRow("mypage.inquiry") { openInquiryForm() }
@@ -93,7 +93,7 @@ struct MyPageView: View {
                 }
             )
         }
-        .sheet(isPresented: $showPromoSheet) {
+        .boatBottomSheet(isPresented: $showPromoSheet, onDismiss: { showPromoSheet = false }) {
             ReceiptPromoSheet(
                 onClose: { showPromoSheet = false },
                 onRegister: {
@@ -103,9 +103,6 @@ struct MyPageView: View {
                     }
                 }
             )
-            .presentationDetents([.height(600)])
-            .presentationDragIndicator(.hidden)
-            .presentationBackground(Color.colorWhite)
         }
         .boatToastHost(toast)
         .boatDialog(
@@ -115,7 +112,7 @@ struct MyPageView: View {
             confirmText: "home.sign_out_button",
             confirmColor: .brandPrimary,
             cancelText: "common.cancel",
-            cancelColor: .brandPrimary,
+            cancelColor: .gray600,
             onConfirm: { viewModel.dispatch(.signOut) }
         )
         .boatDialog(
@@ -125,7 +122,7 @@ struct MyPageView: View {
             confirmText: "dialog.delete.confirm",
             confirmColor: .brandPrimary,
             cancelText: "dialog.delete.cancel",
-            cancelColor: .brandPrimary,
+            cancelColor: .gray600,
             onConfirm: { viewModel.dispatch(.deleteAccount) }
         )
         .onChange(of: viewModel.errorMessage) { _, message in
@@ -140,11 +137,10 @@ struct MyPageView: View {
 
     private var profile: some View {
         HStack(spacing: .spacing16) {
-            Image("img_profile")
-                .resizable()
-                .scaledToFill()
-                .frame(width: 64, height: 64)
+            profileAvatar
+                .frame(width: 54, height: 54)
                 .clipShape(Circle())
+                .background(Color.brandSenary, in: Circle())
 
             VStack(alignment: .leading, spacing: .spacing4) {
                 Text(nameText)
@@ -152,13 +148,28 @@ struct MyPageView: View {
                     .foregroundStyle(Color.gray900)
                 Text(emailText)
                     .font(.pretendard(.regular, size: 14))
-                    .foregroundStyle(Color.gray800)
+                    .foregroundStyle(Color.gray900)
             }
 
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, .spacing20)
+        .padding(.horizontal, .spacing24)
         .padding(.vertical, .spacing20)
+    }
+
+    @ViewBuilder
+    private var profileAvatar: some View {
+        if let urlString = store.current?.profileImageUrl, !urlString.isEmpty, let url = URL(string: urlString) {
+            AsyncImage(url: url) { phase in
+                if case .success(let image) = phase {
+                    image.resizable().scaledToFill()
+                } else {
+                    Image("img_profile").resizable().scaledToFill()
+                }
+            }
+        } else {
+            Image("img_profile").resizable().scaledToFill()
+        }
     }
 
     // MARK: - 영수증 분석 잔여 횟수 배너
@@ -166,17 +177,17 @@ struct MyPageView: View {
     private var analysisBanner: some View {
         HStack(spacing: .spacing8) {
             GifImageView(name: "shiny_white")
-                .frame(width: 18, height: 18)
+                .frame(width: 20, height: 20)
 
-            (
-                Text("mypage.analysis_remaining_pre")
-                    .foregroundStyle(Color.gray900)
-                + Text("mypage.analysis_remaining_count \(CreditStore.shared.current?.remainingCount ?? 3)")
-                    .foregroundStyle(Color.brandPrimary)
-                + Text("mypage.analysis_remaining_post")
-                    .foregroundStyle(Color.gray900)
-            )
-            .font(.pretendard(.semibold, size: 15))
+            Text("mypage.analysis_remaining_pre")
+                .font(.pretendard(.semibold, size: 14))
+                .foregroundStyle(Color.gray900)
+            + Text("mypage.analysis_remaining_count \(CreditStore.shared.current?.remainingCount ?? 3)")
+                .font(.pretendard(.bold, size: 14))
+                .foregroundStyle(Color.brandPrimary)
+            + Text("mypage.analysis_remaining_post")
+                .font(.pretendard(.semibold, size: 14))
+                .foregroundStyle(Color.gray900)
 
             Spacer(minLength: .spacing8)
 
@@ -184,17 +195,17 @@ struct MyPageView: View {
                 showPromoSheet = true
             } label: {
                 Text("mypage.analysis_view")
-                    .font(.pretendard(.semibold, size: 14))
+                    .font(.pretendard(.semibold, size: 13))
                     .foregroundStyle(Color.colorWhite)
-                    .padding(.horizontal, .spacing20)
+                    .padding(.horizontal, .spacing16)
                     .padding(.vertical, .spacing8)
                     .background(Color.brandPrimary, in: Capsule())
             }
             .buttonStyle(.plain)
         }
         .padding(.horizontal, .spacing16)
-        .frame(height: 52)
-        .background(Color.brandSenary, in: RoundedRectangle(cornerRadius: .roundedXl))
+        .frame(height: 53)
+        .background(Color.gray50, in: RoundedRectangle(cornerRadius: .roundedXl))
         .overlay(
             RoundedRectangle(cornerRadius: .roundedXl)
                 .stroke(Color.brandTertiary, lineWidth: 1)
@@ -208,7 +219,7 @@ struct MyPageView: View {
             .font(.pretendard(.regular, size: 13))
             .foregroundStyle(Color.gray500)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, .spacing20)
+            .padding(.horizontal, .spacing24)
             .padding(.top, .spacing24)
             .padding(.bottom, .spacing8)
     }
@@ -220,12 +231,14 @@ struct MyPageView: View {
                     .font(.pretendard(.medium, size: 16))
                     .foregroundStyle(Color.gray900)
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Color.gray400)
+                Image("chevron_right")
+                    .resizable()
+                    .renderingMode(.template)
+                    .frame(width: 9, height: 15)
+                    .foregroundStyle(Color.gray600)
             }
-            .padding(.horizontal, .spacing20)
-            .padding(.vertical, 18)
+            .padding(.horizontal, .spacing24)
+            .padding(.vertical, 12)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -245,11 +258,11 @@ struct MyPageView: View {
     // MARK: - 로그아웃 | 회원탈퇴
 
     private var bottomButtons: some View {
-        HStack(spacing: .spacing12) {
+        HStack(spacing: 0) {
             bottomButton("home.sign_out_button") { showLogoutDialog = true }
-            Text("|")
+            Text("  |  ")
                 .font(.pretendard(.regular, size: 14))
-                .foregroundStyle(Color.gray200)
+                .foregroundStyle(Color.gray600)
             bottomButton("mypage.withdraw") { showDeleteDialog = true }
         }
         .frame(maxWidth: .infinity)
@@ -259,7 +272,7 @@ struct MyPageView: View {
         Button(action: action) {
             Text(key)
                 .font(.pretendard(.regular, size: 14))
-                .foregroundStyle(Color.gray500)
+                .foregroundStyle(Color.gray600)
         }
         .buttonStyle(.plain)
     }

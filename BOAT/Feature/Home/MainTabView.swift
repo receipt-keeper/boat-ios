@@ -29,11 +29,6 @@ struct MainTabView: View {
     @State private var listSort: ReceiptSort = .default
     // 서비스 피드백 시트 제출 결과 토스트
     @State private var toast = BoatToastState()
-    // 피드백 시트 실측 높이 — 별점 선택 전/후 콘텐츠 높이가 달라 고정값을 쓰지 않는다.
-    // 매번 노출될 때 접힌 상태 높이로 리셋해, 이전 세션에서 펼쳐졌던 높이가 다음 노출 때
-    // 잠깐 크게 보였다가 줄어드는 깜빡임을 방지한다.
-    @State private var feedbackSheetHeight: CGFloat = Self.feedbackCollapsedHeight
-    private static let feedbackCollapsedHeight: CGFloat = 330
 
     var body: some View {
         content
@@ -142,12 +137,10 @@ struct MainTabView: View {
             .onChange(of: FeedbackTrigger.shared.triggerCount) { _, _ in
                 UserFeedbackStore.shared.tryShowFeedback()
             }
-            // 매번 새로 뜰 때는 항상 접힌 상태 높이로 시작 — 이전 노출 때 별점을 찍어 늘어났던
-            // 높이가 다음 노출 시 그대로 남아있지 않도록 리셋한다.
-            .onChange(of: UserFeedbackStore.shared.showFeedbackSheet) { _, isShowing in
-                if isShowing { feedbackSheetHeight = Self.feedbackCollapsedHeight }
-            }
-            .sheet(isPresented: feedbackSheetBinding) {
+            .boatBottomSheet(
+                isPresented: feedbackSheetBinding,
+                onDismiss: { UserFeedbackStore.shared.onFeedbackDismissed() }
+            ) {
                 BoatFeedbackSheet(
                     onDismiss: { UserFeedbackStore.shared.onFeedbackDismissed() },
                     onNext: { UserFeedbackStore.shared.onFeedbackPostponed() },
@@ -157,12 +150,8 @@ struct MainTabView: View {
                         } else {
                             toast.showError(String(localized: "feedback.submit_error"))
                         }
-                    },
-                    onHeightChange: { feedbackSheetHeight = $0 }
+                    }
                 )
-                .presentationDetents([.height(feedbackSheetHeight)])
-                .presentationDragIndicator(.hidden)
-                .presentationBackground(Color.colorWhite)
             }
             .boatToastHost(toast)
     }
@@ -237,10 +226,9 @@ struct MainTabView: View {
                         .fill(.ultraThinMaterial)
                         .overlay(Circle().fill(Color.colorWhite.opacity(0.12)))
                 }
-                // shadow_md3 2겹 레이어(Y3/blur15 + Y1/blur7). SwiftUI shadow()는 같은 alpha라도
-                // Android Material elevation보다 훨씬 옅게 보여, 스펙(10%)보다 눈에 띄게 진하게 준다.
-                .shadow(color: .black.opacity(0.32), radius: 15, x: 0, y: 3)
-                .shadow(color: .black.opacity(0.28), radius: 7, x: 0, y: 1)
+                // 사방으로 퍼지지 않고 "아래쪽" 위주로 떨어지는 드롭 섀도우 —
+                // blur는 작게, y 오프셋은 크게 줘서 그림자가 바 아래에 주로 깔리게 한다.
+                .shadow(color: .black.opacity(0.14), radius: 8, x: 0, y: 8)
         }
         .accessibilityLabel(Text(showAddMenu ? "detail.menu_close" : "receipt.add"))
     }

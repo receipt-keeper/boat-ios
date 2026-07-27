@@ -52,6 +52,7 @@ struct BoatHeader: View {
                 .renderingMode(.template)
                 .resizable()
                 .scaledToFit()
+                // 앱 전역 규칙: 상단바 검색/알림 아이콘은 24
                 .frame(width: 24, height: 24)
                 .foregroundStyle(tint)
                 .contentShape(Rectangle())

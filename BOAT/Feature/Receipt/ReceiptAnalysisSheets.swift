@@ -83,8 +83,8 @@ struct NoTokenSheet: View {
         .padding(.horizontal, .spacing20)
         .padding(.top, .spacing8)
         .padding(.bottom, .spacing16)
-        // presentationDetents 고정 높이를 콘텐츠가 다 못 채우면 위아래 여백이 붕 뜬다 — 상단 정렬로 채운다.
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        // 높이는 콘텐츠에 맞춰 산정된다(BoatBottomSheetContainer가 하단에 붙여 그린다).
+        .frame(maxWidth: .infinity, alignment: .top)
     }
 
     private var closeButton: some View {
@@ -151,6 +151,7 @@ struct AnalysisFailedSheet: View {
 
             Spacer().frame(height: .spacing8)
             ReceiptErrorIcon()
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             Spacer().frame(height: .spacing16)
             Text("receipt.fail.title")
@@ -175,8 +176,8 @@ struct AnalysisFailedSheet: View {
         .padding(.horizontal, .spacing20)
         .padding(.top, .spacing8)
         .padding(.bottom, .spacing16)
-        // presentationDetents 고정 높이를 콘텐츠가 다 못 채우면 위아래 여백이 붕 뜬다 — 상단 정렬로 채운다.
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        // 높이는 콘텐츠에 맞춰 산정된다(BoatBottomSheetContainer가 하단에 붙여 그린다).
+        .frame(maxWidth: .infinity, alignment: .top)
     }
 
     private var closeButton: some View {
@@ -261,8 +262,8 @@ struct UnsupportedReceiptSheet: View {
         .padding(.horizontal, .spacing20)
         .padding(.top, .spacing8)
         .padding(.bottom, .spacing16)
-        // presentationDetents 고정 높이를 콘텐츠가 다 못 채우면 위아래 여백이 붕 뜬다 — 상단 정렬로 채운다.
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        // 높이는 콘텐츠에 맞춰 산정된다(BoatBottomSheetContainer가 하단에 붙여 그린다).
+        .frame(maxWidth: .infinity, alignment: .top)
     }
 
     private var closeButton: some View {

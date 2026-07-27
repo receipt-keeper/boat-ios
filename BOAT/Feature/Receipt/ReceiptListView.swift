@@ -172,8 +172,10 @@ struct ReceiptListView: View {
                         }
                     }
                     .padding(.horizontal, .spacing20)
-                    .padding(.vertical, .spacing12)
+                    .padding(.top, .spacing12)
                 }
+
+                Spacer().frame(height: 24) // Figma 스펙: 필터 칩-카운트/정렬 행 마진 24pt
 
                 // 카운트 + 정렬
                 countSortRow
@@ -267,10 +269,10 @@ struct ReceiptListView: View {
                 } label: {
                     VStack(spacing: 0) {
                         Text(tab.title)
-                            .font(.pretendard(isSelected ? .bold : .medium, size: 15))
+                            .font(.pretendard(isSelected ? .bold : .medium, size: 18))
                             .foregroundStyle(isSelected ? Color.gray900 : Color.gray500)
                             .frame(maxWidth: .infinity)
-                            .frame(height: 44)
+                            .frame(height: 48)
                         Rectangle()
                             .fill(isSelected ? Color.gray900 : Color.gray200)
                             .frame(height: isSelected ? 2 : 1)
@@ -289,13 +291,13 @@ struct ReceiptListView: View {
             // 전체 | N
             HStack(spacing: .spacing8) {
                 Text("receipt.filter.all")
-                    .font(.pretendard(.regular, size: 14))
+                    .font(.pretendard(.regular, size: 16))
                     .foregroundStyle(Color.gray600)
                 Text("|")
-                    .font(.pretendard(.regular, size: 14))
+                    .font(.pretendard(.regular, size: 16))
                     .foregroundStyle(Color.gray300)
                 Text("\(viewModel.totalCount)")
-                    .font(.pretendard(.bold, size: 14))
+                    .font(.pretendard(.bold, size: 16))
                     .foregroundStyle(Color.brandPrimary)
             }
 
@@ -305,20 +307,24 @@ struct ReceiptListView: View {
             Button {
                 sortExpanded.toggle()
             } label: {
-                HStack(spacing: .spacing4) {
+                HStack(spacing: 0) {
                     Text(selectedSort.label)
                         .font(.pretendard(.regular, size: 14))
                         .foregroundStyle(Color.gray600)
                     Image(systemName: "chevron.down")
-                        .font(.system(size: 11, weight: .semibold))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 10, height: 6)
                         .foregroundStyle(Color.gray600)
+                        .padding(.leading, 12)
                 }
             }
             .buttonStyle(.plain)
             .anchorPreference(key: SortAnchorKey.self, value: .bounds) { $0 }
         }
         .padding(.horizontal, .spacing20)
-        .padding(.vertical, .spacing8)
+        .padding(.top, 0)
+        .padding(.bottom, 4)
     }
 
     private func reload(silent: Bool = false) {
@@ -337,14 +343,32 @@ struct ReceiptListView: View {
 
     // MARK: - 리스트 영역 (로딩 / 빈 상태 / 카드 목록)
 
-    // 로딩 중에는 mainContent가 스켈레톤을 보여주므로 여기선 빈 상태/목록만 처리.
+    // 로딩 중에는 mainContent가 스켈레톤을 보여주므로 여기선 에러/빈 상태/목록만 처리.
     @ViewBuilder
     private var listContent: some View {
-        if viewModel.receipts.isEmpty {
+        if let errorMessage = viewModel.errorMessage, viewModel.receipts.isEmpty {
+            VStack {
+                Text(errorMessage)
+                    .font(.pretendard(.regular, size: 14))
+                    .foregroundStyle(Color.gray500)
+                Button {
+                    reload()
+                } label: {
+                    Text("receipt.list.retry")
+                        .font(.pretendard(.regular, size: 14))
+                        .foregroundStyle(Color.brandPrimary)
+                        .padding(.top, .spacing8)
+                }
+                .buttonStyle(.plain)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if viewModel.receipts.isEmpty {
             Text("receipt.empty")
-                .font(.pretendard(.medium, size: 16))
+                .font(.pretendard(.medium, size: 18))
                 .foregroundStyle(Color.gray500)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .lineSpacing(7.2) // lineHeight 140%(25.2sp) 대응
+                .padding(.top, 160)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         } else {
             ScrollView {
                 LazyVStack(spacing: .spacing12) {
@@ -364,8 +388,8 @@ struct ReceiptListView: View {
                     }
                 }
                 .padding(.horizontal, .spacing20)
-                .padding(.top, .spacing4)
-                .padding(.bottom, 96) // 플로팅 하단 바 높이만큼 여백
+                .padding(.top, .spacing12)
+                .padding(.bottom, 108) // 플로팅 하단 바 높이만큼 여백
             }
         }
     }
@@ -386,7 +410,7 @@ struct ReceiptCard: View {
             HStack(alignment: .top, spacing: 14) {
                 thumbnail
 
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 4) {
                     HStack(alignment: .center, spacing: .spacing8) {
                         Text(receipt.itemName)
                             .font(.pretendard(.bold, size: 16))
@@ -406,8 +430,14 @@ struct ReceiptCard: View {
             }
         }
         .padding(.spacing16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
+        // minHeight 98 + alignment: .leading(=수평 leading/수직 center)로 메모 없는 카드도
+        // 세로 중앙 정렬되도록 한다(Android Surface.heightIn(min=98dp)+Column.Center 대응).
+        .frame(maxWidth: .infinity, minHeight: 98, alignment: .leading)
+        .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedXl))
+        .overlay(
+            RoundedRectangle(cornerRadius: .roundedXl)
+                .stroke(Color.gray100, lineWidth: 1)
+        )
         .contentShape(Rectangle())
         .onTapGesture { onTap() }
     }
@@ -434,10 +464,10 @@ struct ReceiptCard: View {
         HStack(spacing: 0) {
             Text("receipt.list.expiry_label")
                 .font(.pretendard(.medium, size: 14))
-                .foregroundStyle(Color.gray500)
+                .foregroundStyle(Color.gray400)
             Text("  |  ")
                 .font(.pretendard(.medium, size: 14))
-                .foregroundStyle(Color.gray300)
+                .foregroundStyle(Color.gray200)
             Text(receipt.formattedExpiresOn)
                 .font(.pretendard(.medium, size: 14))
                 .foregroundStyle(Color.gray500)
@@ -460,12 +490,13 @@ struct ReceiptCard: View {
 
     private func memoBox(_ memo: String) -> some View {
         Text(memo)
-            .font(.pretendard(.regular, size: 14))
+            .font(.pretendard(.regular, size: 12))
             .foregroundStyle(Color.gray500)
+            .lineSpacing(4) // lineHeight 16sp(12sp 대비 +4) 대응
             .lineLimit(1)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, .spacing16)
-            .padding(.vertical, .spacing12)
+            .padding(.horizontal, .spacing12)
+            .padding(.vertical, 10)
             .background(Color.gray50, in: RoundedRectangle(cornerRadius: .roundedLg))
     }
 }

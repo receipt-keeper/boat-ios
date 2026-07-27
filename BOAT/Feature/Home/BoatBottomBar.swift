@@ -53,10 +53,9 @@ struct BoatBottomBar: View {
             }
         }
         .clipShape(Capsule())
-        // shadow_md3 2겹 레이어(Y3/blur15 + Y1/blur7). SwiftUI shadow()는 같은 alpha라도
-        // Android Material elevation보다 훨씬 옅게 보여, 스펙(10%)보다 눈에 띄게 진하게 준다.
-        .shadow(color: .black.opacity(0.32), radius: 15, x: 0, y: 3)
-        .shadow(color: .black.opacity(0.28), radius: 7, x: 0, y: 1)
+        // 사방으로 퍼지지 않고 "아래쪽" 위주로 떨어지는 드롭 섀도우 —
+        // blur는 작게, y 오프셋은 크게 줘서 그림자가 바 아래에 주로 깔리게 한다.
+        .shadow(color: .black.opacity(0.14), radius: 8, x: 0, y: 8)
     }
 
     private func item(

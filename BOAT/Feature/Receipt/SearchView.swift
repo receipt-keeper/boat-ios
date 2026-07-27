@@ -137,7 +137,7 @@ struct SearchView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 16, height: 16)
-                    .foregroundStyle(Color.gray400)
+                    .foregroundStyle(Color.gray900)
             } else {
                 Button { query = "" } label: {
                     Image("icon_close_search")
@@ -150,7 +150,9 @@ struct SearchView: View {
         }
         .animation(.easeInOut(duration: 0.15), value: query.isEmpty)
         .padding(.horizontal, .spacing16)
-        .padding(.vertical, 8)
+        // 높이를 고정해 진입 시 키보드가 올라오며 레이아웃이 재정착할 때 검색바가
+        // 순간적으로 작아져 보이던 리플로우를 방지한다.
+        .frame(height: 40)
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
         .overlay(
             RoundedRectangle(cornerRadius: .roundedLg)
