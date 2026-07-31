@@ -160,10 +160,23 @@ struct ReceiptManualInputView: View {
         case 2: return 24
         case 3: return 36
         case 4:
-            guard let n = Int(customMonthsText), n > 0 else { return nil }
+            // 허용 범위(개월 1~99 / 년 1~10)를 벗어나면 유효한 값으로 보지 않는다 → 제출 차단
+            guard let n = Int(customMonthsText), customWarrantyRange.contains(n) else { return nil }
             return customIsYears ? n * 12 : n
         default: return nil
         }
+    }
+
+    /// 직접입력 단위에 따른 허용 범위
+    private var customWarrantyRange: ClosedRange<Int> {
+        customIsYears ? ReceiptTextLimits.warrantyYearRange : ReceiptTextLimits.warrantyMonthRange
+    }
+
+    /// 직접입력 인라인 에러 문구 — 미입력/0이면 입력 안내, 범위 밖이면 범위 안내.
+    private var customWarrantyError: LocalizedStringKey? {
+        guard selectedWarranty == 4 else { return nil }
+        guard let n = Int(customMonthsText), n > 0 else { return "manual.warranty_required" }
+        return customWarrantyRange.contains(n) ? nil : "manual.warranty_range_error"
     }
 
     /// 선택된 보증기간을 읽기전용 박스로 보여줄 텍스트 ("6개월" 등). 직접입력 모드에서는 숨김.
@@ -174,7 +187,7 @@ struct ReceiptManualInputView: View {
         case 2: return String(localized: "manual.warranty_2y")
         case 3: return String(localized: "manual.warranty_3y")
         case 4:
-            guard let n = Int(customMonthsText), n > 0 else { return nil }
+            guard let n = Int(customMonthsText), customWarrantyRange.contains(n) else { return nil }
             return customIsYears ? "\(n)년" : "\(n)개월"
         default: return nil
         }
@@ -575,7 +588,7 @@ struct ReceiptManualInputView: View {
                             // 매 keystroke마다 새 Binding(get:set:)을 만들면 IME 조합 중인 글자가
                             // 분리/중복될 수 있어, 평범한 바인딩 + onChange 보정으로 대체한다.
                             .onChange(of: customMonthsText) { _, newValue in
-                                let filtered = String(newValue.filter(\.isNumber).prefix(ReceiptTextLimits.warrantyMonths))
+                                let filtered = String(newValue.filter(\.isNumber).prefix(ReceiptTextLimits.warrantyDigits))
                                 if filtered != newValue { customMonthsText = filtered }
                             }
                             .keyboardType(.numberPad)
@@ -591,6 +604,13 @@ struct ReceiptManualInputView: View {
                             )
                         customUnitChip("개월", selected: !customIsYears) { customIsYears = false }
                         customUnitChip("년", selected: customIsYears)    { customIsYears = true  }
+                    }
+                    if let customWarrantyError {
+                        Spacer().frame(height: 6)
+                        Text(customWarrantyError)
+                            .font(.pretendard(.medium, size: 13))
+                            .foregroundStyle(Color.systemError)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 } else if let warrantySummaryText {
                     Spacer().frame(height: .spacing8)
@@ -626,11 +646,8 @@ struct ReceiptManualInputView: View {
         .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .rounded2xl))
     }
 
-    private var needsWarrantyHint: Bool {
-        if selectedWarranty == nil { return true }
-        if selectedWarranty == 4 { return (Int(customMonthsText) ?? 0) <= 0 }
-        return false
-    }
+    /// 미선택 상태에서만 안내 박스를 띄운다. 직접입력의 오류는 필드 하단 인라인 에러가 담당한다.
+    private var needsWarrantyHint: Bool { selectedWarranty == nil }
 
     private var memoField: some View {
         VStack(alignment: .leading, spacing: 4) {

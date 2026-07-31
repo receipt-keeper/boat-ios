@@ -1435,12 +1435,22 @@
         }
       }
     },
+    "manual.warranty_range_error": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "입력 가능한 기간을 확인해 주세요."
+          }
+        }
+      }
+    },
     "manual.warranty_required": {
       "localizations": {
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "무상 AS 만료기간을 선택해주세요."
+            "value": "무상 AS 만료기간을 입력해 주세요."
           }
         }
       }
@@ -2360,7 +2370,7 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "영수증 수정에 실패했어요. 잠시 후 다시 시도해 주세요."
+            "value": "입력 내용을 확인해 주세요."
           }
         }
       }
