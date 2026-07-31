@@ -529,6 +529,8 @@ struct ReceiptManualInputView: View {
                     label: "manual.product_name",
                     required: true,
                     placeholder: "manual.product_name_hint",
+                    isError: productNameTooLong,
+                    errorText: LocalizedStringKey("manual.max_length_error \(ReceiptTextLimits.productName)"),
                     maxLength: ReceiptTextLimits.productName
                 )
 
