@@ -103,16 +103,21 @@ extension ReceiptSort {
 }
 
 extension ReceiptFilter {
-    /// category 파라미터 값 (서버 필터 계약). 전체면 nil → 파라미터 미전송.
-    /// Android ReceiptListViewModel.toApiCategory()와 동일한 문자열 사용.
+    /// 클라이언트 필터 매칭용 대상 문자열. 반드시 DeviceCategory.rawValue와 같아야 한다 —
+    /// 영수증 생성/수정 시 앱이 실제로 저장하는 category 값이 rawValue이기 때문이다
+    /// (ReceiptManualInputView/ReceiptEditView 참고). 예전엔 이 값이 별도로 하드코딩되어 있었는데,
+    /// .it("영상/IT 제품")과 .other("기타")가 실제 저장값("IT 기기"/"기타 기기")과 달라
+    /// normalizeCategory로 정규화해도 매칭이 실패해 해당 두 카테고리 필터가 아무 것도
+    /// 걸러내지 못하는 버그가 있었다. rawValue를 그대로 참조해 재발을 막는다.
+    /// 전체면 nil → 파라미터 미전송.
     var apiCategory: String? {
         switch self {
         case .all:     return nil
-        case .it:      return "영상/IT 제품"
-        case .laundry: return "세탁/청소"
-        case .kitchen: return "주방가전"
-        case .living:  return "리빙/냉난방"
-        case .other:   return "기타"
+        case .it:      return DeviceCategory.it.rawValue
+        case .laundry: return DeviceCategory.laundry.rawValue
+        case .kitchen: return DeviceCategory.kitchen.rawValue
+        case .living:  return DeviceCategory.living.rawValue
+        case .other:   return DeviceCategory.other.rawValue
         }
     }
 }

@@ -51,7 +51,7 @@ enum DeviceCategory: String, CaseIterable, Codable {
             ]
         case .it:
             return [
-                "데스크탑/TV":  "img_monitor",
+                "PC/TV":      "img_monitor",
                 "스피커":      "img_speaker",
                 "카메라":      "img_camera",
                 "게임기":      "img_game_console",
@@ -86,7 +86,7 @@ enum DeviceCategory: String, CaseIterable, Codable {
         case .kitchen: return ["전자레인지", "냉장고", "밥솥", "오븐", "정수기", "기타"]
         case .laundry: return ["세탁기", "건조기", "청소기", "로봇청소기", "기타"]
         case .living:  return ["에어컨", "선풍기", "공기청정기", "가습기", "기타"]
-        case .it:      return ["노트북", "핸드폰", "무선이어폰", "스마트워치", "데스크탑/TV", "카메라", "스피커", "게임기", "헤드셋", "기타"]
+        case .it:      return ["노트북", "핸드폰", "무선이어폰", "스마트워치", "PC/TV", "카메라", "스피커", "게임기", "헤드셋", "기타"]
         case .other:   return ["기타"]
         }
     }
@@ -130,6 +130,9 @@ enum DeviceImage {
         }
         // 2) 서버 표기 변형/별칭 (Android SUB_CATEGORY_IMAGE 대응)
         let aliases: [String: String] = [
+            // "데스크탑/TV"는 예전 표기(→ "PC/TV"로 변경). 이 값으로 이미 저장된 기존
+            // 영수증도 계속 같은 아이콘으로 매칭되도록 별칭으로 남겨둔다.
+            "데스크탑/TV": "img_monitor",
             "데스크탑": "img_monitor",
             "tv":      "img_monitor",
             "티비":     "img_monitor",

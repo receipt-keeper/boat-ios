@@ -199,7 +199,10 @@ struct ReceiptManualInputView: View {
     private var priceDisplayBinding: Binding<String> {
         Binding(
             get: { Int(price)?.formattedWithComma ?? "" },
-            set: { price = String($0.filter(\.isNumber).prefix(9)) }
+            // 여기서 9자리로 자르면 BoatInputField의 maxDigits 검사가 초과 상태를 못 본다
+            // (항상 9자리 이하로 들어오므로). 자릿수 제한은 maxDigits가 담당하고,
+            // 여기서는 Int 변환이 깨지지 않을 선까지만 방어적으로 자른다.
+            set: { price = String($0.filter(\.isNumber).prefix(18)) }
         )
     }
 
@@ -275,6 +278,8 @@ struct ReceiptManualInputView: View {
         // 스와이프 대신 스크림 탭이 "취소" 역할을 한다.
         .boatBottomSheet(isPresented: $showDatePicker, onDismiss: { showDatePicker = false }) {
             PurchaseDatePickerSheet(
+                // 시트를 다시 열었을 때 이전에 고른 날짜가 선택된 상태로 보이도록 현재 값을 넘긴다.
+                selected: purchaseDate,
                 onSelect: { purchaseDate = $0; showDatePicker = false }
             )
         }
@@ -724,7 +729,8 @@ struct ReceiptManualInputView: View {
                         placeholder: "manual.price_hint",
                         isError: priceLimitReached,
                         errorText: "최대 999,999,999원까지 입력 가능합니다.",
-                        keyboard: .numberPad
+                        keyboard: .numberPad,
+                        maxDigits: 9
                     )
                     serialField
                 }

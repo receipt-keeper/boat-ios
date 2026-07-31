@@ -247,7 +247,10 @@ struct ReceiptEditView: View {
     private var priceDisplayBinding: Binding<String> {
         Binding(
             get: { Int(price)?.formattedWithComma ?? "" },
-            set: { price = String($0.filter(\.isNumber).prefix(9)) }
+            // 여기서 9자리로 자르면 BoatInputField의 maxDigits 검사가 초과 상태를 못 본다
+            // (항상 9자리 이하로 들어오므로). 자릿수 제한은 maxDigits가 담당하고,
+            // 여기서는 Int 변환이 깨지지 않을 선까지만 방어적으로 자른다.
+            set: { price = String($0.filter(\.isNumber).prefix(18)) }
         )
     }
 
@@ -349,6 +352,8 @@ struct ReceiptEditView: View {
         // 스와이프 대신 스크림 탭이 "취소" 역할을 한다.
         .boatBottomSheet(isPresented: $showDatePicker, onDismiss: { showDatePicker = false }) {
             PurchaseDatePickerSheet(
+                // 시트를 다시 열었을 때 이전에 고른 날짜가 선택된 상태로 보이도록 현재 값을 넘긴다.
+                selected: purchaseDate,
                 onSelect: { purchaseDate = $0; showDatePicker = false }
             )
         }
@@ -479,28 +484,31 @@ struct ReceiptEditView: View {
             selectedSubcategory = selected ? nil : name
         } label: {
             VStack(spacing: 6) {
-                RoundedRectangle(cornerRadius: .roundedXl)
-                    .fill(selected ? Color.brandQuinary : Color.gray100)
-                    .frame(width: 64, height: 52)
+                RoundedRectangle(cornerRadius: .roundedLg)
+                    .fill(selected ? Color.brandQuinary : Color.gray50)
+                    .frame(width: 56, height: 56)
                     .overlay(
                         // stroke()는 경계선을 중심으로 안팎에 절반씩 그려 프레임 밖으로 살짝
                         // 삐져나오는데, 가로 스크롤 안에 있는 칩이라 그 삐져나온 바깥쪽 절반이
                         // 스크롤뷰 레이아웃 경계에 잘려 위쪽 변 테두리가 흐릿하게 보였다.
                         // strokeBorder()는 프레임 안쪽으로만 그려 잘릴 여지가 없다.
-                        RoundedRectangle(cornerRadius: .roundedXl)
+                        RoundedRectangle(cornerRadius: .roundedLg)
                             .strokeBorder(selected ? Color.brandPrimary : Color.clear, lineWidth: 1.5)
                     )
                     .overlay {
                         Image(DeviceImage.assetName(category: selectedCategory.rawValue, subCategory: name))
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 30, height: 30)
+                            .frame(width: 44, height: 44)
                     }
                 Text(name)
-                    .font(.pretendard(.regular, size: 11))
+                    .font(.pretendard(.regular, size: 13))
                     .foregroundStyle(selected ? Color.brandPrimary : Color.gray600)
                     .lineLimit(1)
+                    .multilineTextAlignment(.center)
             }
+            // 칩 1칸의 고정 폭 64 — 56 카드가 가운데 놓이고 좌우 4씩이 칩 사이 여백이 된다.
+            .frame(width: 64)
         }
         .buttonStyle(.plain)
     }
@@ -714,7 +722,8 @@ struct ReceiptEditView: View {
                     placeholder: "manual.price_hint",
                     isError: priceLimitReached,
                     errorText: "최대 999,999,999원까지 입력 가능합니다.",
-                    keyboard: .numberPad
+                    keyboard: .numberPad,
+                    maxDigits: 9
                 )
                 serialField
             }
@@ -1090,7 +1099,12 @@ struct ReceiptEditView: View {
                 )
                 onUpdated()
             } catch {
-                toast.showError(String(localized: "receipt.edit.fail"))
+                // 4xx면 서버가 준 사유를 그대로 노출한다(5xx·네트워크는 APIError가 앱 문구로 바꿔줌).
+                // Android ReceiptEditViewModel(submitError = ApiErrorParser.message)와 동일 정책.
+                toast.showError(
+                    (error as? LocalizedError)?.errorDescription
+                        ?? String(localized: "receipt.edit.fail")
+                )
             }
         }
     }
