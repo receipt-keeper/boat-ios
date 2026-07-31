@@ -187,7 +187,13 @@ final class APIClient {
     }
 
     /// 실패 응답 본문에서 비즈니스 코드 + 사용자 노출 문구 + 필드별 에러 목록(data.errors)을 꺼낸다.
-    /// 문구는 errors 목록이 있으면 첫 번째 필드 에러 메시지를 우선하고, 없으면 data.message를 사용한다.
+    ///
+    /// 서버 계약(백엔드 확인):
+    /// - 400/404/409 등: 비즈니스 오류 문구가 `data.message`에 담긴다.
+    /// - 422: `data.message`와 **함께** 상세 검증 오류가 `data.errors[]`에 담긴다.
+    ///
+    /// 즉 사용자에게 보여줄 문구는 항상 `data.message` 하나다. `errors[]`는 부가 정보이므로
+    /// 문구 결정에 쓰지 않고 그대로 전달만 한다(OCR이 errors[].fileIndex로 실패 이미지를 표시).
     /// 유효한 문구가 없으면 message는 nil — 호출부가 상태코드에 맞는 앱 기본 문구로 대체한다.
     /// (Android ApiErrorParser.parseMessage와 동일 규칙)
     private static func parseError(from data: Data?) -> (code: String?, message: String?, fieldErrors: [APIErrorData.FieldError]) {
@@ -197,13 +203,10 @@ final class APIClient {
         }
         let code = envelope.data?.code
         let fieldErrors = envelope.data?.errors ?? []
-        if let fieldMessage = fieldErrors.first?.message, !fieldMessage.isEmpty {
-            return (code, fieldMessage, fieldErrors)
+        guard let message = envelope.data?.message, !message.isEmpty else {
+            return (code, nil, fieldErrors)
         }
-        if let message = envelope.data?.message, !message.isEmpty {
-            return (code, message, fieldErrors)
-        }
-        return (code, nil, fieldErrors)
+        return (code, message, fieldErrors)
     }
 
     /// 서버가 유효한 메시지를 주지 않았을 때 쓸 앱 기본 문구.
