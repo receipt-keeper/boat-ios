@@ -83,15 +83,17 @@ struct ReceiptManualInputView: View {
         self.onComplete = onComplete
         self.isFromOCR = ocrResult != nil
 
-        // 기본 대분류는 주방가전 (디자인 기본값). OCR 카테고리가 있으면 그걸로.
-        var category = DeviceCategory.kitchen
+        // 대분류·소분류는 항상 필수 — 직접 입력(OCR 결과 없음)이거나 서버 category가
+        // 매칭되지 않으면 "기타"로 타겟팅한다(선택 안 함 상태를 허용하지 않는다).
+        var category = DeviceCategory.other
         if let cat = ocrResult?.category, let matched = DeviceCategory.from(serverValue: cat) {
             category = matched
         }
         _selectedCategory = State(initialValue: category)
 
         // OCR이 인식한 소분류 — 매칭되면 소분류 칩 초기 선택 + 맨 앞 고정 기준값으로 쓴다.
-        let subcategory = Self.matchSubcategory(ocrResult?.subCategory, in: category)
+        // 매칭 실패(또는 OCR 자체가 없는 직접 입력)도 "기타"로 타겟팅해 항상 값이 있도록 한다.
+        let subcategory = Self.matchSubcategory(ocrResult?.subCategory, in: category) ?? "기타"
         _selectedSubcategory = State(initialValue: subcategory)
         self.originalSubcategory = subcategory
 
@@ -480,7 +482,9 @@ struct ReceiptManualInputView: View {
         let selected = category == selectedCategory
         return Button {
             selectedCategory = category
-            selectedSubcategory = nil
+            // 대분류를 바꾸면 이전 소분류는 더 이상 유효한 목록에 없을 수 있어 "기타"로
+            // 재설정한다 — 소분류는 항상 값이 있어야 하므로 nil로 비우지 않는다.
+            selectedSubcategory = "기타"
             withAnimation(.easeInOut(duration: 0.18)) { categoryExpanded = false }
         } label: {
             Text(category.pickerLabel)
@@ -498,7 +502,8 @@ struct ReceiptManualInputView: View {
     private func subcategoryChip(_ name: String) -> some View {
         let selected = selectedSubcategory == name
         return Button {
-            selectedSubcategory = selected ? nil : name
+            // 소분류는 항상 필수 — 이미 선택된 칩을 다시 탭해도 선택 해제되지 않는다.
+            selectedSubcategory = name
         } label: {
             VStack(spacing: 6) {
                 RoundedRectangle(cornerRadius: .roundedLg)

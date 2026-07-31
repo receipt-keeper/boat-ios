@@ -89,8 +89,11 @@ struct ReceiptEditView: View {
         self.onBack = onBack
         self.onUpdated = onUpdated
 
-        let category = DeviceCategory.from(serverValue: receipt.category) ?? .kitchen
-        let subcategory = Self.matchSubcategory(receipt.subCategory, in: category)
+        // 대분류·소분류는 항상 필수 — 서버 category가 매칭되지 않으면 "기타"로,
+        // subCategory가 매칭되지 않으면 해당 대분류 하위 "기타"로 타겟팅한다
+        // (선택 안 함 상태를 허용하지 않는다).
+        let category = DeviceCategory.from(serverValue: receipt.category) ?? .other
+        let subcategory = Self.matchSubcategory(receipt.subCategory, in: category) ?? "기타"
         _selectedCategory = State(initialValue: category)
         _selectedSubcategory = State(initialValue: subcategory)
         originalCategory = category
@@ -475,7 +478,9 @@ struct ReceiptEditView: View {
         let selected = category == selectedCategory
         return Button {
             selectedCategory = category
-            selectedSubcategory = nil
+            // 대분류를 바꾸면 이전 소분류는 더 이상 유효한 목록에 없을 수 있어 "기타"로
+            // 재설정한다 — 소분류는 항상 값이 있어야 하므로 nil로 비우지 않는다.
+            selectedSubcategory = "기타"
             withAnimation(.easeInOut(duration: 0.18)) { categoryExpanded = false }
         } label: {
             Text(category.pickerLabel)
@@ -493,7 +498,8 @@ struct ReceiptEditView: View {
     private func subcategoryChip(_ name: String) -> some View {
         let selected = selectedSubcategory == name
         return Button {
-            selectedSubcategory = selected ? nil : name
+            // 소분류는 항상 필수 — 이미 선택된 칩을 다시 탭해도 선택 해제되지 않는다.
+            selectedSubcategory = name
         } label: {
             VStack(spacing: 6) {
                 RoundedRectangle(cornerRadius: .roundedLg)
