@@ -631,26 +631,34 @@ struct ReceiptManualInputView: View {
     }
 
     private var memoField: some View {
-        ZStack(alignment: .topLeading) {
-            // placeholder는 BoatTextEditor가 직접 그린다(중복 렌더 제거).
-            BoatTextEditor(
-                text: $memo,
-                placeholder: "manual.memo_hint",
-                maxLength: ReceiptTextLimits.memo,
-                height: 154
+        VStack(alignment: .leading, spacing: 4) {
+            ZStack(alignment: .topLeading) {
+                // placeholder는 BoatTextEditor가 직접 그린다(중복 렌더 제거).
+                BoatTextEditor(
+                    text: $memo,
+                    placeholder: "manual.memo_hint",
+                    maxLength: ReceiptTextLimits.memo,
+                    height: 154
+                )
+            }
+            .overlay(
+                RoundedRectangle(cornerRadius: .roundedLg)
+                    .stroke(memoTooLong ? Color.systemError : Color.gray300, lineWidth: 1)
             )
-        }
-        .overlay(
-            RoundedRectangle(cornerRadius: .roundedLg)
-                .stroke(Color.gray300, lineWidth: 1)
-        )
-        // 디자인 가이드: "최대 100자" 안내문구는 박스 밖이 아니라 박스 안 우측 하단에 표시.
-        .overlay(alignment: .bottomTrailing) {
-            Text("manual.memo_counter")
-                .font(.pretendard(.regular, size: 12))
-                .foregroundStyle(Color.gray400)
-                .padding(.trailing, 12)
-                .padding(.bottom, 10)
+            // 디자인 가이드: "최대 100자" 안내문구는 박스 밖이 아니라 박스 안 우측 하단에 표시.
+            .overlay(alignment: .bottomTrailing) {
+                Text("manual.memo_counter")
+                    .font(.pretendard(.regular, size: 12))
+                    .foregroundStyle(Color.gray400)
+                    .padding(.trailing, 12)
+                    .padding(.bottom, 10)
+            }
+            if memoTooLong {
+                Text("manual.max_length_error \(ReceiptTextLimits.memo)")
+                    .font(.pretendard(.medium, size: 13))
+                    .foregroundStyle(Color.systemError)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
     }
 
