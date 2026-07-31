@@ -232,13 +232,15 @@ struct ReceiptEditView: View {
     private var memoTooLong: Bool { memo.count >= ReceiptTextLimits.memo }
     private var brandTooLong: Bool { brand.count >= ReceiptTextLimits.brand }
     private var serialTooLong: Bool { serial.count >= ReceiptTextLimits.serial }
-    private var priceLimitReached: Bool { price.count >= 9 }
+    /// 자릿수가 아니라 금액으로 판단한다 — 123,456,789처럼 9자리여도 상한 미만이면 정상.
+    private var priceLimitReached: Bool { (Int(price) ?? 0) >= ReceiptTextLimits.priceMax }
 
     private var canSubmit: Bool {
         !productName.trimmingCharacters(in: .whitespaces).isEmpty
             && !purchaseDate.isEmpty
             && totalWarrantyMonths != nil
             && totalFileCount >= Self.minPhotos
+            && !priceLimitReached
             && hasChanges
             && !isSubmitting
     }
@@ -721,9 +723,9 @@ struct ReceiptEditView: View {
                     label: "manual.price",
                     placeholder: "manual.price_hint",
                     isError: priceLimitReached,
-                    errorText: "최대 999,999,999원까지 입력 가능합니다.",
+                    errorText: "manual.price_limit_error",
                     keyboard: .numberPad,
-                    maxDigits: 9
+                    maxDigits: ReceiptTextLimits.priceDigits
                 )
                 serialField
             }
@@ -1062,6 +1064,10 @@ struct ReceiptEditView: View {
         }
         guard totalFileCount >= Self.minPhotos else {
             toast.showError(String(localized: "manual.image_required"))
+            return
+        }
+        guard !priceLimitReached else {
+            toast.showError(String(localized: "manual.price_limit_error"))
             return
         }
         guard hasChanges else {

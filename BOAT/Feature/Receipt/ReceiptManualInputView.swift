@@ -108,7 +108,7 @@ struct ReceiptManualInputView: View {
             }
         }
         if let amount = ocr.totalAmount {
-            _price = State(initialValue: String("\(amount)".prefix(9)))
+            _price = State(initialValue: String("\(amount)".prefix(ReceiptTextLimits.priceDigits)))
         }
         if let months = ocr.periodMonths {
             switch months {
@@ -139,7 +139,8 @@ struct ReceiptManualInputView: View {
     private var memoTooLong: Bool { memo.count >= ReceiptTextLimits.memo }
     private var brandTooLong: Bool { brand.count >= ReceiptTextLimits.brand }
     private var serialTooLong: Bool { serial.count >= ReceiptTextLimits.serial }
-    private var priceLimitReached: Bool { price.count >= 9 }
+    /// 자릿수가 아니라 금액으로 판단한다 — 123,456,789처럼 9자리여도 상한 미만이면 정상.
+    private var priceLimitReached: Bool { (Int(price) ?? 0) >= ReceiptTextLimits.priceMax }
 
     /// 소분류 칩 노출 순서 — OCR로 최초 설정된 소분류만 맨 앞에 고정(1회성). 이후 사용자가
     /// 다른 소분류를 직접 선택해도 배열 순서 자체는 바뀌지 않는다(선택 표시만 이동).
@@ -193,6 +194,7 @@ struct ReceiptManualInputView: View {
             && !productName.trimmingCharacters(in: .whitespaces).isEmpty
             && !purchaseDate.isEmpty
             && totalWarrantyMonths != nil
+            && !priceLimitReached
     }
 
     /// 숫자만 입력, 최대 9자리(999,999,999), 입력 중 천 단위 콤마 자동 표시.
@@ -738,9 +740,9 @@ struct ReceiptManualInputView: View {
                         label: "manual.price",
                         placeholder: "manual.price_hint",
                         isError: priceLimitReached,
-                        errorText: "최대 999,999,999원까지 입력 가능합니다.",
+                        errorText: "manual.price_limit_error",
                         keyboard: .numberPad,
-                        maxDigits: 9
+                        maxDigits: ReceiptTextLimits.priceDigits
                     )
                     serialField
                 }
@@ -988,6 +990,10 @@ struct ReceiptManualInputView: View {
         }
         guard totalWarrantyMonths != nil else {
             toast.showError(String(localized: "manual.warranty_required"))
+            return
+        }
+        guard !priceLimitReached else {
+            toast.showError(String(localized: "manual.price_limit_error"))
             return
         }
         guard canSubmit else { return }

@@ -1225,6 +1225,16 @@
         }
       }
     },
+    "manual.price_limit_error": {
+      "localizations": {
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최대 999,999,999원까지 입력 가능합니다."
+          }
+        }
+      }
+    },
     "manual.product_name": {
       "localizations": {
         "ko": {
