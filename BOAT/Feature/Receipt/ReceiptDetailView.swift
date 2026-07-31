@@ -582,7 +582,12 @@ struct ReceiptDetailView: View {
                 onDeleted()  // 목록 동기화 + 삭제 토스트 (상위)
                 onBack()     // 상세 닫기
             } catch {
-                toast.showError(String(localized: "receipt.delete.fail"))
+                // 4xx면 서버가 준 사유를 그대로 노출한다(5xx·네트워크는 APIError가 앱 문구로 바꿔줌).
+                // Android ReceiptDetailViewModel(deleteError = ApiErrorParser.message)와 동일 정책.
+                toast.showError(
+                    (error as? LocalizedError)?.errorDescription
+                        ?? String(localized: "receipt.delete.fail")
+                )
             }
         }
     }

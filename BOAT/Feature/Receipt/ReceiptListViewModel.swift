@@ -85,16 +85,17 @@ final class ReceiptListViewModel {
     }
 
     /// 영수증 삭제 — DELETE API 성공 시 로컬 캐시 + 화면 목록에서 함께 제거.
-    /// 실패 시 목록은 그대로 유지하고 false를 반환 (호출부에서 에러 토스트 처리).
+    /// 실패 시 목록은 그대로 유지하고, 사용자에게 보여줄 사유(4xx면 서버 문구)를 함께 돌려준다.
+    /// (성공 여부만 반환하면 서버가 준 실패 사유가 유실된다)
     @discardableResult
-    func deleteReceipt(id: String) async -> Bool {
+    func deleteReceipt(id: String) async -> (success: Bool, errorMessage: String?) {
         do {
             try await repository.deleteReceipt(id: id)
         } catch {
-            return false
+            return (false, (error as? LocalizedError)?.errorDescription)
         }
         removeFromList(id: id)
-        return true
+        return (true, nil)
     }
 
     /// 목록 배열에서만 제거 (서버 삭제는 이미 완료된 경우 — 상세 화면 삭제 후 동기화용).

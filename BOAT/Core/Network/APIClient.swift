@@ -63,7 +63,7 @@ final class APIClient {
             // HTTP 응답 없음(연결 실패) → 네트워크
             guard let statusCode = response.response?.statusCode else {
                 Self.reportNetworkFailure(path: target.path, method: target.method.rawValue, statusCode: nil, underlyingError: response.error)
-                throw APIError.network
+                throw Self.connectionError(from: response.error)
             }
             // 5xx → 네트워크 문구 (Android ApiErrorParser 규칙)
             if statusCode >= 500 {
@@ -101,7 +101,7 @@ final class APIClient {
         case .failure:
             guard let statusCode = response.response?.statusCode else {
                 Self.reportNetworkFailure(path: target.path, method: target.method.rawValue, statusCode: nil, underlyingError: response.error)
-                throw APIError.network
+                throw Self.connectionError(from: response.error)
             }
             if statusCode >= 500 {
                 Self.reportNetworkFailure(path: target.path, method: target.method.rawValue, statusCode: statusCode, underlyingError: response.error)
@@ -137,7 +137,7 @@ final class APIClient {
         case .failure:
             guard let statusCode = response.response?.statusCode else {
                 Self.reportNetworkFailure(path: path, method: "POST", statusCode: nil, underlyingError: response.error)
-                throw APIError.network
+                throw Self.connectionError(from: response.error)
             }
             if statusCode >= 500 {
                 Self.reportNetworkFailure(path: path, method: "POST", statusCode: statusCode, underlyingError: response.error)
@@ -152,6 +152,17 @@ final class APIClient {
 
     /// 연결 실패(타임아웃/오프라인 등) 또는 5xx로 인한 네트워크 통신 실패 시,
     /// 어떤 요청이 왜 실패했는지 Crashlytics에 non-fatal로 남긴다.
+    /// HTTP 응답 자체를 못 받은 경우(연결 실패) — 시간 초과와 그 외 연결 실패를 구분한다.
+    /// (Android ApiErrorParser: SocketTimeoutException → TIMEOUT_MESSAGE, 그 외 IOException → NETWORK_MESSAGE)
+    private static func connectionError(from error: Error?) -> APIError {
+        guard let error else { return .network }
+        if let urlError = error.asAFError?.underlyingError as? URLError ?? error as? URLError,
+           urlError.code == .timedOut {
+            return .timeout
+        }
+        return .network
+    }
+
     private static func reportNetworkFailure(path: String, method: String, statusCode: Int?, underlyingError: Error?) {
         CrashReporter.setValue(path, forKey: "api_failed_path")
         CrashReporter.setValue(method, forKey: "api_failed_method")

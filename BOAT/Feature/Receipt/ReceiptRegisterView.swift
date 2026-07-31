@@ -33,7 +33,6 @@ struct ReceiptRegisterView: View {
     @State private var showGalleryPicker = false
     @State private var cameraUnavailable = false
     @State private var showCameraDenied = false
-    @State private var showMaxAlert = false
     @State private var isAnalyzing = false
     @State private var activeSheet: AnalysisSheet?
     @State private var showManualInput = false
@@ -154,9 +153,6 @@ struct ReceiptRegisterView: View {
             Button("common.cancel", role: .cancel) {}
         } message: {
             Text("permission.camera.denied_message")
-        }
-        .alert("receipt.register.max", isPresented: $showMaxAlert) {
-            Button("common.confirm", role: .cancel) {}
         }
         .boatBottomSheet(item: $activeSheet, onDismiss: { activeSheet = nil }) { sheet in
             switch sheet {
@@ -310,7 +306,7 @@ struct ReceiptRegisterView: View {
 
     private var galleryCard: some View {
         Button {
-            if canAddMore { showGalleryPicker = true } else { showMaxAlert = true }
+            if canAddMore { showGalleryPicker = true } else { showMaxPhotosToast() }
         } label: {
             outlinedCard(icon: "icon_slot", label: "receipt.register.gallery")
         }
@@ -581,9 +577,15 @@ struct ReceiptRegisterView: View {
 
     // MARK: - Actions
 
+    /// 최대 등록 장수 초과 안내. 디자인 가이드상 안내는 시스템 Alert이 아니라 BoatToast로 통일한다
+    /// (Android도 동일하게 Toast로 안내).
+    private func showMaxPhotosToast() {
+        toast.showError(String(localized: "receipt.register.max"))
+    }
+
     /// 카메라 실행 — 촬영 버튼 탭 시점에 권한 확인/요청 (App Store 심사 가이드 준수).
     private func openCamera() {
-        guard canAddMore else { showMaxAlert = true; return }
+        guard canAddMore else { showMaxPhotosToast(); return }
         guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
             cameraUnavailable = true // 시뮬레이터 등 카메라 미탑재
             return
@@ -607,7 +609,7 @@ struct ReceiptRegisterView: View {
     private func addImages(_ new: [UIImage]) {
         guard !new.isEmpty else { return }
         let slots = remainingSlots
-        guard slots > 0 else { showMaxAlert = true; return }
+        guard slots > 0 else { showMaxPhotosToast(); return }
         images.append(contentsOf: new.prefix(slots))
         failedImageIndices.removeAll()
         // 사진을 1장 이상 등록하면 유의사항 아코디언을 자동으로 접는다.

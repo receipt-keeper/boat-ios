@@ -333,11 +333,12 @@ struct ReceiptListView: View {
 
     /// 삭제 API 호출 → 성공 시 로컬 DB/목록 갱신은 ViewModel에서 처리 + 삭제 토스트, 실패 시 에러 토스트.
     private func deleteReceipt(id: String) async {
-        let success = await viewModel.deleteReceipt(id: id)
-        if success {
+        let result = await viewModel.deleteReceipt(id: id)
+        if result.success {
             toast.show(String(localized: "detail.deleted_toast"), type: .info)
         } else {
-            toast.showError(String(localized: "receipt.delete.fail"))
+            // 4xx면 서버가 준 사유를 그대로 노출한다(5xx·네트워크는 APIError가 앱 문구로 바꿔줌).
+            toast.showError(result.errorMessage ?? String(localized: "receipt.delete.fail"))
         }
     }
 
