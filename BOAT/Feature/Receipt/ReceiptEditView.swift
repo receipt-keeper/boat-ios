@@ -560,6 +560,12 @@ struct ReceiptEditView: View {
                             if index != 4 {
                                 customMonthsText = ""
                                 customIsYears = false
+                            } else if customMonthsText.isEmpty {
+                                // 직접입력 전환 시 빈 값(0) 대신 "1년"을 기본값으로 보여준다.
+                                // 기존 영수증에 이미 저장된 커스텀 기간이 있으면(예: 8개월)
+                                // init()에서 채워진 그 값을 그대로 유지하고 덮어쓰지 않는다.
+                                customMonthsText = "1"
+                                customIsYears = true
                             }
                         }
                     }

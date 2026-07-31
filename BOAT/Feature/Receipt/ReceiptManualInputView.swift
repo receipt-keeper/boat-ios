@@ -575,6 +575,11 @@ struct ReceiptManualInputView: View {
                                 if index != 4 {
                                     customMonthsText = ""
                                     customIsYears = false
+                                } else if customMonthsText.isEmpty {
+                                    // 직접입력 전환 시 빈 값(0) 대신 "1년"을 기본값으로 보여준다.
+                                    // 이미 값이 있으면(OCR 프리필 등) 덮어쓰지 않는다.
+                                    customMonthsText = "1"
+                                    customIsYears = true
                                 }
                             }
                         }
