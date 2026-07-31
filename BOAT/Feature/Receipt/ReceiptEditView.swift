@@ -1067,11 +1067,8 @@ struct ReceiptEditView: View {
     private func submit() {
         guard !isSubmitting else { return }
         // 비활성 버튼 탭 시 화면 최상단부터 순서대로 누락 항목을 확인해 안내한다.
-        // (등록 화면과 동일한 우선순위 — 이미지가 맨 먼저)
-        guard totalFileCount >= Self.minPhotos else {
-            toast.showError(String(localized: "manual.image_required"))
-            return
-        }
+        // (수정 화면은 원본 영수증/이미지 섹션이 화면 맨 아래에 있으므로 등록 화면과
+        // 순서가 다르다 — 항목별 위치 그대로 반영)
         guard !productName.trimmingCharacters(in: .whitespaces).isEmpty else {
             toast.showError(String(localized: "manual.product_name_required"))
             return
@@ -1082,6 +1079,10 @@ struct ReceiptEditView: View {
         }
         guard totalWarrantyMonths != nil else {
             toast.showError(String(localized: "manual.warranty_required"))
+            return
+        }
+        guard totalFileCount >= Self.minPhotos else {
+            toast.showError(String(localized: "manual.image_required"))
             return
         }
         guard !priceLimitReached else {
