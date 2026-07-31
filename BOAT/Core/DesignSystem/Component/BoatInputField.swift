@@ -6,6 +6,13 @@
 //  스펙: height 52 / radius 8(roundedLg) / width는 컨테이너 채움.
 //  라벨(+필수) / placeholder / 상태: 기본(gray300) · 포커스(brandPrimary) · 에러(systemError + 헬퍼) · 비활성(gray200)
 //
+//  입력부는 SwiftUI 기본 TextField를 쓴다.
+//  예전에는 UITextField를 UIViewRepresentable로 감싸 썼는데, 키 입력마다 바인딩이 갱신되며
+//  SwiftUI 업데이트가 돌고 그 과정에서 시스템이 들고 있던 한글 조합(markedText) 상태가 깨져
+//  "하트"가 "핱ㅡ"처럼 자모가 분리되는 문제가 있었다. 조합 중 UITextField의 text/속성을
+//  건드리지 않도록 가드를 넣어도 완전히 막히지 않아, 조합을 프레임워크가 직접 다루는
+//  기본 TextField로 대체했다. (숫자/글자수 제한은 아래 onChange에서 처리)
+//
 
 import SwiftUI
 import UIKit
@@ -21,13 +28,15 @@ struct BoatInputField: View {
     var enabled: Bool = true
     var keyboard: UIKeyboardType = .default
     var maxLength: Int? = nil
+    /// 숫자 자릿수 제한(가격 필드처럼 콤마가 섞이는 값). 서식 문자는 세지 않는다.
+    var maxDigits: Int? = nil
 
-    @State private var focused = false
+    @FocusState private var isFocused: Bool
 
     private var borderColor: Color {
         if isError { return .systemError }
         if !enabled { return .gray200 }
-        return focused ? .brandPrimary : .gray300
+        return isFocused ? .brandPrimary : .gray300
     }
 
     var body: some View {
@@ -52,15 +61,20 @@ struct BoatInputField: View {
                         .font(.pretendard(.medium, size: 16))
                         .foregroundStyle(Color.gray400)
                         .padding(.horizontal, .spacing16)
+                        .allowsHitTesting(false)
                 }
 
-                LimitedTextField(
-                    text: $text,
-                    keyboardType: keyboard,
-                    maxLength: maxLength,
-                    isEnabled: enabled,
-                    isEditing: $focused
-                )
+                TextField("", text: $text)
+                    .font(.pretendard(.medium, size: 16))
+                    .foregroundStyle(Color.gray900)
+                    .tint(Color.brandPrimary)
+                    .keyboardType(keyboard)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
+                    .disabled(!enabled)
+                    .focused($isFocused)
+                    .padding(.horizontal, .spacing16)
+                    .onChange(of: text) { _, newValue in enforceLimits(newValue) }
             }
             .frame(height: 52)
             .background(Color.colorWhite, in: RoundedRectangle(cornerRadius: .roundedLg))
@@ -77,116 +91,17 @@ struct BoatInputField: View {
             }
         }
     }
-}
 
-private struct LimitedTextField: UIViewRepresentable {
-
-    @Binding var text: String
-    let keyboardType: UIKeyboardType
-    let maxLength: Int?
-    let isEnabled: Bool
-    @Binding var isEditing: Bool
-
-    func makeUIView(context: Context) -> PaddedTextField {
-        let textField = PaddedTextField()
-        textField.delegate = context.coordinator
-        textField.backgroundColor = .clear
-        textField.borderStyle = .none
-        textField.textColor = UIColor(Color.gray900)
-        textField.tintColor = UIColor(Color.brandPrimary)
-        textField.font = .init(name: Font.Pretendard.medium.rawValue, size: 16)
-        textField.keyboardType = keyboardType
-        textField.autocorrectionType = .no
-        textField.autocapitalizationType = .none
-        textField.clearButtonMode = .never
-        textField.leftPadding = .spacing16
-        textField.rightPadding = .spacing16
-        textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        return textField
-    }
-
-    func updateUIView(_ uiView: PaddedTextField, context: Context) {
-        uiView.delegate = context.coordinator
-        uiView.isEnabled = isEnabled
-        uiView.keyboardType = keyboardType
-        uiView.textColor = UIColor(Color.gray900)
-        uiView.tintColor = UIColor(Color.brandPrimary)
-        uiView.font = .init(name: Font.Pretendard.medium.rawValue, size: 16)
-
-        // 편집 중(첫 응답자)일 땐 uiView.text를 다시 덮어쓰지 않는다. 한글처럼 여러 keystroke가
-        // 빠르게 이어지는 IME 입력 중에 델리게이트→Binding→SwiftUI 재렌더 왕복이 한 박자 늦게
-        // 돌아오면, 여기서 최신 입력을 아직 반영 못한 stale text로 되돌려써서 글자가 중복/유실
-        // 되는 문제가 있었다. 편집 중이 아닐 때만(프로그램적 초기화 등) 동기화한다.
-        if !uiView.isFirstResponder, uiView.text != text {
-            uiView.text = text
+    /// 제한 초과분만 잘라낸다. 제한에 걸리지 않는 평소 입력에서는 text를 다시 쓰지 않으므로
+    /// 한글 조합에 영향을 주지 않는다.
+    private func enforceLimits(_ newValue: String) {
+        if let maxDigits, newValue.filter(\.isNumber).count > maxDigits {
+            text = String(newValue.filter(\.isNumber).prefix(maxDigits))
+            return
         }
-
-        if isEditing, !uiView.isFirstResponder {
-            uiView.becomeFirstResponder()
-        } else if !isEditing, uiView.isFirstResponder {
-            uiView.resignFirstResponder()
+        if let maxLength, newValue.count > maxLength {
+            text = String(newValue.prefix(maxLength))
         }
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    final class Coordinator: NSObject, UITextFieldDelegate {
-
-        private var parent: LimitedTextField
-
-        init(_ parent: LimitedTextField) {
-            self.parent = parent
-        }
-
-        func textFieldDidBeginEditing(_ textField: UITextField) {
-            parent.isEditing = true
-        }
-
-        func textFieldDidEndEditing(_ textField: UITextField) {
-            parent.isEditing = false
-        }
-
-        func textField(
-            _ textField: UITextField,
-            shouldChangeCharactersIn range: NSRange,
-            replacementString string: String
-        ) -> Bool {
-            guard let currentText = textField.text,
-                  let swiftRange = Range(range, in: currentText) else {
-                return true
-            }
-
-            let proposedText = currentText.replacingCharacters(in: swiftRange, with: string)
-            guard let maxLength = parent.maxLength, proposedText.count > maxLength else {
-                parent.text = proposedText
-                return true
-            }
-
-            let limitedText = String(proposedText.prefix(maxLength))
-            textField.text = limitedText
-            parent.text = limitedText
-            return false
-        }
-    }
-}
-
-private final class PaddedTextField: UITextField {
-
-    var leftPadding: CGFloat = 0
-    var rightPadding: CGFloat = 0
-
-    override func textRect(forBounds bounds: CGRect) -> CGRect {
-        bounds.inset(by: UIEdgeInsets(top: 0, left: leftPadding, bottom: 0, right: rightPadding))
-    }
-
-    override func editingRect(forBounds bounds: CGRect) -> CGRect {
-        bounds.inset(by: UIEdgeInsets(top: 0, left: leftPadding, bottom: 0, right: rightPadding))
-    }
-
-    override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
-        bounds.inset(by: UIEdgeInsets(top: 0, left: leftPadding, bottom: 0, right: rightPadding))
     }
 }
 

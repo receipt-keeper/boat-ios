@@ -4,9 +4,12 @@
 //
 //  공통 멀티라인 입력 필드. 메모 같은 길이 제한 입력에 사용한다.
 //
+//  입력부는 SwiftUI 기본 TextEditor를 쓴다. 예전에는 UITextView를 UIViewRepresentable로
+//  감싸 썼는데, BoatInputField와 같은 이유로 한글 조합(markedText)이 깨져 자모가 분리되는
+//  문제가 있어 프레임워크가 조합을 직접 다루는 기본 컴포넌트로 대체했다.
+//
 
 import SwiftUI
-import UIKit
 
 struct BoatTextEditor: View {
 
@@ -25,102 +28,29 @@ struct BoatTextEditor: View {
                     .lineSpacing(7)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 14)
+                    .allowsHitTesting(false)
             }
 
-            LimitedTextView(
-                text: $text,
-                maxLength: maxLength
-            )
-            .padding(.horizontal, 8)
-            .padding(.vertical, 8)
-            .frame(height: height)
+            TextEditor(text: $text)
+                .font(.pretendard(.regular, size: 15))
+                .foregroundStyle(Color.gray900)
+                .tint(Color.brandPrimary)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
+                // TextEditor는 자체 내부 여백(약 5pt)이 있어, placeholder와 첫 글자가
+                // 같은 위치에서 시작하도록 좌우를 그만큼 덜 준다.
+                .padding(.horizontal, 7)
+                .padding(.vertical, 9)
+                .onChange(of: text) { _, newValue in
+                    // 제한 초과분만 잘라낸다 — 평소 입력에서는 text를 다시 쓰지 않으므로
+                    // 한글 조합에 영향을 주지 않는다.
+                    if let maxLength, newValue.count > maxLength {
+                        text = String(newValue.prefix(maxLength))
+                    }
+                }
         }
-    }
-}
-
-private struct LimitedTextView: UIViewRepresentable {
-
-    @Binding var text: String
-    let maxLength: Int?
-
-    func makeUIView(context: Context) -> UITextView {
-        let textView = UITextView()
-        textView.delegate = context.coordinator
-        textView.backgroundColor = .clear
-        textView.textColor = UIColor(Color.gray900)
-        textView.tintColor = UIColor(Color.brandPrimary)
-        textView.font = .init(name: Font.Pretendard.regular.rawValue, size: 15)
-        textView.autocorrectionType = .no
-        textView.autocapitalizationType = .none
-        textView.isScrollEnabled = true
-        textView.textContainerInset = UIEdgeInsets(top: 8, left: 4, bottom: 8, right: 4)
-        textView.textContainer.lineFragmentPadding = 0
-        return textView
-    }
-
-    func updateUIView(_ uiView: UITextView, context: Context) {
-        uiView.delegate = context.coordinator
-        uiView.textColor = UIColor(Color.gray900)
-        uiView.tintColor = UIColor(Color.brandPrimary)
-        uiView.font = .init(name: Font.Pretendard.regular.rawValue, size: 15)
-
-        // 편집 중(첫 응답자)일 땐 uiView.text를 다시 덮어쓰지 않는다 — BoatInputField와 동일한 이유로,
-        // 한글 등 빠른 IME 입력 중 stale binding 값으로 되돌려쓰면 글자가 중복/유실될 수 있다.
-        if !uiView.isFirstResponder, uiView.text != text {
-            uiView.text = text
-        }
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    final class Coordinator: NSObject, UITextViewDelegate {
-
-        private var parent: LimitedTextView
-
-        init(_ parent: LimitedTextView) {
-            self.parent = parent
-        }
-
-        func textViewDidChange(_ textView: UITextView) {
-            guard let maxLength = parent.maxLength else {
-                parent.text = textView.text
-                return
-            }
-
-            let currentText = textView.text ?? ""
-            if currentText.count <= maxLength {
-                parent.text = currentText
-                return
-            }
-
-            let limitedText = String(currentText.prefix(maxLength))
-            textView.text = limitedText
-            parent.text = limitedText
-        }
-
-        func textView(
-            _ textView: UITextView,
-            shouldChangeTextIn range: NSRange,
-            replacementText text: String
-        ) -> Bool {
-            guard let currentText = textView.text,
-                  let swiftRange = Range(range, in: currentText) else {
-                return true
-            }
-
-            let proposedText = currentText.replacingCharacters(in: swiftRange, with: text)
-            guard let maxLength = parent.maxLength, proposedText.count > maxLength else {
-                parent.text = proposedText
-                return true
-            }
-
-            let limitedText = String(proposedText.prefix(maxLength))
-            textView.text = limitedText
-            parent.text = limitedText
-            textView.selectedRange = NSRange(location: limitedText.utf16.count, length: 0)
-            return false
-        }
+        .frame(height: height)
     }
 }
