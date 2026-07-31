@@ -133,7 +133,10 @@ struct NotificationListView: View {
             try await viewModel.delete(item)
             toast.show(String(localized: "notif.delete.success"), type: .info)
         } catch {
-            toast.showError(String(localized: "notif.delete.fail"))
+            toast.showError(
+                (error as? LocalizedError)?.errorDescription
+                    ?? String(localized: "notif.delete.fail")
+            )
         }
     }
 

@@ -65,14 +65,19 @@ final class APIClient {
                 Self.reportNetworkFailure(path: target.path, method: target.method.rawValue, statusCode: nil, underlyingError: response.error)
                 throw Self.connectionError(from: response.error)
             }
-            // 5xx → 네트워크 문구 (Android ApiErrorParser 규칙)
+            // 5xx는 모니터링용으로만 기록하고, 문구는 아래에서 서버 메시지를 우선한다.
             if statusCode >= 500 {
                 Self.reportNetworkFailure(path: target.path, method: target.method.rawValue, statusCode: statusCode, underlyingError: response.error)
-                throw APIError.network
             }
-            // 4xx → 상태코드는 항상 보존 (404 판별 등에 필요), 메시지는 서버 본문 우선
+            // 상태코드와 무관하게 서버가 준 메시지를 우선 노출한다(400/500 모두).
+            // 상태코드는 항상 보존한다 — 409·404 등 호출부 분기에 필요.
             let parsed = Self.parseError(from: response.data)
-            throw APIError.server(statusCode: statusCode, code: parsed.code, message: parsed.message, fieldErrors: parsed.fieldErrors)
+            throw APIError.server(
+                statusCode: statusCode,
+                code: parsed.code,
+                message: parsed.message ?? Self.fallbackMessage(for: statusCode),
+                fieldErrors: parsed.fieldErrors
+            )
         }
     }
 
@@ -105,9 +110,14 @@ final class APIClient {
             }
             if statusCode >= 500 {
                 Self.reportNetworkFailure(path: target.path, method: target.method.rawValue, statusCode: statusCode, underlyingError: response.error)
-                throw APIError.network
             }
-            throw APIError.server(statusCode: statusCode, message: String(localized: "error.api.unknown"), fieldErrors: [])
+            let parsed = Self.parseError(from: response.data)
+            throw APIError.server(
+                statusCode: statusCode,
+                code: parsed.code,
+                message: parsed.message ?? Self.fallbackMessage(for: statusCode),
+                fieldErrors: parsed.fieldErrors
+            )
         }
     }
 
@@ -141,10 +151,14 @@ final class APIClient {
             }
             if statusCode >= 500 {
                 Self.reportNetworkFailure(path: path, method: "POST", statusCode: statusCode, underlyingError: response.error)
-                throw APIError.network
             }
             let parsed = Self.parseError(from: response.data)
-            throw APIError.server(statusCode: statusCode, code: parsed.code, message: parsed.message, fieldErrors: parsed.fieldErrors)
+            throw APIError.server(
+                statusCode: statusCode,
+                code: parsed.code,
+                message: parsed.message ?? Self.fallbackMessage(for: statusCode),
+                fieldErrors: parsed.fieldErrors
+            )
         }
     }
 
@@ -174,11 +188,12 @@ final class APIClient {
 
     /// 실패 응답 본문에서 비즈니스 코드 + 사용자 노출 문구 + 필드별 에러 목록(data.errors)을 꺼낸다.
     /// 문구는 errors 목록이 있으면 첫 번째 필드 에러 메시지를 우선하고, 없으면 data.message를 사용한다.
+    /// 유효한 문구가 없으면 message는 nil — 호출부가 상태코드에 맞는 앱 기본 문구로 대체한다.
     /// (Android ApiErrorParser.parseMessage와 동일 규칙)
-    private static func parseError(from data: Data?) -> (code: String?, message: String, fieldErrors: [APIErrorData.FieldError]) {
+    private static func parseError(from data: Data?) -> (code: String?, message: String?, fieldErrors: [APIErrorData.FieldError]) {
         guard let data,
               let envelope = try? JSONDecoder().decode(APIResponse<APIErrorData>.self, from: data) else {
-            return (nil, String(localized: "error.api.unknown"), [])
+            return (nil, nil, [])
         }
         let code = envelope.data?.code
         let fieldErrors = envelope.data?.errors ?? []
@@ -188,7 +203,14 @@ final class APIClient {
         if let message = envelope.data?.message, !message.isEmpty {
             return (code, message, fieldErrors)
         }
-        return (code, String(localized: "error.api.unknown"), fieldErrors)
+        return (code, nil, fieldErrors)
+    }
+
+    /// 서버가 유효한 메시지를 주지 않았을 때 쓸 앱 기본 문구.
+    private static func fallbackMessage(for statusCode: Int) -> String {
+        statusCode >= 500
+            ? String(localized: "error.api.network")
+            : String(localized: "error.api.unknown")
     }
 
     private func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {

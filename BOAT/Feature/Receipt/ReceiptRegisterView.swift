@@ -713,7 +713,11 @@ struct ReceiptRegisterView: View {
             toast.show(String(localized: "receipt.recharge.already"), type: .info)
             await checkUsage()
         } catch {
-            toast.showError(String(localized: "receipt.register.network_error"))
+            // 409 외의 실패는 서버가 준 사유를 그대로 노출한다(이벤트 종료 등).
+            toast.showError(
+                (error as? LocalizedError)?.errorDescription
+                    ?? String(localized: "receipt.register.network_error")
+            )
         }
     }
 
