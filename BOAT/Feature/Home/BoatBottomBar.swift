@@ -53,9 +53,11 @@ struct BoatBottomBar: View {
             }
         }
         .clipShape(Capsule())
-        // 사방으로 퍼지지 않고 "아래쪽" 위주로 떨어지는 드롭 섀도우 —
-        // blur는 작게, y 오프셋은 크게 줘서 그림자가 바 아래에 주로 깔리게 한다.
-        .shadow(color: .black.opacity(0.14), radius: 8, x: 0, y: 8)
+        // Effect: shadow_md3 (디자인 시스템) — Android BoatFloatingBottomBar와 동일 2겹 스펙.
+        // y 오프셋을 작게 유지해 아래쪽으로 쏠리지 않고 캡슐 둘레에 고르게 퍼지는
+        // 소프트 섀도우로 보이게 한다(오프셋이 크면 위/좌우보다 아래쪽만 진해 보인다).
+        .shadow(color: .black.opacity(0.12), radius: 15, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.10), radius: 7, x: 0, y: 1)
     }
 
     private func item(

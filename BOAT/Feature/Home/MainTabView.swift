@@ -226,9 +226,9 @@ struct MainTabView: View {
                         .fill(.ultraThinMaterial)
                         .overlay(Circle().fill(Color.colorWhite.opacity(0.12)))
                 }
-                // 사방으로 퍼지지 않고 "아래쪽" 위주로 떨어지는 드롭 섀도우 —
-                // blur는 작게, y 오프셋은 크게 줘서 그림자가 바 아래에 주로 깔리게 한다.
-                .shadow(color: .black.opacity(0.14), radius: 8, x: 0, y: 8)
+                // Effect: shadow_md3 — 탭 바와 동일한 2겹 그림자 스펙(Android AddFloatingButton 대응).
+                .shadow(color: .black.opacity(0.12), radius: 15, x: 0, y: 2)
+                .shadow(color: .black.opacity(0.10), radius: 7, x: 0, y: 1)
         }
         .accessibilityLabel(Text(showAddMenu ? "detail.menu_close" : "receipt.add"))
     }
