@@ -1440,7 +1440,7 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "입력 가능한 기간을 확인해 주세요."
+            "value": "구매일 기준 최대 10년까지 입력할 수 있어요."
           }
         }
       }
